@@ -5,14 +5,14 @@ from setuptools import find_packages
 
 
 def get_version():
-    with open("lemonapi/__init__.py") as file:
+    with open("lemon/__init__.py") as file:
         for line in file:
             if line.startswith("version"):
                 return line.split('"')[1]
 
 
 setup(
-    name="lemonapi",
+    name="lemon",
     version=get_version(),
     description="Official python sdk for lemon.markets",
     long_description=open("README.md").read(),
@@ -35,14 +35,14 @@ setup(
     # author="",
     # author_email="",
     url="https://github.com/lemon-markets/sdk-python/",
-    download_url="https://pypi.python.org/pypi/lemonapi/",
+    download_url="https://pypi.python.org/pypi/lemon/",
     project_urls={
         "Source": "https://github.com/lemon-markets/sdk-python/",
         "Tracker": "https://github.com/lemon-markets/sdk-python/issues/",
         "lemon.markets": "https://www.lemon.markets/",
         "API Documentation": "https://docs.lemon.markets/",
     },
-    packages=find_packages(include=["lemonapi", "lemonapi.*"]),
+    packages=find_packages(include=["lemon", "lemon.*"]),
     install_requires=parse_requirements("requirements.txt"),
     python_requires=">=3.7",
 )
