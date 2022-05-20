@@ -3,8 +3,7 @@ from typing import Any, Dict
 import pytest
 from pytest_httpserver import HTTPServer
 
-from lemon.api import LemonApi
-from lemon.config import Config
+from lemon.api import LemonApi, create
 from lemon.errors import (
     AuthenticationError,
     ErrorCodes,
@@ -29,7 +28,7 @@ def build_query_matcher(data: Dict[str, Any]) -> Dict[str, str]:
 
 @pytest.fixture
 def client(httpserver: HTTPServer) -> LemonApi:
-    return LemonApi(Config(api_token="foobar", api_url=httpserver.url_for("")))
+    return create(api_token="foobar", api_url=httpserver.url_for(""))
 
 
 class CommonApiTests:
