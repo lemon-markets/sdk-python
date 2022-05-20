@@ -17,6 +17,6 @@ def task_lint():
     return {
         "actions": [
             "pylint lemon tests dodo.py",
-            "mypy --strict lemon tests",
+            "mypy lemon tests",
         ],
     }

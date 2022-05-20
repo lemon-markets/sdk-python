@@ -1,6 +1,5 @@
 from typing import Optional
 
-from lemon.errors import ApiError
 from lemon.helpers import ApiClient, encode_query_string
 from lemon.market_data.venues.models import GetVenuesResponse
 
@@ -16,10 +15,5 @@ class Venues:
         page: Optional[int] = None,
     ) -> GetVenuesResponse:
         query_params = encode_query_string(mic=mic, limit=limit, page=page)
-
         resp = self._client.get(f"/venues?{query_params}")
-
-        if resp.ok:
-            return GetVenuesResponse._from_data(resp.json())
-
-        raise ApiError._from_data(resp.json())
+        return GetVenuesResponse._from_data(resp.json())

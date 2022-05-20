@@ -1,12 +1,16 @@
 from dataclasses import dataclass
-from datetime import date, datetime, time, tzinfo
-from typing import Any, Dict, List
+from datetime import date, datetime, time, timedelta, timezone
+from typing import Any, Dict, List, cast
 
 import pytz
 
 
-def _build_time(time: str, timezone: tzinfo) -> time:
-    return datetime.strptime(time, "%H:%M").time().replace(tzinfo=timezone)
+def _build_time(time: str, timedelta: timedelta) -> time:
+    return (
+        datetime.strptime(time, "%H:%M")
+        .time()
+        .replace(tzinfo=timezone(offset=timedelta))
+    )
 
 
 @dataclass
@@ -16,7 +20,9 @@ class OpeningHours:
 
     @staticmethod
     def _from_data(data: Dict[str, str]) -> "OpeningHours":
-        timezone = pytz.timezone(data["timezone"])
+        timezone = cast(
+            timedelta, datetime.now(pytz.timezone(data["timezone"])).utcoffset()
+        )
         return OpeningHours(
             start=_build_time(data["start"], timezone),
             end=_build_time(data["end"], timezone),
