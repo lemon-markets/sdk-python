@@ -5,10 +5,11 @@ import requests
 
 from lemon.config import Config
 from lemon.errors import (
+    AuthenticationError,
+    ErrorCodes,
     InternalServerError,
-    InvalidTokenError,
-    UnauthorizedError,
-    UnexpectedError,
+    InvalidQueryError,
+    RequestsError,
 )
 
 
@@ -28,18 +29,20 @@ class ApiClient:
                 url, headers={"Authorization": f"Bearer {self._config.api_token}"}
             )
         except requests.exceptions.RequestException as exc:
-            raise UnexpectedError(cause=exc) from exc
+            raise RequestsError(cause=exc) from exc
 
         if resp.ok:
             return resp
 
         error = resp.json()
         error_code = error["error_code"]
-        if error_code == UnauthorizedError.ERROR_CODE:
-            raise UnauthorizedError(cause=error)
-        if error_code == InvalidTokenError.ERROR_CODE:
-            raise InvalidTokenError(cause=error)
-        if error_code == InternalServerError.ERROR_CODE:
-            raise InternalServerError(cause=error)
+        if error_code == ErrorCodes.UNAUTHORIZED:
+            raise AuthenticationError._from_data(error)
+        if error_code == ErrorCodes.INVALID_TOKEN:
+            raise AuthenticationError._from_data(error)
+        if error_code == ErrorCodes.INTERNAL_ERROR:
+            raise InternalServerError._from_data(error)
+        if error_code == ErrorCodes.INVALID_QUERY:
+            raise InvalidQueryError._from_data(error)
 
         return resp
