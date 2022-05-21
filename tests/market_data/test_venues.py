@@ -6,7 +6,7 @@ from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
 from lemon.market_data.venues.models import GetVenuesResponse, OpeningHours, Venue
-from tests.conftest import CommonApiTests, build_query_matcher
+from tests.conftest import CommonApiTests
 
 DUMMY_PAYLOAD = {
     "time": "2022-02-14T20:44:03.759+00:00",
@@ -73,20 +73,22 @@ class TestVenuesApi(CommonApiTests):
         return {"uri": "/venues", "method": "GET"}
 
     @pytest.mark.parametrize(
-        "function_kwargs",
+        "function_kwargs,query_string",
         [
-            {},
-            {"mic": ["XMUN"]},
-            {"sorting": "asc"},
-            {"limit": 100},
-            {"page": 2},
-            {"mic": ["XMUN"], "sorting": "asc", "limit": 100, "page": 2},
+            ({}, ""),
+            ({"mic": "XMUN"}, "mic=XMUN"),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            ({"page": 2}, "page=2"),
+            ({"mic": "XMUN", "limit": 100, "page": 2}, "mic=XMUN&limit=100&page=2"),
         ],
     )
-    def test_get_venues(self, client: Api, httpserver: HTTPServer, function_kwargs):
+    def test_get_venues(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
         httpserver.expect_request(
             "/venues",
-            query_string=build_query_matcher(function_kwargs),
+            query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
         assert client.market_data.venues.get(**function_kwargs) == DUMMY_RESPONSE

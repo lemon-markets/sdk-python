@@ -1,5 +1,5 @@
-from typing import Any, Literal
-from urllib.parse import urlencode, urljoin
+from typing import Any, Dict, Literal, Optional
+from urllib.parse import urljoin
 
 import requests
 
@@ -14,20 +14,19 @@ from lemon.errors import (
 Sorting = Literal["asc", "desc"]
 
 
-def encode_query_string(**kwargs: Any) -> str:
-    params = {k: v for k, v in kwargs.items() if v is not None}
-    return urlencode(params)
-
-
 class ApiClient:
     def __init__(self, base_url: str, config: Config):
         self._base_url = base_url
         self._config = config
 
-    def get(self, url: str) -> requests.Response:
+    def get(
+        self, url: str, query_params: Optional[Dict[str, Any]] = None
+    ) -> requests.Response:
         url = urljoin(self._base_url, url)
         resp = requests.get(
-            url, headers={"Authorization": f"Bearer {self._config.api_token}"}
+            url,
+            params=query_params,
+            headers={"Authorization": f"Bearer {self._config.api_token}"},
         )
 
         if resp.ok:
