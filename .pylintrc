@@ -6,5 +6,7 @@ disable=
     R0201, # no-self-use
     R0801, # duplicate-code
     R0903, # too-few-public-methods
+    R0913, # too-many-arguments
     W0212, # protected-access
     W0621, # redefined-outer-name
+    W0622, # redefined-builtin
