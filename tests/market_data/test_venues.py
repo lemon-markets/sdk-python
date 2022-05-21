@@ -87,10 +87,11 @@ class TestVenuesApi(CommonApiTests):
         "function_kwargs",
         [
             {},
-            {"mic": "XMUN"},
+            {"mic": ["XMUN"]},
+            {"sorting": "asc"},
             {"limit": 100},
             {"page": 2},
-            {"mic": "XMUN", "limit": 100, "page": 2},
+            {"mic": ["XMUN"], "sorting": "asc", "limit": 100, "page": 2},
         ],
     )
     def test_get_venues(

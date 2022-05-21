@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Any, Literal
 from urllib.parse import urlencode, urljoin
 
 import requests
@@ -12,8 +12,10 @@ from lemon.errors import (
     RequestsError,
 )
 
+Sorting = Literal["asc", "desc"]
 
-def encode_query_string(**kwargs: Union[str, int, None]) -> str:
+
+def encode_query_string(**kwargs: Any) -> str:
     params = {k: v for k, v in kwargs.items() if v is not None}
     return urlencode(params)
 
