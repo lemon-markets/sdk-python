@@ -56,7 +56,7 @@ class Venue:
 @dataclass
 class GetVenuesResponse:
     time: datetime
-    result: List[Venue]
+    results: List[Venue]
     total: int
     page: int
     pages: int
@@ -65,7 +65,7 @@ class GetVenuesResponse:
     def _from_data(data: Dict[str, Any]) -> "GetVenuesResponse":
         return GetVenuesResponse(
             time=datetime.fromisoformat(data["time"]),
-            result=[Venue._from_data(entry) for entry in data["results"]],
+            results=[Venue._from_data(entry) for entry in data["results"]],
             total=int(data["total"]),
             page=int(data["page"]),
             pages=int(data["pages"]),

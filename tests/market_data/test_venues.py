@@ -34,7 +34,7 @@ DUMMY_PAYLOAD = {
 
 DUMMY_RESPONSE = GetVenuesResponse(
     time=datetime.fromisoformat("2022-02-14T20:44:03.759+00:00"),
-    result=[
+    results=[
         Venue(
             name="Börse München - Gettex",
             title="Gettex",
