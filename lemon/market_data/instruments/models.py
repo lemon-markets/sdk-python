@@ -50,7 +50,7 @@ class Instrument:
 @dataclass
 class GetInstrumentsResponse:
     time: datetime
-    result: List[Instrument]
+    results: List[Instrument]
     total: int
     page: int
     pages: int
@@ -59,7 +59,7 @@ class GetInstrumentsResponse:
     def _from_data(data: Dict[str, Any]) -> "GetInstrumentsResponse":
         return GetInstrumentsResponse(
             time=datetime.fromisoformat(data["time"]),
-            result=[Instrument._from_data(entry) for entry in data["results"]],
+            results=[Instrument._from_data(entry) for entry in data["results"]],
             total=int(data["total"]),
             page=int(data["page"]),
             pages=int(data["pages"]),

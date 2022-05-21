@@ -3,7 +3,7 @@ from datetime import datetime
 import pytest
 from pytest_httpserver import HTTPServer
 
-from lemon.api import LemonApi
+from lemon.api import Api
 from lemon.market_data.instruments.models import (
     GetInstrumentsResponse,
     Instrument,
@@ -42,7 +42,7 @@ DUMMY_PAYLOAD = {
 
 DUMMY_RESPONSE = GetInstrumentsResponse(
     time=datetime.fromisoformat("2022-02-14T20:44:03.759+00:00"),
-    result=[
+    results=[
         Instrument(
             isin="US19260Q1076",
             wkn="A2QP7J",
@@ -68,8 +68,8 @@ DUMMY_RESPONSE = GetInstrumentsResponse(
 )
 
 
-class TestVenuesApi(CommonApiTests):
-    def make_api_call(self, client: LemonApi):
+class TestInstrumentsApi(CommonApiTests):
+    def make_api_call(self, client: Api):
         return client.market_data.instruments.get()
 
     @pytest.fixture
@@ -103,7 +103,7 @@ class TestVenuesApi(CommonApiTests):
         ],
     )
     def test_get_instruments(
-        self, client: LemonApi, httpserver: HTTPServer, function_kwargs
+        self, client: Api, httpserver: HTTPServer, function_kwargs
     ):
         httpserver.expect_request(
             "/instruments",
