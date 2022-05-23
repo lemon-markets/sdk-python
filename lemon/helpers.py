@@ -9,7 +9,6 @@ from lemon.errors import (
     ErrorCodes,
     InternalServerError,
     InvalidQueryError,
-    RequestsError,
 )
 
 Sorting = Literal["asc", "desc"]
@@ -21,17 +20,15 @@ def encode_query_string(**kwargs: Any) -> str:
 
 
 class ApiClient:
-    def __init__(self, config: Config):
+    def __init__(self, base_url: str, config: Config):
+        self._base_url = base_url
         self._config = config
 
     def get(self, url: str) -> requests.Response:
-        url = urljoin(self._config.api_url, url)
-        try:
-            resp = requests.get(
-                url, headers={"Authorization": f"Bearer {self._config.api_token}"}
-            )
-        except requests.exceptions.RequestException as exc:
-            raise RequestsError(cause=exc) from exc
+        url = urljoin(self._base_url, url)
+        resp = requests.get(
+            url, headers={"Authorization": f"Bearer {self._config.api_token}"}
+        )
 
         if resp.ok:
             return resp

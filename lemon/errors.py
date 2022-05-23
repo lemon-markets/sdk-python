@@ -2,8 +2,6 @@ import enum
 from datetime import datetime
 from typing import Dict, Type, TypeVar
 
-import requests
-
 TApiError = TypeVar("TApiError", bound="ApiError")
 
 
@@ -16,12 +14,6 @@ class ErrorCodes(str, enum.Enum):
 
 class BaseError(Exception):
     pass
-
-
-class RequestsError(BaseError):
-    def __init__(self, cause: requests.RequestException):
-        super().__init__(cause)
-        self.cause = cause
 
 
 class ApiError(BaseError):

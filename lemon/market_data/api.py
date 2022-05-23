@@ -9,4 +9,4 @@ class MarketDataApi:
 
     @property
     def venues(self) -> Venues:
-        return Venues(ApiClient(self._config))
+        return Venues(ApiClient(self._config.market_data_api_url, self._config))

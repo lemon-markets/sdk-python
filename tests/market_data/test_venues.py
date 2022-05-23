@@ -1,11 +1,10 @@
-from datetime import date, datetime, time, timedelta, timezone
-from typing import cast
+from datetime import date, datetime, time
 
 import pytest
 import pytz
 from pytest_httpserver import HTTPServer
 
-from lemon.api import LemonApi
+from lemon.api import Api
 from lemon.market_data.venues.models import GetVenuesResponse, OpeningHours, Venue
 from tests.conftest import CommonApiTests, build_query_matcher
 
@@ -44,22 +43,12 @@ DUMMY_RESPONSE = GetVenuesResponse(
                 start=time(
                     hour=8,
                     minute=0,
-                    tzinfo=timezone(
-                        offset=cast(
-                            timedelta,
-                            datetime.now(pytz.timezone("Europe/Berlin")).utcoffset(),
-                        )
-                    ),
+                    tzinfo=pytz.timezone("Europe/Berlin"),
                 ),
                 end=time(
                     hour=22,
                     minute=0,
-                    tzinfo=timezone(
-                        offset=cast(
-                            timedelta,
-                            datetime.now(pytz.timezone("Europe/Berlin")).utcoffset(),
-                        )
-                    ),
+                    tzinfo=pytz.timezone("Europe/Berlin"),
                 ),
             ),
             opening_days=[
@@ -76,7 +65,7 @@ DUMMY_RESPONSE = GetVenuesResponse(
 
 
 class TestVenuesApi(CommonApiTests):
-    def make_api_call(self, client: LemonApi):
+    def make_api_call(self, client: Api):
         return client.market_data.venues.get()
 
     @pytest.fixture
@@ -94,9 +83,7 @@ class TestVenuesApi(CommonApiTests):
             {"mic": ["XMUN"], "sorting": "asc", "limit": 100, "page": 2},
         ],
     )
-    def test_get_venues(
-        self, client: LemonApi, httpserver: HTTPServer, function_kwargs
-    ):
+    def test_get_venues(self, client: Api, httpserver: HTTPServer, function_kwargs):
         httpserver.expect_request(
             "/venues",
             query_string=build_query_matcher(function_kwargs),
