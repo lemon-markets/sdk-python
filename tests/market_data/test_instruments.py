@@ -9,7 +9,7 @@ from lemon.market_data.instruments.models import (
     Instrument,
     Venue,
 )
-from tests.conftest import CommonApiTests, build_query_matcher
+from tests.conftest import CommonApiTests
 
 DUMMY_PAYLOAD = {
     "time": "2022-02-14T20:44:03.759+00:00",
@@ -77,37 +77,41 @@ class TestInstrumentsApi(CommonApiTests):
         return {"uri": "/instruments", "method": "GET"}
 
     @pytest.mark.parametrize(
-        "function_kwargs",
+        "function_kwargs,query_string",
         [
-            {},
-            {"isin": ["XMUN"]},
-            {"search": "foo"},
-            {"type": ["stock", "etf"]},
-            {"mic": ["XMUN"]},
-            {"currency": "USD"},
-            {"tradable": False},
-            {"sorting": "asc"},
-            {"limit": 100},
-            {"page": 7},
-            {
-                "isin": ["XMUN"],
-                "search": "foo",
-                "type": ["stock", "etf"],
-                "mic": ["XMUN"],
-                "currency": "USD",
-                "tradable": False,
-                "sorting": "asc",
-                "limit": 100,
-                "page": 7,
-            },
+            ({}, ""),
+            ({"isin": ["XMUN"]}, "isin=XMUN"),
+            ({"search": "foo"}, "search=foo"),
+            ({"type": ["stock", "etf"]}, "type=stock&type=etf"),
+            ({"mic": ["XMUN"]}, "mic=XMUN"),
+            ({"currency": "USD"}, "currency=USD"),
+            ({"tradable": False}, "tradable=False"),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            ({"page": 7}, "page=7"),
+            (
+                {
+                    "isin": ["XMUN"],
+                    "search": "foo",
+                    "type": ["stock", "etf"],
+                    "mic": ["XMUN"],
+                    "currency": "USD",
+                    "tradable": False,
+                    "sorting": "asc",
+                    "limit": 100,
+                    "page": 7,
+                },
+                "isin=XMUN&search=foo&type=stock&type=etf&mic=XMUN&"
+                "currency=USD&tradable=False&sorting=asc&limit=100&page=7",
+            ),
         ],
     )
     def test_get_instruments(
-        self, client: Api, httpserver: HTTPServer, function_kwargs
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
         httpserver.expect_request(
             "/instruments",
-            query_string=build_query_matcher(function_kwargs),
+            query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
         assert client.market_data.instruments.get(**function_kwargs) == DUMMY_RESPONSE
