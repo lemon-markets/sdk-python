@@ -5,10 +5,10 @@ from doit import task_params
 def task_format(check: bool):
     return {
         "actions": [
-            f"black {'--check' if check else ''} lemon tests setup.py dodo.py",
-            f"isort {'--check' if check else ''} --profile black lemon tests setup.py dodo.py",
             f"autoflake --remove-all-unused-imports {'--check' if check else '--in-place'}"
             " -r lemon tests setup.py dodo.py",
+            f"isort {'--check' if check else ''} --profile black lemon tests setup.py dodo.py",
+            f"black {'--check' if check else ''} lemon tests setup.py dodo.py",
         ],
     }
 

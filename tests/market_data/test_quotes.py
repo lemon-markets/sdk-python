@@ -54,6 +54,10 @@ class TestQuotesApi(CommonApiTests):
     def api_call_kwargs(self):
         return {"uri": "/quotes/latest", "method": "GET", "query_string": "isin=XMUN"}
 
+    @pytest.fixture
+    def httpserver(self, market_data_httpserver: HTTPServer):
+        return market_data_httpserver
+
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
         [

@@ -76,6 +76,10 @@ class TestInstrumentsApi(CommonApiTests):
     def api_call_kwargs(self):
         return {"uri": "/instruments", "method": "GET"}
 
+    @pytest.fixture
+    def httpserver(self, market_data_httpserver: HTTPServer):
+        return market_data_httpserver
+
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
         [
