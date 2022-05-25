@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Dict
 
+from typing_extensions import TypedDict
+
 from lemon.helpers import Environment, Plan
 
 
@@ -93,3 +95,11 @@ class GetAccountResponse:
             mode=data["mode"],
             results=Account._from_data(data["results"]),
         )
+
+
+class EditAccountPayload(TypedDict, total=False):
+    address_street: str
+    address_street_number: str
+    address_city: str
+    address_postal_code: str
+    address_country: str

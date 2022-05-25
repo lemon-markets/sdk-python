@@ -1,5 +1,5 @@
 from lemon.helpers import ApiClient
-from lemon.trading.account.models import GetAccountResponse
+from lemon.trading.account.models import EditAccountPayload, GetAccountResponse
 
 
 class Account:
@@ -8,4 +8,8 @@ class Account:
 
     def get(self) -> GetAccountResponse:
         resp = self._client.get("/account")
+        return GetAccountResponse._from_data(resp.json())
+
+    def update(self, data: EditAccountPayload) -> GetAccountResponse:
+        resp = self._client.put("/account", data=data)
         return GetAccountResponse._from_data(resp.json())
