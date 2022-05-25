@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from lemon.helpers import ApiClient, Sorting, encode_query_string
+from lemon.helpers import ApiClient, Sorting
 from lemon.market_data.instruments.models import GetInstrumentsResponse
 
 
@@ -20,16 +20,18 @@ class Instruments:
         limit: Optional[int] = None,
         page: Optional[int] = None,
     ) -> GetInstrumentsResponse:
-        query_params = encode_query_string(
-            isin=isin,
-            search=search,
-            type=type,
-            mic=mic,
-            currency=currency,
-            tradable=tradable,
-            sorting=sorting,
-            limit=limit,
-            page=page,
+        resp = self._client.get(
+            "/instruments",
+            query_params={
+                "isin": isin,
+                "search": search,
+                "type": type,
+                "mic": mic,
+                "currency": currency,
+                "tradable": tradable,
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
         )
-        resp = self._client.get(f"/instruments?{query_params}")
         return GetInstrumentsResponse._from_data(resp.json())
