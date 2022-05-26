@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 
 @dataclass
@@ -9,9 +9,9 @@ class OhlcData:
     o: float
     h: float
     l: float
-    c: float
-    v: float
-    pbv: float
+    c: Union[float, int]
+    v: int
+    pbv: Union[float, int]
     t: datetime
     mic: str
 
@@ -23,7 +23,7 @@ class OhlcData:
             h=data["h"],
             l=data["l"],
             c=data["c"],
-            v=data["v"],
+            v=int(data["v"]),
             pbv=data["pbv"],
             t=datetime.fromisoformat(data["t"]),
             mic=data["mic"],

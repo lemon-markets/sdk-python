@@ -52,13 +52,13 @@ DUMMY_RESPONSE = GetOhlcResponse(
 
 class TestOhlcApi(CommonApiTests):
     def make_api_call(self, client: Api):
-        return client.market_data.ohlc.get(x1="d1", isin=["XMUN"])
+        return client.market_data.ohlc.get(period="d1", isin=["XMUN"])
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/ohlc/d1", "method": "GET", "query_string": "isin=XMUN"}
 
-    @pytest.mark.parametrize("x1", ["h1", "d1", "m1"])
+    @pytest.mark.parametrize("period", ["h1", "d1", "m1"])
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
         [
@@ -89,11 +89,14 @@ class TestOhlcApi(CommonApiTests):
         ],
     )
     def test_get_ohlc(
-        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string, x1
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string, period
     ):
         httpserver.expect_request(
-            f"/ohlc/{x1}",
+            f"/ohlc/{period}",
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
-        assert client.market_data.ohlc.get(x1=x1, **function_kwargs) == DUMMY_RESPONSE
+        assert (
+            client.market_data.ohlc.get(period=period, **function_kwargs)
+            == DUMMY_RESPONSE
+        )

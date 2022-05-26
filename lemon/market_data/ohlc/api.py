@@ -10,7 +10,7 @@ class Ohlc:
 
     def get(
         self,
-        x1: Literal["m1", "h1", "d1"],
+        period: Literal["m1", "h1", "d1"],
         isin: List[str],
         mic: Optional[str] = None,
         from_: Optional[str] = None,
@@ -22,7 +22,7 @@ class Ohlc:
         page: Optional[int] = None,
     ) -> GetOhlcResponse:
         resp = self._client.get(
-            f"/ohlc/{x1}",
+            f"/ohlc/{period}",
             query_params={
                 "mic": mic,
                 "isin": isin,
