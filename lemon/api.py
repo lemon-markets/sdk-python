@@ -1,7 +1,6 @@
-from typing import Optional
-
-from lemon.config import MARKET_DATA_API_URL, Config
+from lemon.config import LIVE_TRADING_API_URL, MARKET_DATA_API_URL, Config
 from lemon.market_data.api import MarketDataApi
+from lemon.trading.api import TradingApi
 
 
 class Api:
@@ -12,7 +11,20 @@ class Api:
     def market_data(self) -> MarketDataApi:
         return MarketDataApi(self._config)
 
+    @property
+    def trading(self) -> TradingApi:
+        return TradingApi(self._config)
 
-def create(api_token: str, market_data_api_url: Optional[str] = None) -> Api:
-    market_data_api_url = market_data_api_url or MARKET_DATA_API_URL
-    return Api(Config(api_token=api_token, market_data_api_url=market_data_api_url))
+
+def create(
+    api_token: str,
+    market_data_api_url: str = MARKET_DATA_API_URL,
+    trading_api_url: str = LIVE_TRADING_API_URL,
+) -> Api:
+    return Api(
+        Config(
+            api_token=api_token,
+            market_data_api_url=market_data_api_url,
+            trading_api_url=trading_api_url,
+        )
+    )

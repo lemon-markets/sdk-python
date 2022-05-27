@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Dict, Generator
 
 import pytest
 from pytest_httpserver import HTTPServer
@@ -22,13 +22,43 @@ def build_error(error_code: str) -> Dict[str, str]:
     }
 
 
-def build_query_matcher(data: Dict[str, Any]) -> Dict[str, str]:
-    return {k: str(v) for k, v in data.items()}
+def make_http_server() -> Generator[HTTPServer, None, None]:
+    server = HTTPServer(
+        host=HTTPServer.DEFAULT_LISTEN_HOST, port=HTTPServer.DEFAULT_LISTEN_PORT
+    )
+    server.start()
+    yield server
+    server.clear()
+    if server.is_running():
+        server.stop()
+
+
+@pytest.fixture(scope="session")
+def market_data_httpserver() -> Generator[HTTPServer, None, None]:
+    yield from make_http_server()
+
+
+@pytest.fixture(scope="session")
+def trading_httpserver() -> Generator[HTTPServer, None, None]:
+    yield from make_http_server()
+
+
+@pytest.fixture(autouse=True)
+def clear_stubs_queue(
+    market_data_httpserver: HTTPServer, trading_httpserver: HTTPServer
+):
+    yield
+    market_data_httpserver.clear()
+    trading_httpserver.clear()
 
 
 @pytest.fixture
-def client(httpserver: HTTPServer) -> Api:
-    return create(api_token="foobar", market_data_api_url=httpserver.url_for(""))
+def client(market_data_httpserver: HTTPServer, trading_httpserver: HTTPServer) -> Api:
+    return create(
+        api_token="foobar",
+        market_data_api_url=market_data_httpserver.url_for(""),
+        trading_api_url=trading_httpserver.url_for(""),
+    )
 
 
 class CommonApiTests:

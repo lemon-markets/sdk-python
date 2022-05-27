@@ -58,6 +58,10 @@ class TestOhlcApi(CommonApiTests):
     def api_call_kwargs(self):
         return {"uri": "/ohlc/d1", "method": "GET", "query_string": "isin=XMUN"}
 
+    @pytest.fixture
+    def httpserver(self, market_data_httpserver: HTTPServer):
+        return market_data_httpserver
+
     @pytest.mark.parametrize("period", ["h1", "d1", "m1"])
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
