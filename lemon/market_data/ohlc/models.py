@@ -6,9 +6,9 @@ from typing import Any, Dict, List, Union
 @dataclass
 class OhlcData:
     isin: str
-    o: float
-    h: float
-    l: float
+    o: Union[float, int]
+    h: Union[float, int]
+    l: Union[float, int]
     c: Union[float, int]
     v: int
     pbv: Union[float, int]
