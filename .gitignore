@@ -1,4 +1,5 @@
 .venv
 .vscode
+.idea
 *.pyc
 .doit.db
