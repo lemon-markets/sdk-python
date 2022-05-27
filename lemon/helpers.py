@@ -34,15 +34,29 @@ class ApiClient:
         if resp.ok:
             return resp
 
-        error = resp.json()
+        self._handle_common_errors(resp)
+        return resp
+
+    def put(self, url: str, data: Any) -> requests.Response:
+        url = urljoin(self._base_url, url)
+        resp = requests.put(
+            url,
+            json=data,
+            headers={"Authorization": f"Bearer {self._config.api_token}"},
+        )
+
+        if resp.ok:
+            return resp
+
+        self._handle_common_errors(resp)
+        return resp
+
+    def _handle_common_errors(self, response: requests.Response) -> None:
+        error = response.json()
         error_code = error["error_code"]
         if error_code == ErrorCodes.UNAUTHORIZED:
-            raise AuthenticationError._from_data(error)
-        if error_code == ErrorCodes.INVALID_TOKEN:
             raise AuthenticationError._from_data(error)
         if error_code == ErrorCodes.INTERNAL_ERROR:
             raise InternalServerError._from_data(error)
         if error_code == ErrorCodes.INVALID_QUERY:
             raise InvalidQueryError._from_data(error)
-
-        return resp

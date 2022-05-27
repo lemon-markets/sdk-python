@@ -105,3 +105,31 @@ class TestGetAccountApi(CommonApiTests):
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
         assert client.trading.account.get() == DUMMY_RESPONSE
+
+
+class TestEditAccountApi(CommonApiTests):
+    def make_api_call(self, client: Api):
+        return client.trading.account.update({"address_street": "new street"})
+
+    @pytest.fixture
+    def api_call_kwargs(self):
+        return {
+            "uri": "/account",
+            "method": "PUT",
+            "json": {"address_street": "new street"},
+        }
+
+    @pytest.fixture
+    def httpserver(self, trading_httpserver: HTTPServer):
+        return trading_httpserver
+
+    def test_get_account(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_request(
+            "/account",
+            method="PUT",
+            json={"address_street": "new street"},
+        ).respond_with_json(DUMMY_PAYLOAD)
+        assert (
+            client.trading.account.update({"address_street": "new street"})
+            == DUMMY_RESPONSE
+        )

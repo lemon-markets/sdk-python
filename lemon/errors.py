@@ -7,7 +7,6 @@ TApiError = TypeVar("TApiError", bound="ApiError")
 
 class ErrorCodes(str, enum.Enum):
     UNAUTHORIZED = "unauthorized"
-    INVALID_TOKEN = "token_invalid"
     INTERNAL_ERROR = "internal_error"
     INVALID_QUERY = "invalid_query"
 
