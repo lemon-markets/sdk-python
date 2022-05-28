@@ -143,3 +143,16 @@ class GetWithdrawalsResponse:
             page=int(data["page"]),
             pages=int(data["pages"]),
         )
+
+
+@dataclass
+class WithdrawResponse:
+    time: datetime
+    mode: Environment
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "WithdrawResponse":
+        return WithdrawResponse(
+            time=datetime.fromisoformat(data["time"]),
+            mode=data["mode"],
+        )
