@@ -4,10 +4,15 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
-from lemon.trading.account.models import Account, GetAccountResponse
+from lemon.trading.account.models import (
+    Account,
+    GetAccountResponse,
+    GetWithdrawalsResponse,
+    Withdrawal,
+)
 from tests.conftest import CommonApiTests
 
-DUMMY_PAYLOAD = {
+DUMMY_ACCOUNT_PAYLOAD = {
     "time": "2021-11-22T15:37:56.520+00:00",
     "status": "ok",
     "mode": "paper",
@@ -47,7 +52,27 @@ DUMMY_PAYLOAD = {
     },
 }
 
-DUMMY_RESPONSE = GetAccountResponse(
+DUMMY_WITHDRAWLS_PAYLOAD = {
+    "time": "2021-12-15T11:21:21.023+00:00",
+    "status": "ok",
+    "mode": "paper",
+    "results": [
+        {
+            "id": "wtd_pyQTPbbLLMNBQTM0mzkK7Ygb8kH60Ff10X",
+            "amount": 1000000,
+            "created_at": "2021-12-15T11:21:05.853+00:00",
+            "date": "2021-12-15T23:12:02.765+00:00",
+            "idempotency": "1234abcd",
+        },
+    ],
+    "previous": "https://paper-trading.lemon.markets/v1/account/withdrawals/?limit=20&page=1",
+    "next": "https://paper-trading.lemon.markets/v1/account/withdrawals/?limit=2&page=3",
+    "total": 80,
+    "page": 2,
+    "pages": 4,
+}
+
+DUMMY_ACCOUNT_RESPONSE = GetAccountResponse(
     time=datetime.fromisoformat("2021-11-22T15:37:56.520+00:00"),
     mode="paper",
     results=Account(
@@ -86,6 +111,23 @@ DUMMY_RESPONSE = GetAccountResponse(
     ),
 )
 
+DUMMY_WITHDRAWLS_RESPONSE = GetWithdrawalsResponse(
+    time=datetime.fromisoformat("2021-12-15T11:21:21.023+00:00"),
+    mode="paper",
+    results=[
+        Withdrawal(
+            id="wtd_pyQTPbbLLMNBQTM0mzkK7Ygb8kH60Ff10X",
+            amount=1000000,
+            created_at=datetime.fromisoformat("2021-12-15T11:21:05.853+00:00"),
+            date=datetime.fromisoformat("2021-12-15T23:12:02.765+00:00").date(),
+            idempotency="1234abcd",
+        )
+    ],
+    total=80,
+    page=2,
+    pages=4,
+)
+
 
 class TestGetAccountApi(CommonApiTests):
     def make_api_call(self, client: Api):
@@ -103,8 +145,8 @@ class TestGetAccountApi(CommonApiTests):
         httpserver.expect_request(
             "/account",
             method="GET",
-        ).respond_with_json(DUMMY_PAYLOAD)
-        assert client.trading.account.get() == DUMMY_RESPONSE
+        ).respond_with_json(DUMMY_ACCOUNT_PAYLOAD)
+        assert client.trading.account.get() == DUMMY_ACCOUNT_RESPONSE
 
 
 class TestEditAccountApi(CommonApiTests):
@@ -128,8 +170,28 @@ class TestEditAccountApi(CommonApiTests):
             "/account",
             method="PUT",
             json={"address_street": "new street"},
-        ).respond_with_json(DUMMY_PAYLOAD)
+        ).respond_with_json(DUMMY_ACCOUNT_PAYLOAD)
         assert (
             client.trading.account.update({"address_street": "new street"})
-            == DUMMY_RESPONSE
+            == DUMMY_ACCOUNT_RESPONSE
         )
+
+
+class TestGetWithdrawalsApi(CommonApiTests):
+    def make_api_call(self, client: Api):
+        return client.trading.account.get_withdrawals()
+
+    @pytest.fixture
+    def api_call_kwargs(self):
+        return {"uri": "/account/withdrawals", "method": "GET"}
+
+    @pytest.fixture
+    def httpserver(self, trading_httpserver: HTTPServer):
+        return trading_httpserver
+
+    def test_get_withdrawals(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_request(
+            "/account/withdrawals",
+            method="GET",
+        ).respond_with_json(DUMMY_WITHDRAWLS_PAYLOAD)
+        assert client.trading.account.get_withdrawals() == DUMMY_WITHDRAWLS_RESPONSE
