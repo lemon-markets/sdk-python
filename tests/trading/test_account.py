@@ -225,7 +225,7 @@ class TestWithdrawApi(CommonApiTests):
     def httpserver(self, trading_httpserver: HTTPServer):
         return trading_httpserver
 
-    def test_get_withdrawals(self, client: Api, httpserver: HTTPServer):
+    def test_withdraw(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_request(
             "/account/withdrawals",
             method="POST",
