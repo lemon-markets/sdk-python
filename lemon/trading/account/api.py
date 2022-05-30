@@ -6,6 +6,7 @@ from lemon.trading.account.models import (
     EditAccountPayload,
     GetAccountResponse,
     GetBankStatementsResponse,
+    GetDocumentResponse,
     GetDocumentsResponse,
     GetWithdrawalsResponse,
     WithdrawResponse,
@@ -89,3 +90,12 @@ class Account:
             },
         )
         return GetDocumentsResponse._from_data(resp.json())
+
+    def get_document(
+        self, document_id: str, no_redirect: Optional[bool] = None
+    ) -> GetDocumentResponse:
+        resp = self._client.get(
+            f"/account/documents/{document_id}",
+            query_params={"no_redirect": no_redirect},
+        )
+        return GetDocumentResponse._from_data(resp.json())
