@@ -215,3 +215,47 @@ class GetBankStatementsResponse:
             page=int(data["page"]),
             pages=int(data["pages"]),
         )
+
+
+@dataclass
+class Document:
+    id: str
+    name: str
+    created_at: datetime
+    category: str
+    link: str
+    viewed_first_at: datetime
+    viewed_last_at: datetime
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "Document":
+        return Document(
+            id=data["id"],
+            name=data["name"],
+            created_at=datetime.fromisoformat(data["created_at"]),
+            category=data["category"],
+            link=data["link"],
+            viewed_first_at=datetime.fromisoformat(data["viewed_first_at"]),
+            viewed_last_at=datetime.fromisoformat(data["viewed_last_at"]),
+        )
+
+
+@dataclass
+class GetDocumentsResponse:
+    time: datetime
+    mode: Environment
+    results: List[Document]
+    total: int
+    page: int
+    pages: int
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "GetDocumentsResponse":
+        return GetDocumentsResponse(
+            time=datetime.fromisoformat(data["time"]),
+            mode=data["mode"],
+            results=[Document._from_data(entry) for entry in data["results"]],
+            total=int(data["total"]),
+            page=int(data["page"]),
+            pages=int(data["pages"]),
+        )
