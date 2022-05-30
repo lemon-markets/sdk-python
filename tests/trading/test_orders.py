@@ -5,6 +5,7 @@ from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
 from lemon.trading.orders.models import (
+    ActivateOrderResponse,
     CreatedOrder,
     CreateOrderResponse,
     GetOrdersResponse,
@@ -119,6 +120,11 @@ DUMMY_ORDER_PAYLOAD = {
     },
 }
 
+DUMMY_ACTIVATE_ORDER_PAYLOAD = {
+    "time": "2021-11-21T19:34:45.071+00:00",
+    "mode": "paper",
+    "status": "ok",
+}
 
 DUMMY_ORDERS_RESPONSE = GetOrdersResponse(
     time=datetime.fromisoformat("2021-11-21T19:34:45.071+00:00"),
@@ -220,6 +226,11 @@ DUMMY_ORDER_RESPONSE = CreateOrderResponse(
         chargeable_at=datetime.fromisoformat("2021-12-10T07:57:12.628+00:00"),
         key_creation_id="apk_pyJKKbbDDNympXsVwZzPp2nBVlTMTLRmxy",
     ),
+)
+
+DUMMY_ACTIVATE_ORDER_RESPONSE = ActivateOrderResponse(
+    time=datetime.fromisoformat("2021-11-21T19:34:45.071+00:00"),
+    mode="paper",
 )
 
 
@@ -344,4 +355,32 @@ class TestCreateOrderApi(CommonApiTests):
                 idempotency="bar",
             )
             == DUMMY_ORDER_RESPONSE
+        )
+
+
+class TestActivateOrderApi(CommonApiTests):
+    def make_api_call(self, client: Api):
+        return client.trading.orders.activate(order_id="DE0008232125", pin="1234")
+
+    @pytest.fixture
+    def api_call_kwargs(self):
+        return {
+            "uri": "/orders/DE0008232125/activate",
+            "method": "POST",
+            "json": {"pin": "1234"},
+        }
+
+    @pytest.fixture
+    def httpserver(self, trading_httpserver: HTTPServer):
+        return trading_httpserver
+
+    def test_activate_order(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_request(
+            "/orders/DE0008232125/activate",
+            method="POST",
+            json={"pin": "1234"},
+        ).respond_with_json(DUMMY_ACTIVATE_ORDER_PAYLOAD)
+        assert (
+            client.trading.orders.activate(order_id="DE0008232125", pin="1234")
+            == DUMMY_ACTIVATE_ORDER_RESPONSE
         )
