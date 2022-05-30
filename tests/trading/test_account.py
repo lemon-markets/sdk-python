@@ -447,7 +447,7 @@ class TestGetDocumentApi(CommonApiTests):
             ({"no_redirect": False}, "no_redirect=False"),
         ],
     )
-    def test_get_documents(
+    def test_get_document(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
         httpserver.expect_request(
