@@ -9,6 +9,7 @@ from lemon.trading.account.models import (
     GetAccountResponse,
     GetWithdrawalsResponse,
     Withdrawal,
+    WithdrawResponse,
 )
 from tests.conftest import CommonApiTests
 
@@ -72,6 +73,12 @@ DUMMY_WITHDRAWLS_PAYLOAD = {
     "pages": 4,
 }
 
+DUMMY_WITHDRAW_PAYLOAD = {
+    "time": "2021-11-22T15:37:56.520+00:00",
+    "mode": "paper",
+    "status": "ok",
+}
+
 DUMMY_ACCOUNT_RESPONSE = GetAccountResponse(
     time=datetime.fromisoformat("2021-11-22T15:37:56.520+00:00"),
     mode="paper",
@@ -126,6 +133,11 @@ DUMMY_WITHDRAWLS_RESPONSE = GetWithdrawalsResponse(
     total=80,
     page=2,
     pages=4,
+)
+
+DUMMY_WITHDRAW_RESPONSE = WithdrawResponse(
+    time=datetime.fromisoformat("2021-11-22T15:37:56.520+00:00"),
+    mode="paper",
 )
 
 
@@ -195,3 +207,31 @@ class TestGetWithdrawalsApi(CommonApiTests):
             method="GET",
         ).respond_with_json(DUMMY_WITHDRAWLS_PAYLOAD)
         assert client.trading.account.get_withdrawals() == DUMMY_WITHDRAWLS_RESPONSE
+
+
+class TestWithdrawApi(CommonApiTests):
+    def make_api_call(self, client: Api):
+        return client.trading.account.withdraw(amount=100, pin="1234")
+
+    @pytest.fixture
+    def api_call_kwargs(self):
+        return {
+            "uri": "/account/withdrawals",
+            "method": "POST",
+            "json": {"amount": 100, "pin": "1234", "idempotency": None},
+        }
+
+    @pytest.fixture
+    def httpserver(self, trading_httpserver: HTTPServer):
+        return trading_httpserver
+
+    def test_withdraw(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_request(
+            "/account/withdrawals",
+            method="POST",
+            json={"amount": 100, "pin": "1234", "idempotency": None},
+        ).respond_with_json(DUMMY_WITHDRAW_PAYLOAD)
+        assert (
+            client.trading.account.withdraw(amount=100, pin="1234")
+            == DUMMY_WITHDRAW_RESPONSE
+        )

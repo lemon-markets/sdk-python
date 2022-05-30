@@ -5,6 +5,7 @@ from lemon.trading.account.models import (
     EditAccountPayload,
     GetAccountResponse,
     GetWithdrawalsResponse,
+    WithdrawResponse,
 )
 
 
@@ -31,3 +32,19 @@ class Account:
             },
         )
         return GetWithdrawalsResponse._from_data(resp.json())
+
+    def withdraw(
+        self,
+        amount: int,
+        pin: str,
+        idempotency: Optional[str] = None,
+    ) -> WithdrawResponse:
+        resp = self._client.post(
+            "/account/withdrawals",
+            data={
+                "amount": amount,
+                "pin": pin,
+                "idempotency": idempotency,
+            },
+        )
+        return WithdrawResponse._from_data(resp.json())
