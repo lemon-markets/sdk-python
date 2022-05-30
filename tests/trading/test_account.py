@@ -6,7 +6,9 @@ from pytest_httpserver import HTTPServer
 from lemon.api import Api
 from lemon.trading.account.models import (
     Account,
+    BankStatement,
     GetAccountResponse,
+    GetBankStatementsResponse,
     GetWithdrawalsResponse,
     Withdrawal,
     WithdrawResponse,
@@ -79,6 +81,29 @@ DUMMY_WITHDRAW_PAYLOAD = {
     "status": "ok",
 }
 
+DUMMY_BANK_STATEMENTS_PAYLOAD = {
+    "time": "2021-11-22T15:41:04.028+00:00",
+    "status": "ok",
+    "mode": "paper",
+    "results": [
+        {
+            "id": "bst_pyQKKTTSS0Q2drg2J7yRhTwBkMPd1JgZzZ",
+            "account_id": "acc_pyNQNll99hQbXMCS0dRzHyKQCRKYHpy3zg",
+            "type": "order_buy",
+            "date": "2021-12-16",
+            "amount": 100000,
+            "isin": "US19260Q1076",
+            "isin_title": "COINBASE GLOBAL INC.",
+            "created_at": "2021-12-17T01:37:03.362+00:00",
+        },
+    ],
+    "previous": "https://paper-trading.lemon.markets/v1/account/bankstatements/?limit=20&page=1",
+    "next": "https://paper-trading.lemon.markets/v1/account/bankstatements/?limit=2&page=3",
+    "total": 80,
+    "page": 2,
+    "pages": 4,
+}
+
 DUMMY_ACCOUNT_RESPONSE = GetAccountResponse(
     time=datetime.fromisoformat("2021-11-22T15:37:56.520+00:00"),
     mode="paper",
@@ -138,6 +163,26 @@ DUMMY_WITHDRAWLS_RESPONSE = GetWithdrawalsResponse(
 DUMMY_WITHDRAW_RESPONSE = WithdrawResponse(
     time=datetime.fromisoformat("2021-11-22T15:37:56.520+00:00"),
     mode="paper",
+)
+
+DUMMY_BANKSTATEMENTS_RESPONSE = GetBankStatementsResponse(
+    time=datetime.fromisoformat("2021-11-22T15:41:04.028+00:00"),
+    mode="paper",
+    results=[
+        BankStatement(
+            id="bst_pyQKKTTSS0Q2drg2J7yRhTwBkMPd1JgZzZ",
+            account_id="acc_pyNQNll99hQbXMCS0dRzHyKQCRKYHpy3zg",
+            type="order_buy",
+            date=date(year=2021, month=12, day=16),
+            amount=100000,
+            isin="US19260Q1076",
+            isin_title="COINBASE GLOBAL INC.",
+            created_at=datetime.fromisoformat("2021-12-17T01:37:03.362+00:00"),
+        )
+    ],
+    total=80,
+    page=2,
+    pages=4,
 )
 
 
@@ -225,7 +270,7 @@ class TestWithdrawApi(CommonApiTests):
     def httpserver(self, trading_httpserver: HTTPServer):
         return trading_httpserver
 
-    def test_withdraw(self, client: Api, httpserver: HTTPServer):
+    def test_get_withdrawals(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_request(
             "/account/withdrawals",
             method="POST",
@@ -234,4 +279,51 @@ class TestWithdrawApi(CommonApiTests):
         assert (
             client.trading.account.withdraw(amount=100, pin="1234")
             == DUMMY_WITHDRAW_RESPONSE
+        )
+
+
+class TestGetBankStatementsApi(CommonApiTests):
+    def make_api_call(self, client: Api):
+        return client.trading.account.get_bank_statements()
+
+    @pytest.fixture
+    def api_call_kwargs(self):
+        return {"uri": "/account/bankstatements", "method": "GET"}
+
+    @pytest.fixture
+    def httpserver(self, trading_httpserver: HTTPServer):
+        return trading_httpserver
+
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            ({"type": "pay_in"}, "type=pay_in"),
+            ({"from_": "beggining"}, "from=beggining"),
+            ({"to": "now"}, "to=now"),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            ({"page": 7}, "page=7"),
+            (
+                {
+                    "type": "pay_in",
+                    "from_": "beggining",
+                    "to": "now",
+                    "sorting": "asc",
+                    "limit": 100,
+                    "page": 7,
+                },
+                "type=pay_in&from=beggining&to=now&sorting=asc&limit=100&page=7",
+            ),
+        ],
+    )
+    def test_get_bank_statements(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_request(
+            "/account/bankstatements", query_string=query_string, method="GET"
+        ).respond_with_json(DUMMY_BANK_STATEMENTS_PAYLOAD)
+        assert (
+            client.trading.account.get_bank_statements(**function_kwargs)
+            == DUMMY_BANKSTATEMENTS_RESPONSE
         )

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Literal
 
 from typing_extensions import TypedDict
 
@@ -155,4 +155,63 @@ class WithdrawResponse:
         return WithdrawResponse(
             time=datetime.fromisoformat(data["time"]),
             mode=data["mode"],
+        )
+
+
+BankStatementType = Literal[
+    "pay_in",
+    "pay_out",
+    "order_buy",
+    "order_sell",
+    "dividend",
+    "tax_refund",
+    "interest_paid",
+    "interest_earned",
+    "eod_balance",
+]
+
+
+@dataclass
+class BankStatement:
+    id: str
+    account_id: str
+    type: BankStatementType
+    date: date
+    amount: int
+    isin: str
+    isin_title: str
+    created_at: datetime
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "BankStatement":
+        return BankStatement(
+            id=data["id"],
+            account_id=data["account_id"],
+            type=data["type"],
+            date=datetime.fromisoformat(data["date"]).date(),
+            amount=int(data["amount"]),
+            isin=data["isin"],
+            isin_title=data["isin_title"],
+            created_at=datetime.fromisoformat(data["created_at"]),
+        )
+
+
+@dataclass
+class GetBankStatementsResponse:
+    time: datetime
+    mode: Environment
+    results: List[BankStatement]
+    total: int
+    page: int
+    pages: int
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "GetBankStatementsResponse":
+        return GetBankStatementsResponse(
+            time=datetime.fromisoformat(data["time"]),
+            mode=data["mode"],
+            results=[BankStatement._from_data(entry) for entry in data["results"]],
+            total=int(data["total"]),
+            page=int(data["page"]),
+            pages=int(data["pages"]),
         )
