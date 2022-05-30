@@ -139,9 +139,49 @@ class TestGetOrdersApi(CommonApiTests):
     def httpserver(self, trading_httpserver: HTTPServer):
         return trading_httpserver
 
-    def test_get_orders(self, client: Api, httpserver: HTTPServer):
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            (
+                {"from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
+                "from=2021-11-07+22%3A59%3A00%2B00%3A00",
+            ),
+            (
+                {"to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
+                "to=2021-11-07+22%3A59%3A00%2B00%3A00",
+            ),
+            ({"isin": "XMUN"}, "isin=XMUN"),
+            ({"side": "sell"}, "side=sell"),
+            ({"status": "inactive"}, "status=inactive"),
+            ({"type": "market"}, "type=market"),
+            ({"key_creation_id": "foo"}, "key_creation_id=foo"),
+            ({"limit": 100}, "limit=100"),
+            ({"page": 7}, "page=7"),
+            (
+                {
+                    "from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
+                    "to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
+                    "isin": "XMUN",
+                    "side": "sell",
+                    "status": "inactive",
+                    "type": "market",
+                    "key_creation_id": "foo",
+                    "limit": 100,
+                    "page": 7,
+                },
+                "from=2021-11-07+22%3A59%3A00%2B00%3A00&to=2021-11-07+22%3A59%3A00%2B00%3A00&"
+                "isin=XMUN&side=sell&status=inactive&type=market&key_creation_id=foo&limit=100&"
+                "page=7",
+            ),
+        ],
+    )
+    def test_get_orders(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
         httpserver.expect_request(
             "/orders",
+            query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_ORDERS_PAYLOAD)
-        assert client.trading.orders.get() == DUMMY_ORDERS_RESPONSE
+        assert client.trading.orders.get(**function_kwargs) == DUMMY_ORDERS_RESPONSE
