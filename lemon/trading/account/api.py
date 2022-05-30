@@ -6,6 +6,7 @@ from lemon.trading.account.models import (
     EditAccountPayload,
     GetAccountResponse,
     GetBankStatementsResponse,
+    GetDocumentsResponse,
     GetWithdrawalsResponse,
     WithdrawResponse,
 )
@@ -72,3 +73,19 @@ class Account:
             },
         )
         return GetBankStatementsResponse._from_data(resp.json())
+
+    def get_documents(
+        self,
+        sorting: Optional[Sorting] = None,
+        limit: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> GetDocumentsResponse:
+        resp = self._client.get(
+            "/account/documents",
+            query_params={
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
+        )
+        return GetDocumentsResponse._from_data(resp.json())

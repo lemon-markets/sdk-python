@@ -7,8 +7,10 @@ from lemon.api import Api
 from lemon.trading.account.models import (
     Account,
     BankStatement,
+    Document,
     GetAccountResponse,
     GetBankStatementsResponse,
+    GetDocumentsResponse,
     GetWithdrawalsResponse,
     Withdrawal,
     WithdrawResponse,
@@ -104,6 +106,28 @@ DUMMY_BANK_STATEMENTS_PAYLOAD = {
     "pages": 4,
 }
 
+DUMMY_GET_DOCUMENTS_PAYLOAD = {
+    "time": "2021-11-22T15:41:04.028+00:00",
+    "mode": "paper",
+    "status": "ok",
+    "results": [
+        {
+            "id": "doc_pyNjNcc77ht3T3lH8dJa5fD8jhj2JHJ1xX",
+            "name": "account_opening.pdf",
+            "created_at": "2021-10-19T14:58:52.813",
+            "category": "kyc",
+            "link": "lemon.markets/v1/account/documents/doc_pyNjNcc77ht3T3lH8dJa5fD8jhj2JHJ1xX",
+            "viewed_first_at": "2021-10-19T14:58:52.813",
+            "viewed_last_at": "2021-10-19T14:58:52.813",
+        },
+    ],
+    "previous": "https://paper-trading.lemon.markets/v1/account/documents/?limit=20&page=1",
+    "next": "https://paper-trading.lemon.markets/v1/account/documents/?limit=2&page=3",
+    "total": 80,
+    "page": 2,
+    "pages": 4,
+}
+
 DUMMY_ACCOUNT_RESPONSE = GetAccountResponse(
     time=datetime.fromisoformat("2021-11-22T15:37:56.520+00:00"),
     mode="paper",
@@ -179,6 +203,25 @@ DUMMY_BANKSTATEMENTS_RESPONSE = GetBankStatementsResponse(
             isin_title="COINBASE GLOBAL INC.",
             created_at=datetime.fromisoformat("2021-12-17T01:37:03.362+00:00"),
         )
+    ],
+    total=80,
+    page=2,
+    pages=4,
+)
+
+DUMMY_GET_DOCUMENTS_RESPONSE = GetDocumentsResponse(
+    time=datetime.fromisoformat("2021-11-22T15:41:04.028+00:00"),
+    mode="paper",
+    results=[
+        Document(
+            id="doc_pyNjNcc77ht3T3lH8dJa5fD8jhj2JHJ1xX",
+            name="account_opening.pdf",
+            created_at=datetime.fromisoformat("2021-10-19T14:58:52.813"),
+            category="kyc",
+            link="lemon.markets/v1/account/documents/doc_pyNjNcc77ht3T3lH8dJa5fD8jhj2JHJ1xX",
+            viewed_first_at=datetime.fromisoformat("2021-10-19T14:58:52.813"),
+            viewed_last_at=datetime.fromisoformat("2021-10-19T14:58:52.813"),
+        ),
     ],
     total=80,
     page=2,
@@ -326,4 +369,45 @@ class TestGetBankStatementsApi(CommonApiTests):
         assert (
             client.trading.account.get_bank_statements(**function_kwargs)
             == DUMMY_BANKSTATEMENTS_RESPONSE
+        )
+
+
+class TestGetDocumentsApi(CommonApiTests):
+    def make_api_call(self, client: Api):
+        return client.trading.account.get_documents()
+
+    @pytest.fixture
+    def api_call_kwargs(self):
+        return {"uri": "/account/documents", "method": "GET"}
+
+    @pytest.fixture
+    def httpserver(self, trading_httpserver: HTTPServer):
+        return trading_httpserver
+
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            ({"page": 7}, "page=7"),
+            (
+                {
+                    "sorting": "asc",
+                    "limit": 100,
+                    "page": 7,
+                },
+                "sorting=asc&limit=100&page=7",
+            ),
+        ],
+    )
+    def test_get_documents(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_request(
+            "/account/documents", query_string=query_string, method="GET"
+        ).respond_with_json(DUMMY_GET_DOCUMENTS_PAYLOAD)
+        assert (
+            client.trading.account.get_documents(**function_kwargs)
+            == DUMMY_GET_DOCUMENTS_RESPONSE
         )
