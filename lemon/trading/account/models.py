@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from typing_extensions import TypedDict
 
@@ -103,3 +103,43 @@ class EditAccountPayload(TypedDict, total=False):
     address_city: str
     address_postal_code: str
     address_country: str
+
+
+@dataclass
+class Withdrawal:
+    id: str
+    amount: int
+    created_at: datetime
+    date: date
+    idempotency: str
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "Withdrawal":
+        return Withdrawal(
+            id=data["id"],
+            amount=int(data["amount"]),
+            created_at=datetime.fromisoformat(data["created_at"]),
+            date=datetime.fromisoformat(data["date"]).date(),
+            idempotency=data["idempotency"],
+        )
+
+
+@dataclass
+class GetWithdrawalsResponse:
+    time: datetime
+    mode: Environment
+    results: List[Withdrawal]
+    total: int
+    page: int
+    pages: int
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "GetWithdrawalsResponse":
+        return GetWithdrawalsResponse(
+            time=datetime.fromisoformat(data["time"]),
+            mode=data["mode"],
+            results=[Withdrawal._from_data(entry) for entry in data["results"]],
+            total=int(data["total"]),
+            page=int(data["page"]),
+            pages=int(data["pages"]),
+        )
