@@ -5,6 +5,7 @@ from lemon.helpers import ApiClient
 from lemon.trading.orders.models import (
     ActivateOrderResponse,
     CreateOrderResponse,
+    DeleteOrderResponse,
     GetOrderResponse,
     GetOrdersResponse,
     OrderSide,
@@ -83,3 +84,7 @@ class Orders:
     def get_order(self, order_id: str) -> GetOrderResponse:
         resp = self._client.get(f"/orders/{order_id}")
         return GetOrderResponse._from_data(resp.json())
+
+    def delete(self, order_id: str) -> DeleteOrderResponse:
+        resp = self._client.delete(f"/orders/{order_id}")
+        return DeleteOrderResponse._from_data(resp.json())
