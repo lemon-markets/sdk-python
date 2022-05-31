@@ -8,8 +8,10 @@ from lemon.trading.account.models import (
     Account,
     BankStatement,
     Document,
+    DocumentUrl,
     GetAccountResponse,
     GetBankStatementsResponse,
+    GetDocumentResponse,
     GetDocumentsResponse,
     GetWithdrawalsResponse,
     Withdrawal,
@@ -128,6 +130,13 @@ DUMMY_GET_DOCUMENTS_PAYLOAD = {
     "pages": 4,
 }
 
+DUMMY_GET_DOCUMENT_PAYLOAD = {
+    "time": "2022-05-30T09:47:16.769",
+    "mode": "paper",
+    "status": "ok",
+    "results": {"public_url": "foo"},
+}
+
 DUMMY_ACCOUNT_RESPONSE = GetAccountResponse(
     time=datetime.fromisoformat("2021-11-22T15:37:56.520+00:00"),
     mode="paper",
@@ -226,6 +235,12 @@ DUMMY_GET_DOCUMENTS_RESPONSE = GetDocumentsResponse(
     total=80,
     page=2,
     pages=4,
+)
+
+DUMMY_GET_DOCUMENT_RESPONSE = GetDocumentResponse(
+    time=datetime.fromisoformat("2022-05-30T09:47:16.769"),
+    mode="paper",
+    results=DocumentUrl(public_url="foo"),
 )
 
 
@@ -410,4 +425,35 @@ class TestGetDocumentsApi(CommonApiTests):
         assert (
             client.trading.account.get_documents(**function_kwargs)
             == DUMMY_GET_DOCUMENTS_RESPONSE
+        )
+
+
+class TestGetDocumentApi(CommonApiTests):
+    def make_api_call(self, client: Api):
+        return client.trading.account.get_document("foo")
+
+    @pytest.fixture
+    def api_call_kwargs(self):
+        return {"uri": "/account/documents/foo", "method": "GET"}
+
+    @pytest.fixture
+    def httpserver(self, trading_httpserver: HTTPServer):
+        return trading_httpserver
+
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            ({"no_redirect": False}, "no_redirect=False"),
+        ],
+    )
+    def test_get_document(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_request(
+            "/account/documents/foo", query_string=query_string, method="GET"
+        ).respond_with_json(DUMMY_GET_DOCUMENT_PAYLOAD)
+        assert (
+            client.trading.account.get_document("foo", **function_kwargs)
+            == DUMMY_GET_DOCUMENT_RESPONSE
         )

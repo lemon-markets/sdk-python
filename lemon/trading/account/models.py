@@ -259,3 +259,27 @@ class GetDocumentsResponse:
             page=int(data["page"]),
             pages=int(data["pages"]),
         )
+
+
+@dataclass
+class DocumentUrl:
+    public_url: str
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "DocumentUrl":
+        return DocumentUrl(public_url=data["public_url"])
+
+
+@dataclass
+class GetDocumentResponse:
+    time: datetime
+    mode: Environment
+    results: DocumentUrl
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "GetDocumentResponse":
+        return GetDocumentResponse(
+            time=datetime.fromisoformat(data["time"]),
+            mode=data["mode"],
+            results=DocumentUrl._from_data(data["results"]),
+        )
