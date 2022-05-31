@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import datetime, date
 from typing import Optional
 
 from lemon.helpers import ApiClient
 from lemon.trading.orders.models import (
+    CreateOrderResponse,
     GetOrdersResponse,
     OrderSide,
     OrderStatus,
@@ -41,3 +42,31 @@ class Orders:
             },
         )
         return GetOrdersResponse._from_data(resp.json())
+
+    def create(
+        self,
+        isin: str,
+        expires_at: date,
+        side: OrderSide,
+        quantity: int,
+        venue: str,
+        stop_price: Optional[int] = None,
+        limit_price: Optional[int] = None,
+        notes: Optional[str] = None,
+        idempotency: Optional[str] = None,
+    ) -> CreateOrderResponse:
+        resp = self._client.post(
+            "/orders",
+            data={
+                "isin": isin,
+                "expires_at": expires_at.isoformat(),
+                "side": side,
+                "quantity": quantity,
+                "venue": venue,
+                "stop_price": stop_price,
+                "limit_price": limit_price,
+                "notes": notes,
+                "idempotency": idempotency,
+            },
+        )
+        return CreateOrderResponse._from_data(resp.json())

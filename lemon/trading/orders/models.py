@@ -159,3 +159,67 @@ class GetOrdersResponse:
             page=int(data["page"]),
             pages=int(data["pages"]),
         )
+
+
+@dataclass
+class CreatedOrder:
+    id: str
+    status: OrderStatus
+    created_at: datetime
+    regulatory_information: RegulatoryInformation
+    isin: str
+    expires_at: datetime
+    side: OrderSide
+    quantity: int
+    stop_price: Optional[int]
+    limit_price: Optional[int]
+    venue: str
+    estimated_price: int
+    notes: str
+    idempotency: str
+    charge: int
+    chargeable_at: datetime
+    key_creation_id: str
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "CreatedOrder":
+        return CreatedOrder(
+            id=data["id"],
+            status=data["status"],
+            created_at=datetime.fromisoformat(data["created_at"]),
+            regulatory_information=RegulatoryInformation._from_data(
+                data["regulatory_information"]
+            ),
+            isin=data["isin"],
+            expires_at=datetime.fromisoformat(data["expires_at"]),
+            side=data["side"],
+            quantity=int(data["quantity"]),
+            stop_price=int(data["stop_price"])
+            if data["stop_price"] is not None
+            else None,
+            limit_price=int(data["limit_price"])
+            if data["limit_price"] is not None
+            else None,
+            venue=data["venue"],
+            estimated_price=int(data["estimated_price"]),
+            notes=data["notes"],
+            idempotency=data["idempotency"],
+            charge=int(data["charge"]),
+            chargeable_at=datetime.fromisoformat(data["chargeable_at"]),
+            key_creation_id=data["key_creation_id"],
+        )
+
+
+@dataclass
+class CreateOrderResponse:
+    time: datetime
+    mode: Environment
+    results: CreatedOrder
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "CreateOrderResponse":
+        return CreateOrderResponse(
+            time=datetime.fromisoformat(data["time"]),
+            mode=data["mode"],
+            results=CreatedOrder._from_data(data["results"]),
+        )
