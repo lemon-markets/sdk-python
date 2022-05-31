@@ -3,6 +3,7 @@ from typing import Optional
 
 from lemon.helpers import ApiClient
 from lemon.trading.orders.models import (
+    ActivateOrderResponse,
     CreateOrderResponse,
     GetOrdersResponse,
     OrderSide,
@@ -70,3 +71,10 @@ class Orders:
             },
         )
         return CreateOrderResponse._from_data(resp.json())
+
+    def activate(self, order_id: str, pin: str) -> ActivateOrderResponse:
+        resp = self._client.post(
+            f"/orders/{order_id}/activate",
+            data={"pin": pin},
+        )
+        return ActivateOrderResponse._from_data(resp.json())
