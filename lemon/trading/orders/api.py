@@ -1,10 +1,11 @@
-from datetime import datetime, date
+from datetime import date, datetime
 from typing import Optional
 
 from lemon.helpers import ApiClient
 from lemon.trading.orders.models import (
     ActivateOrderResponse,
     CreateOrderResponse,
+    GetOrderResponse,
     GetOrdersResponse,
     OrderSide,
     OrderStatus,
@@ -78,3 +79,7 @@ class Orders:
             data={"pin": pin},
         )
         return ActivateOrderResponse._from_data(resp.json())
+
+    def get_order(self, order_id: str) -> GetOrderResponse:
+        resp = self._client.get(f"/orders/{order_id}")
+        return GetOrderResponse._from_data(resp.json())

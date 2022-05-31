@@ -8,6 +8,7 @@ from lemon.trading.orders.models import (
     ActivateOrderResponse,
     CreatedOrder,
     CreateOrderResponse,
+    GetOrderResponse,
     GetOrdersResponse,
     Order,
     RegulatoryInformation,
@@ -75,7 +76,7 @@ DUMMY_ORDERS_PAYLOAD = {
     "pages": 4,
 }
 
-DUMMY_ORDER_PAYLOAD = {
+DUMMY_CREATE_ORDER_PAYLOAD = {
     "time": "2021-11-21T19:34:45.071+00:00",
     "status": "ok",
     "mode": "paper",
@@ -124,6 +125,60 @@ DUMMY_ACTIVATE_ORDER_PAYLOAD = {
     "time": "2021-11-21T19:34:45.071+00:00",
     "mode": "paper",
     "status": "ok",
+}
+
+DUMMY_ORDER_PAYLOAD = {
+    "time": "2021-11-21T19:34:45.071+00:00",
+    "status": "ok",
+    "mode": "paper",
+    "results": {
+        "id": "ord_pyPGQhhllz0mypLHw2nfM67Gm9PmgTYq0J",
+        "isin": "DE0008232125",
+        "isin_title": "DEUTSCHE LUFTHANSA AG",
+        "expires_at": "2021-11-07T22:59:00.000+00:00",
+        "created_at": "2021-11-04T12:25:30.063+00:00",
+        "side": "buy",
+        "quantity": 1000,
+        "stop_price": None,
+        "limit_price": None,
+        "estimated_price": 66140000,
+        "estimated_price_total": 66140000,
+        "venue": "xmun",
+        "status": "inactive",
+        "type": "market",
+        "executed_quantity": 1,
+        "executed_price": 2965000,
+        "executed_price_total": 2965000,
+        "executed_at": "2021-11-04T12:25:12.402+00:00",
+        "rejected_at": None,
+        "notes": "My Notes",
+        "charge": 20000,
+        "chargeable_at": "2021-12-10T07:57:12.628+00:00",
+        "key_creation_id": "apk_pyJHHbbDDNympXsVwZzPp2nNBlTMTLRmxy",
+        "key_activation_id": "apk_pyJHHbbDDNympXsVwZzPp2nNBlTMTLRmxy",
+        "regulatory_information": {
+            "costs_entry": 20000,
+            "costs_entry_pct": "0.30%",
+            "costs_running": 0,
+            "costs_running_pct": "0.00%",
+            "costs_product": 0,
+            "costs_product_pct": "0.00%",
+            "costs_exit": 20000,
+            "costs_exit_pct": "0.30%",
+            "yield_reduction_year": 20000,
+            "yield_reduction_year_pct": "0.30%",
+            "yield_reduction_year_following": 0,
+            "yield_reduction_year_following_pct": "0.00%",
+            "yield_reduction_year_exit": 20000,
+            "yield_reduction_year_exit_pct": "0.30%",
+            "estimated_holding_duration_years": "5",
+            "estimated_yield_reduction_total": 40000,
+            "estimated_yield_reduction_total_pct": "0.61%",
+            "KIID": "text",
+            "legal_disclaimer": "text",
+        },
+        "idempotency": "1234abcd",
+    },
 }
 
 DUMMY_ORDERS_RESPONSE = GetOrdersResponse(
@@ -184,7 +239,7 @@ DUMMY_ORDERS_RESPONSE = GetOrdersResponse(
     pages=4,
 )
 
-DUMMY_ORDER_RESPONSE = CreateOrderResponse(
+DUMMY_CREATE_ORDER_RESPONSE = CreateOrderResponse(
     time=datetime.fromisoformat("2021-11-21T19:34:45.071+00:00"),
     mode="paper",
     results=CreatedOrder(
@@ -231,6 +286,59 @@ DUMMY_ORDER_RESPONSE = CreateOrderResponse(
 DUMMY_ACTIVATE_ORDER_RESPONSE = ActivateOrderResponse(
     time=datetime.fromisoformat("2021-11-21T19:34:45.071+00:00"),
     mode="paper",
+)
+
+DUMMY_ORDER_RESPONSE = GetOrderResponse(
+    time=datetime.fromisoformat("2021-11-21T19:34:45.071+00:00"),
+    mode="paper",
+    results=Order(
+        id="ord_pyPGQhhllz0mypLHw2nfM67Gm9PmgTYq0J",
+        isin="DE0008232125",
+        isin_title="DEUTSCHE LUFTHANSA AG",
+        expires_at=datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
+        created_at=datetime.fromisoformat("2021-11-04T12:25:30.063+00:00"),
+        side="buy",
+        quantity=1000,
+        stop_price=None,
+        limit_price=None,
+        estimated_price=66140000,
+        estimated_price_total=66140000,
+        venue="xmun",
+        status="inactive",
+        type="market",
+        executed_quantity=1,
+        executed_price=2965000,
+        executed_price_total=2965000,
+        executed_at=datetime.fromisoformat("2021-11-04T12:25:12.402+00:00"),
+        rejected_at=None,
+        notes="My Notes",
+        charge=20000,
+        chargeable_at=datetime.fromisoformat("2021-12-10T07:57:12.628+00:00"),
+        key_creation_id="apk_pyJHHbbDDNympXsVwZzPp2nNBlTMTLRmxy",
+        key_activation_id="apk_pyJHHbbDDNympXsVwZzPp2nNBlTMTLRmxy",
+        regulatory_information=RegulatoryInformation(
+            costs_entry=20000,
+            costs_entry_pct="0.30%",
+            costs_running=0,
+            costs_running_pct="0.00%",
+            costs_product=0,
+            costs_product_pct="0.00%",
+            costs_exit=20000,
+            costs_exit_pct="0.30%",
+            yield_reduction_year=20000,
+            yield_reduction_year_pct="0.30%",
+            yield_reduction_year_following=0,
+            yield_reduction_year_following_pct="0.00%",
+            yield_reduction_year_exit=20000,
+            yield_reduction_year_exit_pct="0.30%",
+            estimated_holding_duration_years="5",
+            estimated_yield_reduction_total=40000,
+            estimated_yield_reduction_total_pct="0.61%",
+            KIID="text",
+            legal_disclaimer="text",
+        ),
+        idempotency="1234abcd",
+    ),
 )
 
 
@@ -341,7 +449,7 @@ class TestCreateOrderApi(CommonApiTests):
                 "notes": "foo",
                 "idempotency": "bar",
             },
-        ).respond_with_json(DUMMY_ORDER_PAYLOAD)
+        ).respond_with_json(DUMMY_CREATE_ORDER_PAYLOAD)
         assert (
             client.trading.orders.create(
                 isin="DE0008232125",
@@ -354,7 +462,7 @@ class TestCreateOrderApi(CommonApiTests):
                 notes="foo",
                 idempotency="bar",
             )
-            == DUMMY_ORDER_RESPONSE
+            == DUMMY_CREATE_ORDER_RESPONSE
         )
 
 
@@ -383,4 +491,30 @@ class TestActivateOrderApi(CommonApiTests):
         assert (
             client.trading.orders.activate(order_id="DE0008232125", pin="1234")
             == DUMMY_ACTIVATE_ORDER_RESPONSE
+        )
+
+
+class TestGetOrderApi(CommonApiTests):
+    def make_api_call(self, client: Api):
+        return client.trading.orders.get_order(order_id="DE0008232125")
+
+    @pytest.fixture
+    def api_call_kwargs(self):
+        return {
+            "uri": "/orders/DE0008232125",
+            "method": "GET",
+        }
+
+    @pytest.fixture
+    def httpserver(self, trading_httpserver: HTTPServer):
+        return trading_httpserver
+
+    def test_get_order(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_request(
+            "/orders/DE0008232125",
+            method="GET",
+        ).respond_with_json(DUMMY_ORDER_PAYLOAD)
+        assert (
+            client.trading.orders.get_order(order_id="DE0008232125")
+            == DUMMY_ORDER_RESPONSE
         )
