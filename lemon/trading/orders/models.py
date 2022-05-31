@@ -251,3 +251,16 @@ class GetOrderResponse:
             mode=data["mode"],
             results=Order._from_data(data["results"]),
         )
+
+
+@dataclass
+class DeleteOrderResponse:
+    time: datetime
+    mode: Environment
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "DeleteOrderResponse":
+        return DeleteOrderResponse(
+            time=datetime.fromisoformat(data["time"]),
+            mode=data["mode"],
+        )

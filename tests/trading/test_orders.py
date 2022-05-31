@@ -8,6 +8,7 @@ from lemon.trading.orders.models import (
     ActivateOrderResponse,
     CreatedOrder,
     CreateOrderResponse,
+    DeleteOrderResponse,
     GetOrderResponse,
     GetOrdersResponse,
     Order,
@@ -181,6 +182,12 @@ DUMMY_ORDER_PAYLOAD = {
     },
 }
 
+DUMMY_DELETE_ORDER_PAYLOAD = {
+    "time": "2021-11-21T19:34:45.071+00:00",
+    "status": "ok",
+    "mode": "paper",
+}
+
 DUMMY_ORDERS_RESPONSE = GetOrdersResponse(
     time=datetime.fromisoformat("2021-11-21T19:34:45.071+00:00"),
     mode="paper",
@@ -339,6 +346,11 @@ DUMMY_ORDER_RESPONSE = GetOrderResponse(
         ),
         idempotency="1234abcd",
     ),
+)
+
+DUMMY_DELETE_ORDER_RESPONSE = DeleteOrderResponse(
+    time=datetime.fromisoformat("2021-11-21T19:34:45.071+00:00"),
+    mode="paper",
 )
 
 
@@ -517,4 +529,30 @@ class TestGetOrderApi(CommonApiTests):
         assert (
             client.trading.orders.get_order(order_id="DE0008232125")
             == DUMMY_ORDER_RESPONSE
+        )
+
+
+class TestDeleteOrderApi(CommonApiTests):
+    def make_api_call(self, client: Api):
+        return client.trading.orders.delete(order_id="DE0008232125")
+
+    @pytest.fixture
+    def api_call_kwargs(self):
+        return {
+            "uri": "/orders/DE0008232125",
+            "method": "DELETE",
+        }
+
+    @pytest.fixture
+    def httpserver(self, trading_httpserver: HTTPServer):
+        return trading_httpserver
+
+    def test_delete_order(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_request(
+            "/orders/DE0008232125",
+            method="DELETE",
+        ).respond_with_json(DUMMY_DELETE_ORDER_PAYLOAD)
+        assert (
+            client.trading.orders.delete(order_id="DE0008232125")
+            == DUMMY_DELETE_ORDER_RESPONSE
         )
