@@ -4,7 +4,9 @@ from typing import Any, Dict, List, Literal
 
 from typing_extensions import TypedDict
 
-from lemon.helpers import Environment, Plan
+from lemon.helpers import Environment
+
+Plan = Literal["go", "investor", "trader"]
 
 
 @dataclass
