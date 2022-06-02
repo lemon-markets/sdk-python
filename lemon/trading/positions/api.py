@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional
 
 from lemon.helpers import ApiClient, Sorting
 from lemon.trading.positions.models import (
+    GetPerformanceResponse,
     GetPositionsResponse,
     GetStatementsResponse,
     StatementType,
@@ -52,3 +53,25 @@ class Positions:
             },
         )
         return GetStatementsResponse._from_data(resp.json())
+
+    def get_performance(
+        self,
+        isin: Optional[str] = None,
+        from_: Optional[date] = None,
+        to: Optional[date] = None,
+        sorting: Optional[Sorting] = None,
+        limit: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> GetPerformanceResponse:
+        resp = self._client.get(
+            "/positions/performance",
+            query_params={
+                "isin": isin,
+                "from": from_,
+                "to": to,
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
+        )
+        return GetPerformanceResponse._from_data(resp.json())

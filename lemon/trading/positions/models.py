@@ -95,3 +95,53 @@ class GetStatementsResponse:
             page=int(data["page"]),
             pages=int(data["pages"]),
         )
+
+
+@dataclass
+class Performance:
+    isin: str
+    isin_title: str
+    profit: int
+    loss: int
+    quantity_bought: int
+    quantity_sold: int
+    quantity_open: int
+    opened_at: datetime
+    closed_at: datetime
+    fees: int
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "Performance":
+        return Performance(
+            isin=data["isin"],
+            isin_title=data["isin_title"],
+            profit=int(data["profit"]),
+            loss=int(data["loss"]),
+            quantity_bought=int(data["quantity_bought"]),
+            quantity_sold=int(data["quantity_sold"]),
+            quantity_open=int(data["quantity_open"]),
+            opened_at=datetime.fromisoformat(data["opened_at"]),
+            closed_at=datetime.fromisoformat(data["closed_at"]),
+            fees=int(data["fees"]),
+        )
+
+
+@dataclass
+class GetPerformanceResponse:
+    time: datetime
+    mode: Environment
+    results: List[Performance]
+    total: int
+    page: int
+    pages: int
+
+    @staticmethod
+    def _from_data(data: Dict[str, Any]) -> "GetPerformanceResponse":
+        return GetPerformanceResponse(
+            time=datetime.fromisoformat(data["time"]),
+            mode=data["mode"],
+            results=[Performance._from_data(entry) for entry in data["results"]],
+            total=int(data["total"]),
+            page=int(data["page"]),
+            pages=int(data["pages"]),
+        )

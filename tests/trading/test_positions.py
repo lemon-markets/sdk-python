@@ -5,8 +5,10 @@ from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
 from lemon.trading.positions.models import (
+    GetPerformanceResponse,
     GetPositionsResponse,
     GetStatementsResponse,
+    Performance,
     Position,
     Statement,
 )
@@ -57,6 +59,31 @@ DUMMY_STATEMENTS_PAYLOAD = {
     "pages": 4,
 }
 
+DUMMY_PERFORMANCE_PAYLOAD = {
+    "time": "2021-11-21T19:34:45.071+00:00",
+    "status": "ok",
+    "mode": "money",
+    "results": [
+        {
+            "isin": "US19260Q1076",
+            "isin_title": "COINBASE GLOBAL INC.",
+            "profit": 89400,
+            "loss": 0,
+            "quantity_bought": 1,
+            "quantity_sold": 1,
+            "quantity_open": 0,
+            "opened_at": "2022-02-02T16:20:30.618+00:00",
+            "closed_at": "2022-02-03T12:32:00.762+00:00",
+            "fees": 40000,
+        },
+    ],
+    "previous": "https://trading.lemon.markets/v1/positions/performance?limit=10&page=1",
+    "next": "https://trading.lemon.markets/v1/positions/performance?limit=10&page=3",
+    "total": 37,
+    "page": 2,
+    "pages": 4,
+}
+
 
 DUMMY_POSITIONS_RESPONSE = GetPositionsResponse(
     time=datetime.fromisoformat("2021-11-21T19:34:45.071+00:00"),
@@ -93,6 +120,28 @@ DUMMY_STATEMENTS_RESPONSE = GetStatementsResponse(
         )
     ],
     total=33,
+    page=2,
+    pages=4,
+)
+
+DUMMY_PERFORMANCE_RESPONSE = GetPerformanceResponse(
+    time=datetime.fromisoformat("2021-11-21T19:34:45.071+00:00"),
+    mode="money",
+    results=[
+        Performance(
+            isin="US19260Q1076",
+            isin_title="COINBASE GLOBAL INC.",
+            profit=89400,
+            loss=0,
+            quantity_bought=1,
+            quantity_sold=1,
+            quantity_open=0,
+            opened_at=datetime.fromisoformat("2022-02-02T16:20:30.618+00:00"),
+            closed_at=datetime.fromisoformat("2022-02-03T12:32:00.762+00:00"),
+            fees=40000,
+        )
+    ],
+    total=37,
     page=2,
     pages=4,
 )
@@ -195,4 +244,60 @@ class TestGetStatementsApi(CommonApiTests):
         assert (
             client.trading.positions.get_statements(**function_kwargs)
             == DUMMY_STATEMENTS_RESPONSE
+        )
+
+
+class TestGetPerformanceApi(CommonApiTests):
+    def make_api_call(self, client: Api):
+        return client.trading.positions.get_performance()
+
+    @pytest.fixture
+    def api_call_kwargs(self):
+        return {"uri": "/positions/performance", "method": "GET"}
+
+    @pytest.fixture
+    def httpserver(self, trading_httpserver: HTTPServer):
+        return trading_httpserver
+
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            ({"isin": "XMUN"}, "isin=XMUN"),
+            (
+                {"from_": date(year=2021, month=11, day=7)},
+                "from=2021-11-07",
+            ),
+            (
+                {"to": date(year=2021, month=11, day=7)},
+                "to=2021-11-07",
+            ),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            ({"page": 7}, "page=7"),
+            (
+                {
+                    "isin": "XMUN",
+                    "from_": date(year=2021, month=11, day=7),
+                    "to": date(year=2021, month=11, day=7),
+                    "sorting": "asc",
+                    "limit": 100,
+                    "page": 7,
+                },
+                "isin=XMUN&from=2021-11-07&to=2021-11-07&"
+                "sorting=asc&limit=100&page=7",
+            ),
+        ],
+    )
+    def test_get_performance(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_request(
+            "/positions/performance",
+            query_string=query_string,
+            method="GET",
+        ).respond_with_json(DUMMY_PERFORMANCE_PAYLOAD)
+        assert (
+            client.trading.positions.get_performance(**function_kwargs)
+            == DUMMY_PERFORMANCE_RESPONSE
         )
