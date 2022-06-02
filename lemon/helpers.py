@@ -13,7 +13,6 @@ from lemon.errors import (
 
 Sorting = Literal["asc", "desc"]
 Environment = Literal["paper", "money"]
-Plan = Literal["go", "investor", "trader"]
 
 
 class ApiClient:
