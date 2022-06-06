@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List, Literal, Optional, Union
 
-from lemon.helpers import ApiClient, Sorting
-from lemon.market_data.ohlc.models import DayOffset, GetOhlcResponse
+from lemon.helpers import ApiClient, Days, Sorting
+from lemon.market_data.ohlc.models import GetOhlcResponse
 
 
 class Ohlc:
@@ -15,7 +15,7 @@ class Ohlc:
         isin: List[str],
         mic: Optional[str] = None,
         from_: Optional[datetime] = None,
-        to: Union[datetime, DayOffset, None] = None,
+        to: Union[datetime, Days, None] = None,
         decimals: Optional[bool] = None,
         epoch: Optional[bool] = None,
         sorting: Optional[Sorting] = None,
@@ -28,7 +28,7 @@ class Ohlc:
                 "mic": mic,
                 "isin": isin,
                 "from": from_,
-                "to": f"P{to}D" if isinstance(to, DayOffset) else to,
+                "to": f"P{to}D" if isinstance(to, Days) else to,
                 "decimals": decimals,
                 "epoch": epoch,
                 "sorting": sorting,

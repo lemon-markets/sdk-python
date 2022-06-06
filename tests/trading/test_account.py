@@ -395,21 +395,21 @@ class TestGetBankStatementsApi(CommonApiTests):
         [
             ({}, ""),
             ({"type": "pay_in"}, "type=pay_in"),
-            ({"from_": "beggining"}, "from=beggining"),
-            ({"to": "now"}, "to=now"),
+            ({"from_": "beginning"}, "from=beginning"),
+            ({"to": date(year=2000, month=3, day=3)}, "to=2000-03-03"),
             ({"sorting": "asc"}, "sorting=asc"),
             ({"limit": 100}, "limit=100"),
             ({"page": 7}, "page=7"),
             (
                 {
                     "type": "pay_in",
-                    "from_": "beggining",
-                    "to": "now",
+                    "from_": "beginning",
+                    "to": date(year=2000, month=3, day=3),
                     "sorting": "asc",
                     "limit": 100,
                     "page": 7,
                 },
-                "type=pay_in&from=beggining&to=now&sorting=asc&limit=100&page=7",
+                "type=pay_in&from=beginning&to=2000-03-03&sorting=asc&limit=100&page=7",
             ),
         ],
     )

@@ -291,12 +291,12 @@ class TestGetPerformanceApi(CommonApiTests):
             ({}, ""),
             ({"isin": "XMUN"}, "isin=XMUN"),
             (
-                {"from_": date(year=2021, month=11, day=7)},
-                "from=2021-11-07",
+                {"from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
+                "from=2021-11-07+22%3A59%3A00%2B00%3A00",
             ),
             (
-                {"to": date(year=2021, month=11, day=7)},
-                "to=2021-11-07",
+                {"to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
+                "to=2021-11-07+22%3A59%3A00%2B00%3A00",
             ),
             ({"sorting": "asc"}, "sorting=asc"),
             ({"limit": 100}, "limit=100"),
@@ -304,14 +304,14 @@ class TestGetPerformanceApi(CommonApiTests):
             (
                 {
                     "isin": "XMUN",
-                    "from_": date(year=2021, month=11, day=7),
-                    "to": date(year=2021, month=11, day=7),
+                    "from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
+                    "to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
                     "sorting": "asc",
                     "limit": 100,
                     "page": 7,
                 },
-                "isin=XMUN&from=2021-11-07&to=2021-11-07&"
-                "sorting=asc&limit=100&page=7",
+                "isin=XMUN&from=2021-11-07+22%3A59%3A00%2B00%3A00&"
+                "to=2021-11-07+22%3A59%3A00%2B00%3A00&sorting=asc&limit=100&page=7",
             ),
         ],
     )

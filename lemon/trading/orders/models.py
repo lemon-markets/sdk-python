@@ -16,6 +16,7 @@ OrderStatus = Literal[
     "expired",
 ]
 OrderType = Literal["market", "stop", "limit", "stop_limit"]
+Venue = Literal["xmun", "allday"]
 
 
 @dataclass
