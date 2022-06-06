@@ -5,7 +5,7 @@ from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
 from lemon.market_data.ohlc.models import GetOhlcResponse, OhlcData
-from tests.conftest import CommonApiTests
+from tests.market_data.conftest import CommonMarketDataApiTests
 
 DUMMY_PAYLOAD = {
     "time": "2022-02-14T20:44:03.759+00:00",
@@ -72,17 +72,13 @@ DUMMY_RESPONSE = GetOhlcResponse(
 )
 
 
-class TestGetOhlcApi(CommonApiTests):
+class TestGetOhlcApi(CommonMarketDataApiTests):
     def make_api_call(self, client: Api):
         return client.market_data.ohlc.get(period="d1", isin=["XMUN"])
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/ohlc/d1", "method": "GET", "query_string": "isin=XMUN"}
-
-    @pytest.fixture
-    def httpserver(self, market_data_httpserver: HTTPServer):
-        return market_data_httpserver
 
     @pytest.mark.parametrize("period", ["h1", "d1", "m1"])
     @pytest.mark.parametrize(
@@ -213,17 +209,13 @@ class TestGetOhlcApi(CommonApiTests):
         assert client.market_data.ohlc.get(period="h1", isin=["XMUN"]) == DUMMY_RESPONSE
 
 
-class TestGetLatestOhlcApi(CommonApiTests):
+class TestGetLatestOhlcApi(CommonMarketDataApiTests):
     def make_api_call(self, client: Api):
         return client.market_data.ohlc.get_latest(period="d1", isin=["XMUN"])
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/ohlc/d1/latest", "method": "GET", "query_string": "isin=XMUN"}
-
-    @pytest.fixture
-    def httpserver(self, market_data_httpserver: HTTPServer):
-        return market_data_httpserver
 
     @pytest.mark.parametrize("period", ["h1", "d1", "m1"])
     @pytest.mark.parametrize(

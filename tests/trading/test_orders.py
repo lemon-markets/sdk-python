@@ -14,7 +14,7 @@ from lemon.trading.orders.models import (
     Order,
     RegulatoryInformation,
 )
-from tests.conftest import CommonApiTests
+from tests.trading.conftest import CommonTradingApiTests
 
 DUMMY_ORDERS_PAYLOAD = {
     "time": "2021-11-21T19:34:45.071+00:00",
@@ -354,17 +354,13 @@ DUMMY_DELETE_ORDER_RESPONSE = DeleteOrderResponse(
 )
 
 
-class TestGetOrdersApi(CommonApiTests):
+class TestGetOrdersApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.orders.get()
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/orders", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
@@ -427,7 +423,7 @@ class TestGetOrdersApi(CommonApiTests):
         assert client.trading.orders.get() == DUMMY_ORDERS_RESPONSE
 
 
-class TestCreateOrderApi(CommonApiTests):
+class TestCreateOrderApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.orders.create(
             isin="DE0008232125",
@@ -454,10 +450,6 @@ class TestCreateOrderApi(CommonApiTests):
                 "idempotency": None,
             },
         }
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     def test_create_order(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -491,7 +483,7 @@ class TestCreateOrderApi(CommonApiTests):
         )
 
 
-class TestActivateOrderApi(CommonApiTests):
+class TestActivateOrderApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.orders.activate(order_id="DE0008232125", pin="1234")
 
@@ -502,10 +494,6 @@ class TestActivateOrderApi(CommonApiTests):
             "method": "POST",
             "json": {"pin": "1234"},
         }
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     def test_activate_order(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -519,7 +507,7 @@ class TestActivateOrderApi(CommonApiTests):
         )
 
 
-class TestGetOrderApi(CommonApiTests):
+class TestGetOrderApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.orders.get_order(order_id="DE0008232125")
 
@@ -529,10 +517,6 @@ class TestGetOrderApi(CommonApiTests):
             "uri": "/orders/DE0008232125",
             "method": "GET",
         }
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     def test_get_order(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -561,7 +545,7 @@ class TestGetOrderApi(CommonApiTests):
         )
 
 
-class TestDeleteOrderApi(CommonApiTests):
+class TestDeleteOrderApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.orders.delete(order_id="DE0008232125")
 
@@ -571,10 +555,6 @@ class TestDeleteOrderApi(CommonApiTests):
             "uri": "/orders/DE0008232125",
             "method": "DELETE",
         }
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     def test_delete_order(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

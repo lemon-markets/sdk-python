@@ -9,7 +9,7 @@ from lemon.market_data.instruments.models import (
     Instrument,
     Venue,
 )
-from tests.conftest import CommonApiTests
+from tests.market_data.conftest import CommonMarketDataApiTests
 
 DUMMY_PAYLOAD = {
     "time": "2022-02-14T20:44:03.759+00:00",
@@ -68,17 +68,13 @@ DUMMY_RESPONSE = GetInstrumentsResponse(
 )
 
 
-class TestInstrumentsApi(CommonApiTests):
+class TestInstrumentsApi(CommonMarketDataApiTests):
     def make_api_call(self, client: Api):
         return client.market_data.instruments.get()
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/instruments", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, market_data_httpserver: HTTPServer):
-        return market_data_httpserver
 
     @pytest.mark.parametrize(
         "function_kwargs,query_string",

@@ -12,7 +12,7 @@ from lemon.trading.positions.models import (
     Position,
     Statement,
 )
-from tests.conftest import CommonApiTests
+from tests.trading.conftest import CommonTradingApiTests
 
 DUMMY_POSITIONS_PAYLOAD = {
     "time": "2021-11-21T19:34:45.071+00:00",
@@ -147,17 +147,13 @@ DUMMY_PERFORMANCE_RESPONSE = GetPerformanceResponse(
 )
 
 
-class TestGetPositionsApi(CommonApiTests):
+class TestGetPositionsApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.positions.get()
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/positions", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
@@ -202,17 +198,13 @@ class TestGetPositionsApi(CommonApiTests):
         assert client.trading.positions.get() == DUMMY_POSITIONS_RESPONSE
 
 
-class TestGetStatementsApi(CommonApiTests):
+class TestGetStatementsApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.positions.get_statements()
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/positions/statements", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
@@ -273,17 +265,13 @@ class TestGetStatementsApi(CommonApiTests):
         assert client.trading.positions.get_statements() == DUMMY_STATEMENTS_RESPONSE
 
 
-class TestGetPerformanceApi(CommonApiTests):
+class TestGetPerformanceApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.positions.get_performance()
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/positions/performance", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
