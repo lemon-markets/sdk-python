@@ -32,7 +32,7 @@ class Orders:
     ) -> GetOrdersResponse:
         resp = self._client.get(
             "/orders",
-            query_params={
+            params={
                 "from": from_,
                 "to": to,
                 "isin": isin,
@@ -60,7 +60,7 @@ class Orders:
     ) -> CreateOrderResponse:
         resp = self._client.post(
             "/orders",
-            data={
+            json={
                 "isin": isin,
                 "expires_at": expires_at.isoformat(),
                 "side": side,
@@ -77,7 +77,7 @@ class Orders:
     def activate(self, order_id: str, pin: str) -> ActivateOrderResponse:
         resp = self._client.post(
             f"/orders/{order_id}/activate",
-            data={"pin": pin},
+            json={"pin": pin},
         )
         return ActivateOrderResponse._from_data(resp.json())
 

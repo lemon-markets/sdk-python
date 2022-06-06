@@ -48,7 +48,13 @@ def clear_stubs_queue(
     market_data_httpserver: HTTPServer, trading_httpserver: HTTPServer
 ):
     yield
+
+    assert len(market_data_httpserver.oneshot_handlers) == 0
+    market_data_httpserver.check_assertions()
     market_data_httpserver.clear()
+
+    assert len(trading_httpserver.oneshot_handlers) == 0
+    trading_httpserver.check_assertions()
     trading_httpserver.clear()
 
 
@@ -68,7 +74,7 @@ class CommonApiTests:
     def test_handle_unauthorized_error(
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
-        httpserver.expect_request(**api_call_kwargs).respond_with_json(
+        httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
             build_error(ErrorCodes.UNAUTHORIZED.value), status=400
         )
         with pytest.raises(AuthenticationError):
@@ -77,7 +83,7 @@ class CommonApiTests:
     def test_handle_internal_error(
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
-        httpserver.expect_request(**api_call_kwargs).respond_with_json(
+        httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
             build_error(ErrorCodes.INTERNAL_ERROR.value), status=400
         )
         with pytest.raises(InternalServerError):
@@ -86,7 +92,7 @@ class CommonApiTests:
     def test_handle_invalid_query_error(
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
-        httpserver.expect_request(**api_call_kwargs).respond_with_json(
+        httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
             build_error(ErrorCodes.INVALID_QUERY.value), status=400
         )
         with pytest.raises(InvalidQueryError):

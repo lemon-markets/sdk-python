@@ -17,7 +17,7 @@ class Venues:
     ) -> GetVenuesResponse:
         resp = self._client.get(
             "/venues",
-            query_params={
+            params={
                 "mic": mic,
                 "sorting": sorting,
                 "limit": limit,

@@ -406,12 +406,25 @@ class TestGetOrdersApi(CommonApiTests):
     def test_get_orders(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/orders",
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_ORDERS_PAYLOAD)
         assert client.trading.orders.get(**function_kwargs) == DUMMY_ORDERS_RESPONSE
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/orders",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/orders",
+            method="GET",
+        ).respond_with_json(DUMMY_ORDERS_PAYLOAD)
+
+        assert client.trading.orders.get() == DUMMY_ORDERS_RESPONSE
 
 
 class TestCreateOrderApi(CommonApiTests):
@@ -447,7 +460,7 @@ class TestCreateOrderApi(CommonApiTests):
         return trading_httpserver
 
     def test_create_order(self, client: Api, httpserver: HTTPServer):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/orders",
             method="POST",
             json={
@@ -495,7 +508,7 @@ class TestActivateOrderApi(CommonApiTests):
         return trading_httpserver
 
     def test_activate_order(self, client: Api, httpserver: HTTPServer):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/orders/DE0008232125/activate",
             method="POST",
             json={"pin": "1234"},
@@ -522,10 +535,26 @@ class TestGetOrderApi(CommonApiTests):
         return trading_httpserver
 
     def test_get_order(self, client: Api, httpserver: HTTPServer):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/orders/DE0008232125",
             method="GET",
         ).respond_with_json(DUMMY_ORDER_PAYLOAD)
+        assert (
+            client.trading.orders.get_order(order_id="DE0008232125")
+            == DUMMY_ORDER_RESPONSE
+        )
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/orders/DE0008232125",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/orders/DE0008232125",
+            method="GET",
+        ).respond_with_json(DUMMY_ORDER_PAYLOAD)
+
         assert (
             client.trading.orders.get_order(order_id="DE0008232125")
             == DUMMY_ORDER_RESPONSE
@@ -548,10 +577,26 @@ class TestDeleteOrderApi(CommonApiTests):
         return trading_httpserver
 
     def test_delete_order(self, client: Api, httpserver: HTTPServer):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/orders/DE0008232125",
             method="DELETE",
         ).respond_with_json(DUMMY_DELETE_ORDER_PAYLOAD)
+        assert (
+            client.trading.orders.delete(order_id="DE0008232125")
+            == DUMMY_DELETE_ORDER_RESPONSE
+        )
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/orders/DE0008232125",
+            method="DELETE",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/orders/DE0008232125",
+            method="DELETE",
+        ).respond_with_json(DUMMY_DELETE_ORDER_PAYLOAD)
+
         assert (
             client.trading.orders.delete(order_id="DE0008232125")
             == DUMMY_DELETE_ORDER_RESPONSE

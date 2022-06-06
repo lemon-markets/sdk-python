@@ -23,7 +23,7 @@ class Ohlc:
     ) -> GetOhlcResponse:
         resp = self._client.get(
             f"/ohlc/{period}",
-            query_params={
+            params={
                 "mic": mic,
                 "isin": isin,
                 "from": from_,

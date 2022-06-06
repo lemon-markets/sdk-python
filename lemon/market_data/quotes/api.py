@@ -21,7 +21,7 @@ class Quotes:
     ) -> GetQuotesResponse:
         resp = self._client.get(
             "/quotes/latest",
-            query_params={
+            params={
                 "isin": isin,
                 "mic": mic,
                 "from": from_,

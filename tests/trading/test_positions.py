@@ -179,7 +179,7 @@ class TestGetPositionsApi(CommonApiTests):
     def test_get_positions(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/positions",
             query_string=query_string,
             method="GET",
@@ -187,6 +187,19 @@ class TestGetPositionsApi(CommonApiTests):
         assert (
             client.trading.positions.get(**function_kwargs) == DUMMY_POSITIONS_RESPONSE
         )
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/positions",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/positions",
+            method="GET",
+        ).respond_with_json(DUMMY_POSITIONS_PAYLOAD)
+
+        assert client.trading.positions.get() == DUMMY_POSITIONS_RESPONSE
 
 
 class TestGetStatementsApi(CommonApiTests):
@@ -236,7 +249,7 @@ class TestGetStatementsApi(CommonApiTests):
     def test_get_statements(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/positions/statements",
             query_string=query_string,
             method="GET",
@@ -245,6 +258,19 @@ class TestGetStatementsApi(CommonApiTests):
             client.trading.positions.get_statements(**function_kwargs)
             == DUMMY_STATEMENTS_RESPONSE
         )
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/positions/statements",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/positions/statements",
+            method="GET",
+        ).respond_with_json(DUMMY_STATEMENTS_PAYLOAD)
+
+        assert client.trading.positions.get_statements() == DUMMY_STATEMENTS_RESPONSE
 
 
 class TestGetPerformanceApi(CommonApiTests):
@@ -292,7 +318,7 @@ class TestGetPerformanceApi(CommonApiTests):
     def test_get_performance(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/positions/performance",
             query_string=query_string,
             method="GET",
@@ -301,3 +327,16 @@ class TestGetPerformanceApi(CommonApiTests):
             client.trading.positions.get_performance(**function_kwargs)
             == DUMMY_PERFORMANCE_RESPONSE
         )
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/positions/performance",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/positions/performance",
+            method="GET",
+        ).respond_with_json(DUMMY_PERFORMANCE_PAYLOAD)
+
+        assert client.trading.positions.get_performance() == DUMMY_PERFORMANCE_RESPONSE

@@ -257,23 +257,42 @@ class TestGetAccountApi(CommonApiTests):
         return trading_httpserver
 
     def test_get_account(self, client: Api, httpserver: HTTPServer):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/account",
             method="GET",
         ).respond_with_json(DUMMY_ACCOUNT_PAYLOAD)
         assert client.trading.account.get() == DUMMY_ACCOUNT_RESPONSE
 
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/account",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/account",
+            method="GET",
+        ).respond_with_json(DUMMY_ACCOUNT_PAYLOAD)
+
+        assert client.trading.account.get() == DUMMY_ACCOUNT_RESPONSE
+
 
 class TestEditAccountApi(CommonApiTests):
     def make_api_call(self, client: Api):
-        return client.trading.account.update({"address_street": "new street"})
+        return client.trading.account.update(address_street="new street")
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {
             "uri": "/account",
             "method": "PUT",
-            "json": {"address_street": "new street"},
+            "json": {
+                "address_street": "new street",
+                "address_street_number": None,
+                "address_city": None,
+                "address_postal_code": None,
+                "address_country": None,
+            },
         }
 
     @pytest.fixture
@@ -281,13 +300,19 @@ class TestEditAccountApi(CommonApiTests):
         return trading_httpserver
 
     def test_get_account(self, client: Api, httpserver: HTTPServer):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/account",
             method="PUT",
-            json={"address_street": "new street"},
+            json={
+                "address_street": "new street",
+                "address_street_number": None,
+                "address_city": None,
+                "address_postal_code": None,
+                "address_country": None,
+            },
         ).respond_with_json(DUMMY_ACCOUNT_PAYLOAD)
         assert (
-            client.trading.account.update({"address_street": "new street"})
+            client.trading.account.update(address_street="new street")
             == DUMMY_ACCOUNT_RESPONSE
         )
 
@@ -305,10 +330,23 @@ class TestGetWithdrawalsApi(CommonApiTests):
         return trading_httpserver
 
     def test_get_withdrawals(self, client: Api, httpserver: HTTPServer):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/account/withdrawals",
             method="GET",
         ).respond_with_json(DUMMY_WITHDRAWLS_PAYLOAD)
+        assert client.trading.account.get_withdrawals() == DUMMY_WITHDRAWLS_RESPONSE
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/account/withdrawals",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/account/withdrawals",
+            method="GET",
+        ).respond_with_json(DUMMY_WITHDRAWLS_PAYLOAD)
+
         assert client.trading.account.get_withdrawals() == DUMMY_WITHDRAWLS_RESPONSE
 
 
@@ -329,7 +367,7 @@ class TestWithdrawApi(CommonApiTests):
         return trading_httpserver
 
     def test_get_withdrawals(self, client: Api, httpserver: HTTPServer):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/account/withdrawals",
             method="POST",
             json={"amount": 100, "pin": "1234", "idempotency": None},
@@ -378,11 +416,27 @@ class TestGetBankStatementsApi(CommonApiTests):
     def test_get_bank_statements(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/account/bankstatements", query_string=query_string, method="GET"
         ).respond_with_json(DUMMY_BANK_STATEMENTS_PAYLOAD)
         assert (
             client.trading.account.get_bank_statements(**function_kwargs)
+            == DUMMY_BANKSTATEMENTS_RESPONSE
+        )
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/account/bankstatements",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/account/bankstatements",
+            method="GET",
+        ).respond_with_json(DUMMY_BANK_STATEMENTS_PAYLOAD)
+
+        assert (
+            client.trading.account.get_bank_statements()
             == DUMMY_BANKSTATEMENTS_RESPONSE
         )
 
@@ -419,13 +473,26 @@ class TestGetDocumentsApi(CommonApiTests):
     def test_get_documents(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/account/documents", query_string=query_string, method="GET"
         ).respond_with_json(DUMMY_GET_DOCUMENTS_PAYLOAD)
         assert (
             client.trading.account.get_documents(**function_kwargs)
             == DUMMY_GET_DOCUMENTS_RESPONSE
         )
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/account/documents",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/account/documents",
+            method="GET",
+        ).respond_with_json(DUMMY_GET_DOCUMENTS_PAYLOAD)
+
+        assert client.trading.account.get_documents() == DUMMY_GET_DOCUMENTS_RESPONSE
 
 
 class TestGetDocumentApi(CommonApiTests):
@@ -450,10 +517,23 @@ class TestGetDocumentApi(CommonApiTests):
     def test_get_document(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/account/documents/foo", query_string=query_string, method="GET"
         ).respond_with_json(DUMMY_GET_DOCUMENT_PAYLOAD)
         assert (
             client.trading.account.get_document("foo", **function_kwargs)
             == DUMMY_GET_DOCUMENT_RESPONSE
         )
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/account/documents/foo",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/account/documents/foo",
+            method="GET",
+        ).respond_with_json(DUMMY_GET_DOCUMENT_PAYLOAD)
+
+        assert client.trading.account.get_document("foo") == DUMMY_GET_DOCUMENT_RESPONSE

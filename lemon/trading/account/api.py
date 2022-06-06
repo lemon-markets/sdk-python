@@ -3,7 +3,6 @@ from typing import Optional
 from lemon.helpers import ApiClient, Sorting
 from lemon.trading.account.models import (
     BankStatementType,
-    EditAccountPayload,
     GetAccountResponse,
     GetBankStatementsResponse,
     GetDocumentResponse,
@@ -21,8 +20,24 @@ class Account:
         resp = self._client.get("/account")
         return GetAccountResponse._from_data(resp.json())
 
-    def update(self, data: EditAccountPayload) -> GetAccountResponse:
-        resp = self._client.put("/account", data=data)
+    def update(
+        self,
+        address_street: Optional[str] = None,
+        address_street_number: Optional[str] = None,
+        address_city: Optional[str] = None,
+        address_postal_code: Optional[str] = None,
+        address_country: Optional[str] = None,
+    ) -> GetAccountResponse:
+        resp = self._client.put(
+            "/account",
+            json={
+                "address_street": address_street,
+                "address_street_number": address_street_number,
+                "address_city": address_city,
+                "address_postal_code": address_postal_code,
+                "address_country": address_country,
+            },
+        )
         return GetAccountResponse._from_data(resp.json())
 
     def get_withdrawals(
@@ -30,7 +45,7 @@ class Account:
     ) -> GetWithdrawalsResponse:
         resp = self._client.get(
             "/account/withdrawals",
-            query_params={
+            params={
                 "limit": limit,
                 "page": page,
             },
@@ -45,7 +60,7 @@ class Account:
     ) -> WithdrawResponse:
         resp = self._client.post(
             "/account/withdrawals",
-            data={
+            json={
                 "amount": amount,
                 "pin": pin,
                 "idempotency": idempotency,
@@ -64,7 +79,7 @@ class Account:
     ) -> GetBankStatementsResponse:
         resp = self._client.get(
             "/account/bankstatements",
-            query_params={
+            params={
                 "type": type,
                 "from": from_,
                 "to": to,
@@ -83,7 +98,7 @@ class Account:
     ) -> GetDocumentsResponse:
         resp = self._client.get(
             "/account/documents",
-            query_params={
+            params={
                 "sorting": sorting,
                 "limit": limit,
                 "page": page,
@@ -96,6 +111,6 @@ class Account:
     ) -> GetDocumentResponse:
         resp = self._client.get(
             f"/account/documents/{document_id}",
-            query_params={"no_redirect": no_redirect},
+            params={"no_redirect": no_redirect},
         )
         return GetDocumentResponse._from_data(resp.json())

@@ -74,8 +74,21 @@ class TestGetUserApi(CommonApiTests):
         return trading_httpserver
 
     def test_get_user(self, client: Api, httpserver: HTTPServer):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/user",
             method="GET",
         ).respond_with_json(DUMMY_USER_PAYLOAD)
+        assert client.trading.user.get() == DUMMY_USER_RESPONSE
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/user",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/user",
+            method="GET",
+        ).respond_with_json(DUMMY_USER_PAYLOAD)
+
         assert client.trading.user.get() == DUMMY_USER_RESPONSE

@@ -21,7 +21,7 @@ class Trades:
     ) -> GetTradesResponse:
         resp = self._client.get(
             "/trades/latest",
-            query_params={
+            params={
                 "mic": mic,
                 "isin": isin,
                 "from": from_,
