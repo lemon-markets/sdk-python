@@ -32,7 +32,7 @@ class Orders:
         page: Optional[int] = None,
     ) -> GetOrdersResponse:
         resp = self._client.get(
-            "/v1/orders",
+            "orders",
             params={
                 "from": from_,
                 "to": to,
@@ -67,7 +67,7 @@ class Orders:
             expires_at_str = None
 
         resp = self._client.post(
-            "/v1/orders",
+            "orders",
             json={
                 "isin": isin,
                 "expires_at": expires_at_str,
@@ -84,15 +84,15 @@ class Orders:
 
     def activate(self, order_id: str, pin: str) -> ActivateOrderResponse:
         resp = self._client.post(
-            f"/v1/orders/{order_id}/activate",
+            f"orders/{order_id}/activate",
             json={"pin": pin},
         )
         return ActivateOrderResponse._from_data(resp.json())
 
     def get_order(self, order_id: str) -> GetOrderResponse:
-        resp = self._client.get(f"/v1/orders/{order_id}")
+        resp = self._client.get(f"orders/{order_id}")
         return GetOrderResponse._from_data(resp.json())
 
     def delete(self, order_id: str) -> DeleteOrderResponse:
-        resp = self._client.delete(f"/v1/orders/{order_id}")
+        resp = self._client.delete(f"orders/{order_id}")
         return DeleteOrderResponse._from_data(resp.json())

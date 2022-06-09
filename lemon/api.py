@@ -1,6 +1,6 @@
 from functools import cached_property
 
-from lemon.config import LIVE_TRADING_API_URL, MARKET_DATA_API_URL, Config
+from lemon.config import MARKET_DATA_API_URL, PAPER_TRADING_API_URL, Config
 from lemon.market_data.api import MarketDataApi
 from lemon.trading.api import TradingApi
 
@@ -21,7 +21,7 @@ class Api:
 def create(
     api_token: str,
     market_data_api_url: str = MARKET_DATA_API_URL,
-    trading_api_url: str = LIVE_TRADING_API_URL,
+    trading_api_url: str = PAPER_TRADING_API_URL,
     timeout: int = 5,
     retry_count: int = 3,
     retry_backoff_factor: float = 0.1,

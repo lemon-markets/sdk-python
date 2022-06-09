@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Dict
+from pprint import pprint
+from typing import Any, Dict, Optional
 
 from lemon.helpers import Environment
 
@@ -18,9 +19,9 @@ class User:
     account_id: str
     trading_plan: str
     data_plan: str
-    tax_allowance: int
-    tax_allowance_start: date
-    tax_allowance_end: date
+    tax_allowance: Optional[int]
+    tax_allowance_start: Optional[date]
+    tax_allowance_end: Optional[date]
     optin_order_push: bool
     optin_order_email: bool
     country: str
@@ -29,6 +30,7 @@ class User:
 
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "User":
+        pprint(data)
         return User(
             created_at=datetime.fromisoformat(data["created_at"]),
             user_id=data["user_id"],
@@ -44,8 +46,12 @@ class User:
             tax_allowance=data["tax_allowance"],
             tax_allowance_start=datetime.fromisoformat(
                 data["tax_allowance_start"]
-            ).date(),
-            tax_allowance_end=datetime.fromisoformat(data["tax_allowance_end"]).date(),
+            ).date()
+            if data["tax_allowance_start"]
+            else None,
+            tax_allowance_end=datetime.fromisoformat(data["tax_allowance_end"]).date()
+            if data["tax_allowance_end"]
+            else None,
             optin_order_push=data["optin_order_push"],
             optin_order_email=data["optin_order_email"],
             country=data["country"],

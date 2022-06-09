@@ -18,7 +18,7 @@ class Account:
         self._client = client
 
     def get(self) -> GetAccountResponse:
-        resp = self._client.get("/v1/account")
+        resp = self._client.get("account")
         return GetAccountResponse._from_data(resp.json())
 
     def update(
@@ -30,7 +30,7 @@ class Account:
         address_country: Optional[str] = None,
     ) -> GetAccountResponse:
         resp = self._client.put(
-            "/v1/account",
+            "account",
             json={
                 "address_street": address_street,
                 "address_street_number": address_street_number,
@@ -45,7 +45,7 @@ class Account:
         self, limit: Optional[int] = None, page: Optional[int] = None
     ) -> GetWithdrawalsResponse:
         resp = self._client.get(
-            "/v1/account/withdrawals",
+            "account/withdrawals",
             params={
                 "limit": limit,
                 "page": page,
@@ -60,7 +60,7 @@ class Account:
         idempotency: Optional[str] = None,
     ) -> WithdrawResponse:
         resp = self._client.post(
-            "/v1/account/withdrawals",
+            "account/withdrawals",
             json={
                 "amount": amount,
                 "pin": pin,
@@ -79,7 +79,7 @@ class Account:
         page: Optional[int] = None,
     ) -> GetBankStatementsResponse:
         resp = self._client.get(
-            "/v1/account/bankstatements",
+            "account/bankstatements",
             params={
                 "type": type,
                 "from": from_,
@@ -98,7 +98,7 @@ class Account:
         page: Optional[int] = None,
     ) -> GetDocumentsResponse:
         resp = self._client.get(
-            "/v1/account/documents",
+            "account/documents",
             params={
                 "sorting": sorting,
                 "limit": limit,
@@ -111,7 +111,7 @@ class Account:
         self, document_id: str, no_redirect: Optional[bool] = None
     ) -> GetDocumentResponse:
         resp = self._client.get(
-            f"/v1/account/documents/{document_id}",
+            f"account/documents/{document_id}",
             params={"no_redirect": no_redirect},
         )
         return GetDocumentResponse._from_data(resp.json())

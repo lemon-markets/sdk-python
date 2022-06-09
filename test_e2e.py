@@ -245,3 +245,11 @@ def test_venues_by_mic(uut: Api):
 
         assert isinstance(venue.opening_hours.start, time)
         assert isinstance(venue.opening_hours.end, time)
+
+
+def test_user_e2e(uut: Api):
+    response = uut.trading.user.get()
+    user = response.results
+
+    assert user.email is not None
+    assert isinstance(user.created_at, datetime)

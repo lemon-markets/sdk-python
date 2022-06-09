@@ -21,7 +21,7 @@ class Positions:
         page: Optional[int] = None,
     ) -> GetPositionsResponse:
         resp = self._client.get(
-            "/v1/positions",
+            "positions",
             params={
                 "isin": isin,
                 "limit": limit,
@@ -41,7 +41,7 @@ class Positions:
         page: Optional[int] = None,
     ) -> GetStatementsResponse:
         resp = self._client.get(
-            "/v1/positions/statements",
+            "positions/statements",
             params={
                 "isin": isin,
                 "from": from_,
@@ -64,7 +64,7 @@ class Positions:
         page: Optional[int] = None,
     ) -> GetPerformanceResponse:
         resp = self._client.get(
-            "/v1/positions/performance",
+            "positions/performance",
             params={
                 "isin": isin,
                 "from": from_,
