@@ -20,7 +20,7 @@ class Quotes:
         page: Optional[int] = None,
     ) -> GetQuotesResponse:
         resp = self._client.get(
-            "/quotes/latest",
+            "/v1/quotes/latest",
             params={
                 "isin": isin,
                 "mic": mic,

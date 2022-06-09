@@ -23,7 +23,7 @@ class Ohlc:
         page: Optional[int] = None,
     ) -> GetOhlcResponse:
         resp = self._client.get(
-            f"/ohlc/{period}",
+            f"/v1/ohlc/{period}",
             params={
                 "mic": mic,
                 "isin": isin,
@@ -54,7 +54,7 @@ class Ohlc:
         page: Optional[int] = None,
     ) -> GetOhlcResponse:
         resp = self._client.get(
-            f"/ohlc/{period}/latest",
+            f"/v1/ohlc/{period}/latest",
             params={
                 "mic": mic,
                 "isin": isin,
