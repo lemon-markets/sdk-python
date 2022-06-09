@@ -20,7 +20,7 @@ class Trades:
         page: Optional[int] = None,
     ) -> GetTradesResponse:
         resp = self._client.get(
-            "/trades/latest",
+            "trades/latest",
             params={
                 "mic": mic,
                 "isin": isin,

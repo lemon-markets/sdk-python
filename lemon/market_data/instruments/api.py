@@ -14,14 +14,14 @@ class Instruments:
         search: Optional[str] = None,
         type: Optional[List[InstrumentType]] = None,
         mic: Optional[List[str]] = None,
-        currency: Optional[str] = None,
+        currency: Optional[List[str]] = None,
         tradable: Optional[bool] = None,
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
         page: Optional[int] = None,
     ) -> GetInstrumentsResponse:
         resp = self._client.get(
-            "/instruments",
+            "instruments",
             params={
                 "isin": isin,
                 "search": search,
