@@ -1,8 +1,7 @@
 import os
-from dataclasses import asdict
-from pprint import pprint
-
 import pytest
+
+from operator import attrgetter
 
 from lemon import api
 from lemon.api import Api
@@ -15,25 +14,44 @@ def uut() -> Api:
     return api.create(api_token=API_KEY)
 
 
-def test_instruments(uut: Api):
-    result = uut.market_data.instruments.get(search='a*bet', type=['etf', 'stock'])
-
-    pprint(asdict(result))
-
-    for instrument in result.results:
-        print(instrument.title)
+@pytest.mark.parametrize('type_', ["stock", "bond", "fund", "etf"])
+def test_instruments_by_type(uut: Api, type_):
+    result = uut.market_data.instruments.get(type=[type_])
+    assert set(map(attrgetter('type'), result.results)) == {type_}
 
 
-def test_order(uut: Api):
-    result = uut.market_data.instruments.get(
-        search='TESLA'
-    )
+def test_instruments_by_search(uut: Api):
+    result = uut.market_data.instruments.get(search='tesla*')
+    assert len(result.results) == 3
 
-    result = uut.trading.orders.create(
-        isin=result.results[-1].isin,
-        side='buy',
-        quantity=5,
-        expires_at=5,
-    )
-    result = uut.trading.orders.activate(order_id=result.results.id)
-    print(result)
+
+def test_instruments_by_isin(uut: Api):
+    response = uut.market_data.instruments.get(isin=['US88160R1014'])
+
+    assert len(response.results) == 1
+    assert response.results[-1].title == 'TESLA INC.'
+
+
+@pytest.mark.parametrize('currency', ['EUR', 'PLN'])
+def test_instruments_by_currency(uut: Api, currency):
+    response = uut.market_data.instruments.get(currency=currency)
+
+    given = set()
+    for instrument in response.results:
+        given.update(info.currency for info in instrument.venues)
+    assert given == {currency}
+
+
+@pytest.mark.parametrize('tradable', [True, False])
+def test_instruments_by_tradable(uut: Api, tradable: bool):
+    response = uut.market_data.instruments.get(tradable=tradable)
+
+    given = set()
+    for i in response.results:
+        given.update(info.tradable for info in i.venues)
+    assert given == {tradable}
+
+
+def test_instruments_limit(uut: Api):
+    response = uut.market_data.instruments.get(limit=10)
+    assert len(response.results) == 10
