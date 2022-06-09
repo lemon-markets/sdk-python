@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from lemon.helpers import Environment
 
@@ -38,9 +38,9 @@ class Account:
     approved_at: datetime
     trading_plan: Plan
     data_plan: Plan
-    tax_allowance: int
-    tax_allowance_start: date
-    tax_allowance_end: date
+    tax_allowance: Optional[int]
+    tax_allowance_start: Optional[date]
+    tax_allowance_end: Optional[date]
 
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "Account":
@@ -71,14 +71,20 @@ class Account:
             amount_open_orders=int(data["amount_open_orders"]),
             amount_open_withdrawals=int(data["amount_open_withdrawals"]),
             amount_estimate_taxes=int(data["amount_estimate_taxes"]),
-            approved_at=datetime.fromisoformat(data["approved_at"]),
+            approved_at=datetime.fromisoformat(data["approved_at"])
+            if data.get("approved_at")
+            else None,
             trading_plan=data["trading_plan"],
             data_plan=data["data_plan"],
             tax_allowance=data["tax_allowance"],
             tax_allowance_start=datetime.fromisoformat(
                 data["tax_allowance_start"]
-            ).date(),
-            tax_allowance_end=datetime.fromisoformat(data["tax_allowance_end"]).date(),
+            ).date()
+            if data.get("tax_allowance_start")
+            else None,
+            tax_allowance_end=datetime.fromisoformat(data["tax_allowance_end"]).date()
+            if data.get("tax_allowance_end")
+            else None,
         )
 
 

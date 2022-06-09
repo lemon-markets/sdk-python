@@ -253,3 +253,12 @@ def test_user_e2e(uut: Api):
 
     assert user.email is not None
     assert isinstance(user.created_at, datetime)
+
+
+def test_account_e2e(uut: Api):
+    response = uut.trading.account.get()
+
+    account = response.results
+
+    assert account.created_at
+
