@@ -1,7 +1,7 @@
-from datetime import date, datetime
-from typing import Optional
+from datetime import date
+from typing import Optional, Union
 
-from lemon.helpers import ApiClient
+from lemon.helpers import ApiClient, Days
 from lemon.trading.orders.models import (
     ActivateOrderResponse,
     CreateOrderResponse,
@@ -11,6 +11,7 @@ from lemon.trading.orders.models import (
     OrderSide,
     OrderStatus,
     OrderType,
+    Venue,
 )
 
 
@@ -20,8 +21,8 @@ class Orders:
 
     def get(
         self,
-        from_: Optional[datetime] = None,
-        to: Optional[datetime] = None,
+        from_: Optional[date] = None,
+        to: Optional[date] = None,
         isin: Optional[str] = None,
         side: Optional[OrderSide] = None,
         status: Optional[OrderStatus] = None,
@@ -49,20 +50,27 @@ class Orders:
     def create(
         self,
         isin: str,
-        expires_at: date,
         side: OrderSide,
         quantity: int,
-        venue: str,
+        expires_at: Union[date, Days, None] = None,
         stop_price: Optional[int] = None,
         limit_price: Optional[int] = None,
+        venue: Optional[Venue] = None,
         notes: Optional[str] = None,
         idempotency: Optional[str] = None,
     ) -> CreateOrderResponse:
+        if isinstance(expires_at, date):
+            expires_at_str = expires_at.isoformat()
+        elif isinstance(expires_at, int):
+            expires_at_str = f"P{expires_at}D"
+        else:
+            expires_at_str = None
+
         resp = self._client.post(
             "/orders",
             json={
                 "isin": isin,
-                "expires_at": expires_at.isoformat(),
+                "expires_at": expires_at_str,
                 "side": side,
                 "quantity": quantity,
                 "venue": venue,

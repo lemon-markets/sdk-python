@@ -1,4 +1,5 @@
-from typing import Optional
+from datetime import date
+from typing import Literal, Optional, Union
 
 from lemon.helpers import ApiClient, Sorting
 from lemon.trading.account.models import (
@@ -71,8 +72,8 @@ class Account:
     def get_bank_statements(
         self,
         type: Optional[BankStatementType] = None,
-        from_: Optional[str] = None,
-        to: Optional[str] = None,
+        from_: Union[date, Literal["beginning"], None] = None,
+        to: Optional[date] = None,
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
         page: Optional[int] = None,

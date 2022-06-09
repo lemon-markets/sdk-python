@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 from typing import Optional
 
 from lemon.helpers import ApiClient, Sorting
@@ -57,8 +57,8 @@ class Positions:
     def get_performance(
         self,
         isin: Optional[str] = None,
-        from_: Optional[date] = None,
-        to: Optional[date] = None,
+        from_: Optional[datetime] = None,
+        to: Optional[datetime] = None,
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
         page: Optional[int] = None,

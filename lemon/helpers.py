@@ -14,6 +14,7 @@ from lemon.errors import (
 
 Sorting = Literal["asc", "desc"]
 Environment = Literal["paper", "money"]
+Days = int
 
 
 class ApiClient:

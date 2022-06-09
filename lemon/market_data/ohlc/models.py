@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Union
 
-DayOffset = int
-
 
 @dataclass
 class OhlcData:
