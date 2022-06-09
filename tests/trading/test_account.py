@@ -17,7 +17,7 @@ from lemon.trading.account.models import (
     Withdrawal,
     WithdrawResponse,
 )
-from tests.conftest import CommonApiTests
+from tests.trading.conftest import CommonTradingApiTests
 
 DUMMY_ACCOUNT_PAYLOAD = {
     "time": "2021-11-22T15:37:56.520+00:00",
@@ -244,17 +244,13 @@ DUMMY_GET_DOCUMENT_RESPONSE = GetDocumentResponse(
 )
 
 
-class TestGetAccountApi(CommonApiTests):
+class TestGetAccountApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.account.get()
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/account", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     def test_get_account(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -277,7 +273,7 @@ class TestGetAccountApi(CommonApiTests):
         assert client.trading.account.get() == DUMMY_ACCOUNT_RESPONSE
 
 
-class TestEditAccountApi(CommonApiTests):
+class TestEditAccountApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.account.update(address_street="new street")
 
@@ -294,10 +290,6 @@ class TestEditAccountApi(CommonApiTests):
                 "address_country": None,
             },
         }
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     def test_get_account(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -317,17 +309,13 @@ class TestEditAccountApi(CommonApiTests):
         )
 
 
-class TestGetWithdrawalsApi(CommonApiTests):
+class TestGetWithdrawalsApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.account.get_withdrawals()
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/account/withdrawals", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     def test_get_withdrawals(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -350,7 +338,7 @@ class TestGetWithdrawalsApi(CommonApiTests):
         assert client.trading.account.get_withdrawals() == DUMMY_WITHDRAWLS_RESPONSE
 
 
-class TestWithdrawApi(CommonApiTests):
+class TestWithdrawApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.account.withdraw(amount=100, pin="1234")
 
@@ -361,10 +349,6 @@ class TestWithdrawApi(CommonApiTests):
             "method": "POST",
             "json": {"amount": 100, "pin": "1234", "idempotency": None},
         }
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     def test_get_withdrawals(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -378,17 +362,13 @@ class TestWithdrawApi(CommonApiTests):
         )
 
 
-class TestGetBankStatementsApi(CommonApiTests):
+class TestGetBankStatementsApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.account.get_bank_statements()
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/account/bankstatements", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
@@ -441,17 +421,13 @@ class TestGetBankStatementsApi(CommonApiTests):
         )
 
 
-class TestGetDocumentsApi(CommonApiTests):
+class TestGetDocumentsApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.account.get_documents()
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/account/documents", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
@@ -495,17 +471,13 @@ class TestGetDocumentsApi(CommonApiTests):
         assert client.trading.account.get_documents() == DUMMY_GET_DOCUMENTS_RESPONSE
 
 
-class TestGetDocumentApi(CommonApiTests):
+class TestGetDocumentApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.account.get_document("foo")
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/account/documents/foo", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     @pytest.mark.parametrize(
         "function_kwargs,query_string",

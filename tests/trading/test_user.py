@@ -5,7 +5,7 @@ from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
 from lemon.trading.user.models import GetUserResponse, User
-from tests.conftest import CommonApiTests
+from tests.trading.conftest import CommonTradingApiTests
 
 DUMMY_USER_PAYLOAD = {
     "time": "2022-06-01T18:37:03.817",
@@ -61,17 +61,13 @@ DUMMY_USER_RESPONSE = GetUserResponse(
 )
 
 
-class TestGetUserApi(CommonApiTests):
+class TestGetUserApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.user.get()
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/user", "method": "GET"}
-
-    @pytest.fixture
-    def httpserver(self, trading_httpserver: HTTPServer):
-        return trading_httpserver
 
     def test_get_user(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

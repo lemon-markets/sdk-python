@@ -5,7 +5,7 @@ from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
 from lemon.market_data.trades.models import GetTradesResponse, Trade
-from tests.conftest import CommonApiTests
+from tests.market_data.conftest import CommonMarketDataApiTests
 
 DUMMY_PAYLOAD = {
     "time": "2022-02-14T20:44:03.759+00:00",
@@ -60,17 +60,13 @@ DUMMY_RESPONSE = GetTradesResponse(
 )
 
 
-class TestTradesApi(CommonApiTests):
+class TestTradesApi(CommonMarketDataApiTests):
     def make_api_call(self, client: Api):
         return client.market_data.trades.get_latest(isin=["XMUN"])
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {"uri": "/trades/latest", "method": "GET", "query_string": "isin=XMUN"}
-
-    @pytest.fixture
-    def httpserver(self, market_data_httpserver: HTTPServer):
-        return market_data_httpserver
 
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
