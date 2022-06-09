@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Literal, Optional, Union, overload
+from typing import Optional, Union
 
 from lemon.helpers import ApiClient, Days
 from lemon.trading.orders.models import (
@@ -47,82 +47,17 @@ class Orders:
         )
         return GetOrdersResponse._from_data(resp.json())
 
-    @overload
     def create(
         self,
         isin: str,
         side: OrderSide,
         quantity: int,
-        venue: Optional[Venue] = None,
-        notes: Optional[str] = None,
-        idempotency: Optional[str] = None,
-        *,
-        expires_at: Union[date, Days, None] = None,
-        stop_price: Literal[None] = None,
-        limit_price: Literal[None] = None,
-    ) -> CreateOrderResponse:
-        ...
-
-    @overload
-    def create(
-        self,
-        isin: str,
-        side: OrderSide,
-        quantity: int,
-        venue: Optional[Venue] = None,
-        notes: Optional[str] = None,
-        idempotency: Optional[str] = None,
-        *,
-        expires_at: Union[date, Days],
-        stop_price: int,
-        limit_price: Literal[None] = None,
-    ) -> CreateOrderResponse:
-        ...
-
-    @overload
-    def create(
-        self,
-        isin: str,
-        side: OrderSide,
-        quantity: int,
-        venue: Optional[Venue] = None,
-        notes: Optional[str] = None,
-        idempotency: Optional[str] = None,
-        *,
-        expires_at: Union[date, Days],
-        stop_price: Literal[None] = None,
-        limit_price: int,
-    ) -> CreateOrderResponse:
-        ...
-
-    @overload
-    def create(
-        self,
-        isin: str,
-        side: OrderSide,
-        quantity: int,
-        venue: Optional[Venue] = None,
-        notes: Optional[str] = None,
-        idempotency: Optional[str] = None,
-        *,
-        expires_at: Union[date, Days],
-        stop_price: int,
-        limit_price: int,
-    ) -> CreateOrderResponse:
-        ...
-
-    def create(
-        self,
-        isin: str,
-        side: OrderSide,
-        quantity: int,
-        venue: Optional[Venue] = None,
-        notes: Optional[str] = None,
-        idempotency: Optional[str] = None,
-        *,
         expires_at: Union[date, Days, None] = None,
         stop_price: Optional[int] = None,
         limit_price: Optional[int] = None,
+        venue: Optional[Venue] = None,
+        notes: Optional[str] = None,
+        idempotency: Optional[str] = None,
     ) -> CreateOrderResponse:
         if isinstance(expires_at, date):
             expires_at_str = expires_at.isoformat()
