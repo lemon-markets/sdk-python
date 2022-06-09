@@ -21,7 +21,7 @@ class Instruments:
         page: Optional[int] = None,
     ) -> GetInstrumentsResponse:
         resp = self._client.get(
-            "/v1/instruments",
+            "instruments",
             params={
                 "isin": isin,
                 "search": search,
