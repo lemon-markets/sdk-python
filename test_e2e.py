@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, time
 from typing import Literal
 
 import pytest
@@ -198,3 +198,50 @@ def test_quotes_by_epoch(uut: Api):
         isin=['US88160R1014'], epoch=True
     )
     assert isinstance(response.results[-1].t, int)
+
+
+def test_trades_by_decimals(uut: Api):
+    # decimals=False
+    response = uut.market_data.trades.get_latest(
+        isin=['US88160R1014'], decimals=False
+    )
+    quote = response.results[-1]
+
+    for attr in ['p', 'v']:
+        assert isinstance(getattr(quote, attr), int), f"{attr!r} is not int"
+
+    # decimals=True
+    response = uut.market_data.trades.get_latest(
+        isin=['US88160R1014'], decimals=True
+    )
+    quote = response.results[-1]
+
+    assert isinstance(quote.p, float)
+    assert isinstance(quote.v, int)
+
+
+def test_trades_by_epoch(uut: Api):
+    # decimals=False
+    response = uut.market_data.trades.get_latest(
+        isin=['US88160R1014'], epoch=False
+    )
+    assert isinstance(response.results[-1].t, datetime)
+
+    # decimals=True
+    response = uut.market_data.trades.get_latest(
+        isin=['US88160R1014'], epoch=True
+    )
+    assert isinstance(response.results[-1].t, int)
+
+
+def test_venues_by_mic(uut: Api):
+    response = uut.market_data.venues.get(sorting='asc')
+
+    assert len(response.results) == 2
+
+    for venue in response.results:
+        for i in venue.opening_days:
+            assert isinstance(i, date)
+
+        assert isinstance(venue.opening_hours.start, time)
+        assert isinstance(venue.opening_hours.end, time)

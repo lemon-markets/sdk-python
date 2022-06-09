@@ -10,7 +10,7 @@ K = TypeVar("K", int, datetime)
 class Trade:
     isin: str
     p: Union[int, float]
-    v: Union[int, float]
+    v: int
     t: Union[datetime, int]
     mic: str
 
@@ -23,7 +23,7 @@ class Trade:
         return Trade(
             isin=data["isin"],
             p=t_type(data["p"]),
-            v=t_type(data["v"]),
+            v=data["v"],
             t=k_type(data["t"]),
             mic=data["mic"],
         )
