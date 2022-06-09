@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from lemon.helpers import Environment
 
@@ -9,18 +9,18 @@ from lemon.helpers import Environment
 class User:
     created_at: datetime
     user_id: str
-    firstname: str
-    lastname: str
-    email: str
-    phone: str
-    phone_verified: datetime
+    firstname: Optional[str]
+    lastname: Optional[str]
+    email: Optional[str]
+    phone: Optional[str]
+    phone_verified: Optional[datetime]
     pin_verified: bool
     account_id: str
     trading_plan: str
     data_plan: str
-    tax_allowance: int
-    tax_allowance_start: date
-    tax_allowance_end: date
+    tax_allowance: Optional[int]
+    tax_allowance_start: Optional[date]
+    tax_allowance_end: Optional[date]
     optin_order_push: bool
     optin_order_email: bool
     country: str
@@ -36,7 +36,9 @@ class User:
             lastname=data["lastname"],
             email=data["email"],
             phone=data["phone"],
-            phone_verified=datetime.fromisoformat(data["phone_verified"]),
+            phone_verified=datetime.fromisoformat(data["phone_verified"])
+            if data["phone_verified"] is not None
+            else None,
             pin_verified=data["pin_verified"],
             account_id=data["account_id"],
             trading_plan=data["trading_plan"],
@@ -44,8 +46,12 @@ class User:
             tax_allowance=data["tax_allowance"],
             tax_allowance_start=datetime.fromisoformat(
                 data["tax_allowance_start"]
-            ).date(),
-            tax_allowance_end=datetime.fromisoformat(data["tax_allowance_end"]).date(),
+            ).date()
+            if data["tax_allowance_start"] is not None
+            else None,
+            tax_allowance_end=datetime.fromisoformat(data["tax_allowance_end"]).date()
+            if data["tax_allowance_end"] is not None
+            else None,
             optin_order_push=data["optin_order_push"],
             optin_order_email=data["optin_order_email"],
             country=data["country"],

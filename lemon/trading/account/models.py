@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Dict, List, Literal
+from typing import Any, Dict, List, Literal, Optional
 
 from lemon.helpers import Environment
 
@@ -11,36 +11,36 @@ Plan = Literal["go", "investor", "trader"]
 class Account:
     created_at: datetime
     account_id: str
-    firstname: str
-    lastname: str
-    email: str
-    phone: str
-    address: str
-    billing_address: str
-    billing_email: str
-    billing_name: str
-    billing_vat: str
-    mode: Environment
-    deposit_id: str
-    client_id: str
-    account_number: str
-    iban_brokerage: str
-    iban_origin: str
-    bank_name_origin: str
-    balance: int
-    cash_to_invest: int
-    cash_to_withdraw: int
-    amount_bought_intraday: int
-    amount_sold_intraday: int
-    amount_open_orders: int
-    amount_open_withdrawals: int
-    amount_estimate_taxes: int
-    approved_at: datetime
+    firstname: Optional[str]
+    lastname: Optional[str]
+    email: Optional[str]
+    phone: Optional[str]
+    address: Optional[str]
+    billing_address: Optional[str]
+    billing_email: Optional[str]
+    billing_name: Optional[str]
+    billing_vat: Optional[str]
+    mode: Optional[Environment]
+    deposit_id: Optional[str]
+    client_id: Optional[str]
+    account_number: Optional[str]
+    iban_brokerage: Optional[str]
+    iban_origin: Optional[str]
+    bank_name_origin: Optional[str]
+    balance: Optional[int]
+    cash_to_invest: Optional[int]
+    cash_to_withdraw: Optional[int]
+    amount_bought_intraday: Optional[int]
+    amount_sold_intraday: Optional[int]
+    amount_open_orders: Optional[int]
+    amount_open_withdrawals: Optional[int]
+    amount_estimate_taxes: Optional[int]
+    approved_at: Optional[datetime]
     trading_plan: Plan
     data_plan: Plan
-    tax_allowance: int
-    tax_allowance_start: date
-    tax_allowance_end: date
+    tax_allowance: Optional[int]
+    tax_allowance_start: Optional[date]
+    tax_allowance_end: Optional[date]
 
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "Account":
@@ -63,22 +63,42 @@ class Account:
             iban_brokerage=data["iban_brokerage"],
             iban_origin=data["iban_origin"],
             bank_name_origin=data["bank_name_origin"],
-            balance=int(data["balance"]),
-            cash_to_invest=int(data["cash_to_invest"]),
-            cash_to_withdraw=int(data["cash_to_withdraw"]),
-            amount_bought_intraday=int(data["amount_bought_intraday"]),
-            amount_sold_intraday=int(data["amount_sold_intraday"]),
-            amount_open_orders=int(data["amount_open_orders"]),
-            amount_open_withdrawals=int(data["amount_open_withdrawals"]),
-            amount_estimate_taxes=int(data["amount_estimate_taxes"]),
-            approved_at=datetime.fromisoformat(data["approved_at"]),
+            balance=int(data["balance"]) if data["balance"] is not None else None,
+            cash_to_invest=int(data["cash_to_invest"])
+            if data["cash_to_invest"] is not None
+            else None,
+            cash_to_withdraw=int(data["cash_to_withdraw"])
+            if data["cash_to_withdraw"] is not None
+            else None,
+            amount_bought_intraday=int(data["amount_bought_intraday"])
+            if data["amount_bought_intraday"] is not None
+            else None,
+            amount_sold_intraday=int(data["amount_sold_intraday"])
+            if data["amount_sold_intraday"] is not None
+            else None,
+            amount_open_orders=int(data["amount_open_orders"])
+            if data["amount_open_orders"] is not None
+            else None,
+            amount_open_withdrawals=int(data["amount_open_withdrawals"])
+            if data["amount_open_withdrawals"] is not None
+            else None,
+            amount_estimate_taxes=int(data["amount_estimate_taxes"])
+            if data["amount_estimate_taxes"] is not None
+            else None,
+            approved_at=datetime.fromisoformat(data["approved_at"])
+            if data["approved_at"] is not None
+            else None,
             trading_plan=data["trading_plan"],
             data_plan=data["data_plan"],
             tax_allowance=data["tax_allowance"],
             tax_allowance_start=datetime.fromisoformat(
                 data["tax_allowance_start"]
-            ).date(),
-            tax_allowance_end=datetime.fromisoformat(data["tax_allowance_end"]).date(),
+            ).date()
+            if data["tax_allowance_start"] is not None
+            else None,
+            tax_allowance_end=datetime.fromisoformat(data["tax_allowance_end"]).date()
+            if data["tax_allowance_end"] is not None
+            else None,
         )
 
 
@@ -102,8 +122,8 @@ class Withdrawal:
     id: str
     amount: int
     created_at: datetime
-    date: date
-    idempotency: str
+    date: Optional[date]
+    idempotency: Optional[str]
 
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "Withdrawal":
@@ -111,7 +131,9 @@ class Withdrawal:
             id=data["id"],
             amount=int(data["amount"]),
             created_at=datetime.fromisoformat(data["created_at"]),
-            date=datetime.fromisoformat(data["date"]).date(),
+            date=datetime.fromisoformat(data["date"]).date()
+            if data["date"] is not None
+            else None,
             idempotency=data["idempotency"],
         )
 
@@ -170,9 +192,10 @@ class BankStatement:
     type: BankStatementType
     date: date
     amount: int
-    isin: str
-    isin_title: str
+    isin: Optional[str]
+    isin_title: Optional[str]
     created_at: datetime
+    quantity: Optional[int]
 
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "BankStatement":
@@ -185,6 +208,7 @@ class BankStatement:
             isin=data["isin"],
             isin_title=data["isin_title"],
             created_at=datetime.fromisoformat(data["created_at"]),
+            quantity=int(data["quantity"]) if data["quantity"] is not None else None,
         )
 
 
@@ -216,8 +240,8 @@ class Document:
     created_at: datetime
     category: str
     link: str
-    viewed_first_at: datetime
-    viewed_last_at: datetime
+    viewed_first_at: Optional[datetime]
+    viewed_last_at: Optional[datetime]
 
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "Document":
@@ -227,8 +251,12 @@ class Document:
             created_at=datetime.fromisoformat(data["created_at"]),
             category=data["category"],
             link=data["link"],
-            viewed_first_at=datetime.fromisoformat(data["viewed_first_at"]),
-            viewed_last_at=datetime.fromisoformat(data["viewed_last_at"]),
+            viewed_first_at=datetime.fromisoformat(data["viewed_first_at"])
+            if data["viewed_first_at"] is not None
+            else None,
+            viewed_last_at=datetime.fromisoformat(data["viewed_last_at"])
+            if data["viewed_last_at"] is not None
+            else None,
         )
 
 
@@ -255,7 +283,7 @@ class GetDocumentsResponse:
 
 @dataclass
 class DocumentUrl:
-    public_url: str
+    public_url: Optional[str]
 
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "DocumentUrl":
