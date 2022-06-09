@@ -203,6 +203,7 @@ class CreatedOrder:
     limit_price: Optional[int]
     venue: Optional[str]
     estimated_price: int
+    estimated_price_total: int
     notes: Optional[str]
     charge: Optional[int]
     chargeable_at: Optional[datetime]
@@ -230,6 +231,7 @@ class CreatedOrder:
             else None,
             venue=data["venue"],
             estimated_price=int(data["estimated_price"]),
+            estimated_price_total=int(data["estimated_price_total"]),
             notes=data["notes"],
             charge=int(data["charge"]) if data["charge"] is not None else None,
             chargeable_at=datetime.fromisoformat(data["chargeable_at"])
