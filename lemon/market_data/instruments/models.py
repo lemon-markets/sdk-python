@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Literal, Optional
 
 
 @dataclass
@@ -24,14 +24,17 @@ class Venue:
         )
 
 
+InstrumentType = Literal["stock", "bond", "warrant", "fund", "etf"]
+
+
 @dataclass
 class Instrument:
     isin: str
     wkn: str
     name: str
-    title: str
-    symbol: str
-    type: str
+    title: Optional[str]
+    symbol: Optional[str]
+    type: InstrumentType
     venues: List[Venue]
 
     @staticmethod

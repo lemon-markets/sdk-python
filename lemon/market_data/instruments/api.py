@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from lemon.helpers import ApiClient, Sorting
-from lemon.market_data.instruments.models import GetInstrumentsResponse
+from lemon.market_data.instruments.models import GetInstrumentsResponse, InstrumentType
 
 
 class Instruments:
@@ -12,7 +12,7 @@ class Instruments:
         self,
         isin: Optional[List[str]] = None,
         search: Optional[str] = None,
-        type: Optional[List[str]] = None,
+        type: Optional[List[InstrumentType]] = None,
         mic: Optional[List[str]] = None,
         currency: Optional[str] = None,
         tradable: Optional[bool] = None,

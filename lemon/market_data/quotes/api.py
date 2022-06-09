@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 from lemon.helpers import ApiClient, Sorting
@@ -8,11 +9,10 @@ class Quotes:
     def __init__(self, client: ApiClient):
         self._client = client
 
-    def get(
+    def get_latest(
         self,
         isin: List[str],
         mic: Optional[str] = None,
-        from_: Optional[str] = None,
         decimals: Optional[bool] = None,
         epoch: Optional[bool] = None,
         sorting: Optional[Sorting] = None,
@@ -24,7 +24,6 @@ class Quotes:
             params={
                 "isin": isin,
                 "mic": mic,
-                "from": from_,
                 "decimals": decimals,
                 "epoch": epoch,
                 "sorting": sorting,
@@ -32,4 +31,8 @@ class Quotes:
                 "page": page,
             },
         )
-        return GetQuotesResponse._from_data(resp.json())
+        return GetQuotesResponse._from_data(
+            data=resp.json(),
+            t_type=float if decimals else int,
+            k_type=int if epoch else datetime.fromisoformat,  # type: ignore
+        )
