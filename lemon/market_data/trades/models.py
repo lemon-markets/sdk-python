@@ -1,23 +1,25 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, Dict, Generic, List, TypeVar
+from typing import Any, Callable, Dict, List, TypeVar, Union
 
 T = TypeVar("T", int, float)
 K = TypeVar("K", int, datetime)
 
 
 @dataclass
-class Trade(Generic[T, K]):
+class Trade:
     isin: str
-    p: T
-    v: T
-    t: K
+    p: Union[int, float]
+    v: Union[int, float]
+    t: Union[datetime, int]
     mic: str
 
     @staticmethod
     def _from_data(
-        data: Dict[str, Any], t_type: Callable[[Any], T], k_type: Callable[[Any], K]
-    ) -> "Trade[T, K]":
+        data: Dict[str, Any],
+        t_type: Callable[[Any], Union[int, float]],
+        k_type: Callable[[Any], Union[datetime, int]],
+    ) -> "Trade":
         return Trade(
             isin=data["isin"],
             p=t_type(data["p"]),
@@ -28,17 +30,19 @@ class Trade(Generic[T, K]):
 
 
 @dataclass
-class GetTradesResponse(Generic[T, K]):
+class GetTradesResponse:
     time: datetime
-    results: List[Trade[T, K]]
+    results: List[Trade]
     total: int
     page: int
     pages: int
 
     @staticmethod
     def _from_data(
-        data: Dict[str, Any], t_type: Callable[[Any], T], k_type: Callable[[Any], K]
-    ) -> "GetTradesResponse[T, K]":
+        data: Dict[str, Any],
+        t_type: Callable[[Any], Union[int, float]],
+        k_type: Callable[[Any], Union[datetime, int]],
+    ) -> "GetTradesResponse":
         return GetTradesResponse(
             time=datetime.fromisoformat(data["time"]),
             results=[

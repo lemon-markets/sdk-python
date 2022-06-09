@@ -1,29 +1,28 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, Dict, Generic, List, TypeVar
+from typing import Any, Callable, Dict, List, Union
 
 DayOffset = int
 
-T = TypeVar("T", int, float)
-K = TypeVar("K", int, datetime)
-
 
 @dataclass
-class OhlcData(Generic[T, K]):
+class OhlcData:
     isin: str
-    o: T
-    h: T
-    l: T
-    c: T
-    v: T
-    pbv: T
-    t: K
+    o: Union[int, float]
+    h: Union[int, float]
+    l: Union[int, float]
+    c: Union[int, float]
+    v: Union[int, float]
+    pbv: Union[int, float]
+    t: Union[datetime, int]
     mic: str
 
     @staticmethod
     def _from_data(
-        data: Dict[str, Any], t_type: Callable[[Any], T], k_type: Callable[[Any], K]
-    ) -> "OhlcData[T, K]":
+        data: Dict[str, Any],
+        t_type: Callable[[Any], Union[int, float]],
+        k_type: Callable[[Any], Union[datetime, int]],
+    ) -> "OhlcData":
         return OhlcData(
             isin=data["isin"],
             o=t_type(data["o"]),
@@ -38,17 +37,19 @@ class OhlcData(Generic[T, K]):
 
 
 @dataclass
-class GetOhlcResponse(Generic[T, K]):
+class GetOhlcResponse:
     time: datetime
-    results: List[OhlcData[T, K]]
+    results: List[OhlcData]
     total: int
     page: int
     pages: int
 
     @staticmethod
     def _from_data(
-        data: Dict[str, Any], t_type: Callable[[Any], T], k_type: Callable[[Any], K]
-    ) -> "GetOhlcResponse[T, K]":
+        data: Dict[str, Any],
+        t_type: Callable[[Any], Union[int, float]],
+        k_type: Callable[[Any], Union[datetime, int]],
+    ) -> "GetOhlcResponse":
         return GetOhlcResponse(
             time=datetime.fromisoformat(data["time"]),
             results=[

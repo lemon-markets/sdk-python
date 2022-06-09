@@ -1,25 +1,24 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, Dict, Generic, List, TypeVar
-
-T = TypeVar("T", int, float)
-K = TypeVar("K", int, datetime)
+from typing import Any, Callable, Dict, List, Union
 
 
 @dataclass
-class Quote(Generic[T, K]):
+class Quote:
     isin: str
-    b_v: T
-    a_v: T
-    b: T
-    a: T
-    t: K
+    b_v: Union[int, float]
+    a_v: Union[int, float]
+    b: Union[int, float]
+    a: Union[int, float]
+    t: Union[datetime, int]
     mic: str
 
     @staticmethod
     def _from_data(
-        data: Dict[str, Any], t_type: Callable[[Any], T], k_type: Callable[[Any], K]
-    ) -> "Quote[T, K]":
+        data: Dict[str, Any],
+        t_type: Callable[[Any], Union[int, float]],
+        k_type: Callable[[Any], Union[datetime, int]],
+    ) -> "Quote":
         return Quote(
             isin=data["isin"],
             b_v=t_type(data["b_v"]),
@@ -32,17 +31,19 @@ class Quote(Generic[T, K]):
 
 
 @dataclass
-class GetQuotesResponse(Generic[T, K]):
+class GetQuotesResponse:
     time: datetime
-    results: List[Quote[T, K]]
+    results: List[Quote]
     total: int
     page: int
     pages: int
 
     @staticmethod
     def _from_data(
-        data: Dict[str, Any], t_type: Callable[[Any], T], k_type: Callable[[Any], K]
-    ) -> "GetQuotesResponse[T, K]":
+        data: Dict[str, Any],
+        t_type: Callable[[Any], Union[int, float]],
+        k_type: Callable[[Any], Union[datetime, int]],
+    ) -> "GetQuotesResponse":
         return GetQuotesResponse(
             time=datetime.fromisoformat(data["time"]),
             results=[
