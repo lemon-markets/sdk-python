@@ -2,6 +2,7 @@ from typing import Any, Dict, Literal, Optional
 from urllib.parse import urljoin
 
 import requests
+from requests.adapters import HTTPAdapter, Retry
 
 from lemon.config import Config
 from lemon.errors import (
@@ -19,15 +20,30 @@ class ApiClient:
     def __init__(self, base_url: str, config: Config):
         self._base_url = base_url
         self._config = config
+        self._session = requests.Session()
+        retries = Retry(
+            total=config.retry_count,
+            backoff_factor=config.retry_backoff_factor,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["HEAD", "GET", "DELETE", "OPTIONS", "TRACE"],
+        )
+
+        self._session.mount("http://", HTTPAdapter(max_retries=retries))
+        self._session.mount("https://", HTTPAdapter(max_retries=retries))
 
     def get(
-        self, url: str, query_params: Optional[Dict[str, Any]] = None
+        self,
+        url: str,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
     ) -> requests.Response:
         url = urljoin(self._base_url, url)
-        resp = requests.get(
+        headers = headers or {}
+        resp = self._session.get(
             url,
-            params=query_params,
-            headers={"Authorization": f"Bearer {self._config.api_token}"},
+            params=params,
+            headers={"Authorization": f"Bearer {self._config.api_token}", **headers},
+            timeout=self._config.timeout,
         )
 
         if resp.ok:
@@ -36,12 +52,21 @@ class ApiClient:
         self._handle_common_errors(resp)
         return resp
 
-    def put(self, url: str, data: Any) -> requests.Response:
+    def put(
+        self,
+        url: str,
+        json: Any,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> requests.Response:
         url = urljoin(self._base_url, url)
-        resp = requests.put(
+        headers = headers or {}
+        resp = self._session.put(
             url,
-            json=data,
-            headers={"Authorization": f"Bearer {self._config.api_token}"},
+            json=json,
+            params=params,
+            headers={"Authorization": f"Bearer {self._config.api_token}", **headers},
+            timeout=self._config.timeout,
         )
 
         if resp.ok:
@@ -50,12 +75,21 @@ class ApiClient:
         self._handle_common_errors(resp)
         return resp
 
-    def post(self, url: str, data: Any) -> requests.Response:
+    def post(
+        self,
+        url: str,
+        json: Any,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> requests.Response:
         url = urljoin(self._base_url, url)
-        resp = requests.post(
+        headers = headers or {}
+        resp = self._session.post(
             url,
-            json=data,
-            headers={"Authorization": f"Bearer {self._config.api_token}"},
+            json=json,
+            params=params,
+            headers={"Authorization": f"Bearer {self._config.api_token}", **headers},
+            timeout=self._config.timeout,
         )
 
         if resp.ok:
@@ -64,11 +98,19 @@ class ApiClient:
         self._handle_common_errors(resp)
         return resp
 
-    def delete(self, url: str) -> requests.Response:
+    def delete(
+        self,
+        url: str,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> requests.Response:
         url = urljoin(self._base_url, url)
-        resp = requests.delete(
+        headers = headers or {}
+        resp = self._session.delete(
             url,
-            headers={"Authorization": f"Bearer {self._config.api_token}"},
+            params=params,
+            headers={"Authorization": f"Bearer {self._config.api_token}", **headers},
+            timeout=self._config.timeout,
         )
 
         if resp.ok:

@@ -22,7 +22,7 @@ class Positions:
     ) -> GetPositionsResponse:
         resp = self._client.get(
             "/positions",
-            query_params={
+            params={
                 "isin": isin,
                 "limit": limit,
                 "page": page,
@@ -42,7 +42,7 @@ class Positions:
     ) -> GetStatementsResponse:
         resp = self._client.get(
             "/positions/statements",
-            query_params={
+            params={
                 "isin": isin,
                 "from": from_,
                 "to": to,
@@ -65,7 +65,7 @@ class Positions:
     ) -> GetPerformanceResponse:
         resp = self._client.get(
             "/positions/performance",
-            query_params={
+            params={
                 "isin": isin,
                 "from": from_,
                 "to": to,

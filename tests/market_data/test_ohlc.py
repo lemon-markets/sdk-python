@@ -95,7 +95,7 @@ class TestOhlcApi(CommonApiTests):
     def test_get_ohlc(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string, period
     ):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             f"/ohlc/{period}",
             query_string=query_string,
             method="GET",
@@ -104,3 +104,18 @@ class TestOhlcApi(CommonApiTests):
             client.market_data.ohlc.get(period=period, **function_kwargs)
             == DUMMY_RESPONSE
         )
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/ohlc/h1",
+            query_string="isin=XMUN",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/ohlc/h1",
+            query_string="isin=XMUN",
+            method="GET",
+        ).respond_with_json(DUMMY_PAYLOAD)
+
+        assert client.market_data.ohlc.get(period="h1", isin=["XMUN"]) == DUMMY_RESPONSE

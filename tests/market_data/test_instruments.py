@@ -113,9 +113,22 @@ class TestInstrumentsApi(CommonApiTests):
     def test_get_instruments(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
-        httpserver.expect_request(
+        httpserver.expect_oneshot_request(
             "/instruments",
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
         assert client.market_data.instruments.get(**function_kwargs) == DUMMY_RESPONSE
+
+    def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/instruments",
+            method="GET",
+        ).respond_with_data(status=500)
+
+        httpserver.expect_oneshot_request(
+            "/instruments",
+            method="GET",
+        ).respond_with_json(DUMMY_PAYLOAD)
+
+        assert client.market_data.instruments.get() == DUMMY_RESPONSE

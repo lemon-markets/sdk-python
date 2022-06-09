@@ -22,7 +22,7 @@ class Instruments:
     ) -> GetInstrumentsResponse:
         resp = self._client.get(
             "/instruments",
-            query_params={
+            params={
                 "isin": isin,
                 "search": search,
                 "type": type,
