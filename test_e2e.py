@@ -1,4 +1,7 @@
 import os
+from datetime import datetime, timedelta
+from typing import Literal
+
 import pytest
 
 from operator import attrgetter
@@ -55,3 +58,106 @@ def test_instruments_by_tradable(uut: Api, tradable: bool):
 def test_instruments_limit(uut: Api):
     response = uut.market_data.instruments.get(limit=10)
     assert len(response.results) == 10
+
+
+@pytest.mark.parametrize("period", ['m1', 'h1', 'd1'])
+def test_ohlc_by_period(uut: Api, period: Literal['m1', 'h1', 'd1']):
+    isin = [
+        'ANN4327C1220',
+        'AT000000STR1',
+        'AT00000AMAG3',
+        'AT00000FACC2',
+        'AT00000VIE62',
+        'AT0000606306',
+        'AT0000609607',
+        'AT0000641352',
+        'AT0000644505',
+    ]
+
+    response = uut.market_data.ohlc.get(isin=isin, period=period)
+
+    assert 1 <= len(response.results) <= 10
+
+
+def test_ohlc_by_from(uut: Api):
+    # 1
+    response = uut.market_data.ohlc.get(
+        isin=['US88160R1014'], period='m1', from_='latest'
+    )
+
+    assert len(response.results) == 1
+    ohlc = response.results[-1]
+
+    for attr in ['o', 'h', 'l', 'c', 'v', 'pbv']:
+        assert isinstance(getattr(ohlc, attr), int)
+
+    assert isinstance(ohlc.t, datetime)
+
+    # 2
+    response = uut.market_data.ohlc.get(
+        isin=['US88160R1014'], period='m1', from_=datetime.now() - timedelta(days=1)
+    )
+
+    assert len(response.results)
+    ohlc = response.results[-1]
+
+    for attr in ['o', 'h', 'l', 'c', 'v', 'pbv']:
+        assert isinstance(getattr(ohlc, attr), int)
+
+
+def test_ohlc_latest_by_decimals(uut: Api):
+    # decimals=False
+    response = uut.market_data.ohlc.get(
+        isin=['US88160R1014'], period='m1', decimals=False
+    )
+
+    assert len(response.results)
+    ohlc = response.results[-1]
+
+    for attr in ['o', 'h', 'l', 'c', 'v', 'pbv']:
+        assert isinstance(getattr(ohlc, attr), int), f"{attr!r} is not int"
+
+    # decimals=True
+    response = uut.market_data.ohlc.get(
+        isin=['US88160R1014'], period='m1', decimals=True
+    )
+
+    assert len(response.results)
+    ohlc = response.results[-1]
+
+    for attr in ['o', 'h', 'l', 'c', 'pbv']:
+        assert isinstance(getattr(ohlc, attr), float), f"{attr!r} is not float"
+
+    assert isinstance(ohlc.v, int)
+
+
+def test_ohlc_by_epoch(uut: Api):
+    # decimals=False
+    response = uut.market_data.ohlc.get(
+        isin=['US88160R1014'], period='m1', epoch=False
+    )
+    assert isinstance(response.results[-1].t, datetime)
+
+    # decimals=True
+    response = uut.market_data.ohlc.get(
+        isin=['US88160R1014'], period='m1', epoch=True
+    )
+    assert isinstance(response.results[-1].t, int)
+
+
+def test_ohlc_by_sorting(uut: Api):
+    # asc
+    response = uut.market_data.ohlc.get(
+        isin=['US88160R1014', 'US0231351067'], period='m1', sorting='asc'
+    )
+    assert len(response.results) == 2
+    assert response.results[0].isin == 'US0231351067'
+    assert response.results[1].isin == 'US88160R1014'
+
+    # desc
+    response = uut.market_data.ohlc.get(
+        isin=['US88160R1014', 'US0231351067'], period='m1', sorting='desc'
+    )
+    assert len(response.results) == 2
+    assert response.results[0].isin == 'US88160R1014'
+    assert response.results[1].isin == 'US0231351067'

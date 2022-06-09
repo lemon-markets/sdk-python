@@ -10,7 +10,7 @@ class OhlcData:
     h: Union[int, float]
     l: Union[int, float]
     c: Union[int, float]
-    v: Union[int, float]
+    v: int
     pbv: Union[int, float]
     t: Union[datetime, int]
     mic: str
@@ -27,7 +27,7 @@ class OhlcData:
             h=t_type(data["h"]),
             l=t_type(data["l"]),
             c=t_type(data["c"]),
-            v=t_type(data["v"]),
+            v=data["v"],
             pbv=t_type(data["pbv"]),
             t=k_type(data["t"]),
             mic=data["mic"],
