@@ -6,8 +6,8 @@ from typing import Any, Callable, Dict, List, Union
 @dataclass
 class Quote:
     isin: str
-    b_v: Union[int, float]
-    a_v: Union[int, float]
+    b_v: int
+    a_v: int
     b: Union[int, float]
     a: Union[int, float]
     t: Union[datetime, int]
@@ -21,8 +21,8 @@ class Quote:
     ) -> "Quote":
         return Quote(
             isin=data["isin"],
-            b_v=t_type(data["b_v"]),
-            a_v=t_type(data["a_v"]),
+            b_v=data["b_v"],
+            a_v=data["a_v"],
             b=t_type(data["b"]),
             a=t_type(data["a"]),
             t=k_type(data["t"]),

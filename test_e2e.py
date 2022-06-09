@@ -161,3 +161,40 @@ def test_ohlc_by_sorting(uut: Api):
     assert len(response.results) == 2
     assert response.results[0].isin == 'US88160R1014'
     assert response.results[1].isin == 'US0231351067'
+
+
+def test_quotes_by_decimals(uut: Api):
+    # decimals=False
+    response = uut.market_data.quotes.get_latest(
+        isin=['US88160R1014'], decimals=False
+    )
+    quote = response.results[-1]
+
+    for attr in ['a', 'b', 'a_v', 'b_v']:
+        assert isinstance(getattr(quote, attr), int), f"{attr!r} is not int"
+
+    # decimals=True
+    response = uut.market_data.quotes.get_latest(
+        isin=['US88160R1014'], decimals=True
+    )
+    quote = response.results[-1]
+
+    for attr in ['a_v', 'b_v']:
+        assert isinstance(getattr(quote, attr), int), f"{attr!r} is not int"
+
+    for attr in ['a', 'b']:
+        assert isinstance(getattr(quote, attr), float), f"{attr!r} is not float"
+
+
+def test_quotes_by_epoch(uut: Api):
+    # decimals=False
+    response = uut.market_data.quotes.get_latest(
+        isin=['US88160R1014'], epoch=False
+    )
+    assert isinstance(response.results[-1].t, datetime)
+
+    # decimals=True
+    response = uut.market_data.quotes.get_latest(
+        isin=['US88160R1014'], epoch=True
+    )
+    assert isinstance(response.results[-1].t, int)
