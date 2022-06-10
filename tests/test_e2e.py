@@ -11,6 +11,7 @@ from operator import attrgetter
 
 from lemon import api
 from lemon.api import Api
+from lemon.errors import ApiError
 from lemon.trading.account.models import Account
 
 API_KEY = os.getenv('API_KEY', None)
@@ -326,3 +327,6 @@ def test_orders_e2e(uut: Api):
     order_id = response.results.id
     assert order_id is not None
     uut.trading.orders.delete(order_id)
+    response = uut.trading.orders.get_order(order_id)
+
+    assert response.results.status == 'canceled'
