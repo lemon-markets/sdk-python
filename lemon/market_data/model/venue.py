@@ -4,13 +4,15 @@ from typing import Any, Dict, List
 
 import pytz
 
+from lemon.helpers import SerializableMixin
+
 
 def _build_time(time: str, timezone: tzinfo) -> time:
     return datetime.strptime(time, "%H:%M").time().replace(tzinfo=timezone)
 
 
 @dataclass
-class OpeningHours:
+class OpeningHours(SerializableMixin):
     start: time
     end: time
 
@@ -24,7 +26,7 @@ class OpeningHours:
 
 
 @dataclass
-class Venue:
+class Venue(SerializableMixin):
     name: str
     title: str
     mic: str
@@ -48,7 +50,7 @@ class Venue:
 
 
 @dataclass
-class GetVenuesResponse:
+class GetVenuesResponse(SerializableMixin):
     time: datetime
     results: List[Venue]
     total: int

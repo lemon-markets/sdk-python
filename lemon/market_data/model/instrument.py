@@ -2,9 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 
+from lemon.helpers import SerializableMixin
+
 
 @dataclass
-class InstrumentVenue:
+class InstrumentVenue(SerializableMixin):
     name: str
     title: str
     mic: str
@@ -28,7 +30,7 @@ InstrumentType = Literal["stock", "bond", "warrant", "fund", "etf"]
 
 
 @dataclass
-class Instrument:
+class Instrument(SerializableMixin):
     isin: str
     wkn: str
     name: str
@@ -51,7 +53,7 @@ class Instrument:
 
 
 @dataclass
-class GetInstrumentsResponse:
+class GetInstrumentsResponse(SerializableMixin):
     time: datetime
     results: List[Instrument]
     total: int

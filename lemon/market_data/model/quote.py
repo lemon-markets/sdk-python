@@ -2,9 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Union
 
+from lemon.helpers import SerializableMixin
+
 
 @dataclass
-class Quote:
+class Quote(SerializableMixin):
     isin: str
     b_v: int
     a_v: int
@@ -31,7 +33,7 @@ class Quote:
 
 
 @dataclass
-class GetQuotesResponse:
+class GetQuotesResponse(SerializableMixin):
     time: datetime
     results: List[Quote]
     total: int
