@@ -21,8 +21,8 @@ class Quote:
     ) -> "Quote":
         return Quote(
             isin=data["isin"],
-            b_v=data["b_v"],
-            a_v=data["a_v"],
+            b_v=int(data["b_v"]),
+            a_v=int(data["a_v"]),
             b=t_type(data["b"]),
             a=t_type(data["a"]),
             t=k_type(data["t"]),

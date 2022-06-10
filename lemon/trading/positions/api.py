@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from lemon.helpers import ApiClient, Sorting
 from lemon.trading.positions.models import (
@@ -35,7 +35,7 @@ class Positions:
         isin: Optional[str] = None,
         from_: Optional[datetime] = None,
         to: Optional[datetime] = None,
-        type: Optional[StatementType] = None,
+        types: Optional[List[StatementType]] = None,
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
         page: Optional[int] = None,
@@ -46,7 +46,7 @@ class Positions:
                 "isin": isin,
                 "from": from_,
                 "to": to,
-                "type": type,
+                "types": types,
                 "sorting": sorting,
                 "limit": limit,
                 "page": page,

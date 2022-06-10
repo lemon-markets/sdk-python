@@ -1,15 +1,13 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Callable, Dict, List, TypeVar, Union
-
-T = TypeVar("T", int, float)
-K = TypeVar("K", int, datetime)
+from typing import Any, Callable, Dict, List, Union
 
 
 @dataclass
 class Trade:
     isin: str
     p: Union[int, float]
+    pbv: Union[int, float]
     v: int
     t: Union[datetime, int]
     mic: str
@@ -23,7 +21,8 @@ class Trade:
         return Trade(
             isin=data["isin"],
             p=t_type(data["p"]),
-            v=data["v"],
+            pbv=t_type(data["pbv"]),
+            v=int(data["v"]),
             t=k_type(data["t"]),
             mic=data["mic"],
         )

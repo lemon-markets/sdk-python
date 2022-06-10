@@ -27,7 +27,7 @@ class OhlcData:
             h=t_type(data["h"]),
             l=t_type(data["l"]),
             c=t_type(data["c"]),
-            v=data["v"],
+            v=int(data["v"]),
             pbv=t_type(data["pbv"]),
             t=k_type(data["t"]),
             mic=data["mic"],
