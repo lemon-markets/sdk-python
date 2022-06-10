@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Dict, Optional
 
-from lemon.helpers import Environment
+from lemon.helpers import Environment, as_or_none, to_date
 
 
 @dataclass
@@ -32,26 +32,20 @@ class User:
         return User(
             created_at=datetime.fromisoformat(data["created_at"]),
             user_id=data["user_id"],
-            firstname=data["firstname"],
-            lastname=data["lastname"],
-            email=data["email"],
-            phone=data["phone"],
-            phone_verified=datetime.fromisoformat(data["phone_verified"])
-            if data["phone_verified"] is not None
-            else None,
+            firstname=data.get("firstname"),
+            lastname=data.get("lastname"),
+            email=data.get("email"),
+            phone=data.get("phone"),
+            phone_verified=as_or_none(
+                datetime.fromisoformat, data.get("phone_verified")
+            ),
             pin_verified=data["pin_verified"],
             account_id=data["account_id"],
             trading_plan=data["trading_plan"],
             data_plan=data["data_plan"],
-            tax_allowance=data["tax_allowance"],
-            tax_allowance_start=datetime.fromisoformat(
-                data["tax_allowance_start"]
-            ).date()
-            if data["tax_allowance_start"] is not None
-            else None,
-            tax_allowance_end=datetime.fromisoformat(data["tax_allowance_end"]).date()
-            if data["tax_allowance_end"] is not None
-            else None,
+            tax_allowance=data.get("tax_allowance"),
+            tax_allowance_start=as_or_none(to_date, data.get("tax_allowance_start")),
+            tax_allowance_end=as_or_none(to_date, data.get("tax_allowance_end")),
             optin_order_push=data["optin_order_push"],
             optin_order_email=data["optin_order_email"],
             country=data["country"],
