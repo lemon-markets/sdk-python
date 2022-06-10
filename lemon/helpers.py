@@ -1,4 +1,5 @@
-from typing import Any, Dict, Literal, Optional
+from datetime import date, datetime
+from typing import Any, Callable, Dict, Literal, Optional
 from urllib.parse import urljoin
 
 import requests
@@ -129,3 +130,11 @@ class ApiClient:
             raise InternalServerError._from_data(error)
         if error_code == ErrorCodes.INVALID_QUERY:
             raise InvalidQueryError._from_data(error)
+
+
+def as_or_none(type_: Callable[[Any], Any], value: Any) -> Any:
+    return type_(value) if value is not None else None
+
+
+def to_date(x: str) -> date:
+    return datetime.fromisoformat(x).date()

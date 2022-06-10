@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from lemon.helpers import Environment
+from lemon.helpers import Environment, as_or_none, to_date
 
 StatementType = Literal["order_buy", "order_sell", "split", "import", "snx"]
 
@@ -13,8 +13,8 @@ class Position:
     isin_title: str
     quantity: int
     buy_price_avg: int
-    estimated_price_total: int
-    estimated_price: int
+    estimated_price_total: Optional[int]
+    estimated_price: Optional[int]
 
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "Position":
@@ -23,8 +23,8 @@ class Position:
             isin_title=data["isin_title"],
             quantity=int(data["quantity"]),
             buy_price_avg=int(data["buy_price_avg"]),
-            estimated_price_total=int(data["estimated_price_total"]),
-            estimated_price=int(data["estimated_price"]),
+            estimated_price_total=as_or_none(int, data.get("estimated_price_total")),
+            estimated_price=as_or_none(int, data.get("estimated_price")),
         )
 
 
@@ -52,12 +52,12 @@ class GetPositionsResponse:
 @dataclass
 class Statement:
     id: str
-    order_id: str
+    order_id: Optional[str]
     external_id: Optional[str]
     type: StatementType
     quantity: int
     isin: str
-    isin_title: str
+    isin_title: Optional[str]
     date: date
     created_at: datetime
 
@@ -65,13 +65,13 @@ class Statement:
     def _from_data(data: Dict[str, Any]) -> "Statement":
         return Statement(
             id=data["id"],
-            order_id=data["order_id"],
-            external_id=data["external_id"],
+            order_id=data.get("order_id"),
+            external_id=data.get("external_id"),
             type=data["type"],
             quantity=int(data["quantity"]),
             isin=data["isin"],
-            isin_title=data["isin_title"],
-            date=datetime.fromisoformat(data["date"]).date(),
+            isin_title=data.get("isin_title"),
+            date=to_date(data["date"]),
             created_at=datetime.fromisoformat(data["created_at"]),
         )
 
@@ -106,8 +106,8 @@ class Performance:
     quantity_bought: int
     quantity_sold: int
     quantity_open: int
-    opened_at: datetime
-    closed_at: datetime
+    opened_at: Optional[datetime]
+    closed_at: Optional[datetime]
     fees: int
 
     @staticmethod
@@ -120,8 +120,8 @@ class Performance:
             quantity_bought=int(data["quantity_bought"]),
             quantity_sold=int(data["quantity_sold"]),
             quantity_open=int(data["quantity_open"]),
-            opened_at=datetime.fromisoformat(data["opened_at"]),
-            closed_at=datetime.fromisoformat(data["closed_at"]),
+            opened_at=as_or_none(datetime.fromisoformat, data.get("opened_at")),
+            closed_at=as_or_none(datetime.fromisoformat, data.get("closed_at")),
             fees=int(data["fees"]),
         )
 

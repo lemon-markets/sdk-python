@@ -1,26 +1,26 @@
 from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
-from lemon.helpers import Environment
+from lemon.helpers import Environment, as_or_none, to_date
 
 
 @dataclass
 class User:
     created_at: datetime
     user_id: str
-    firstname: str
-    lastname: str
-    email: str
-    phone: str
-    phone_verified: datetime
+    firstname: Optional[str]
+    lastname: Optional[str]
+    email: Optional[str]
+    phone: Optional[str]
+    phone_verified: Optional[datetime]
     pin_verified: bool
     account_id: str
     trading_plan: str
     data_plan: str
-    tax_allowance: int
-    tax_allowance_start: date
-    tax_allowance_end: date
+    tax_allowance: Optional[int]
+    tax_allowance_start: Optional[date]
+    tax_allowance_end: Optional[date]
     optin_order_push: bool
     optin_order_email: bool
     country: str
@@ -32,20 +32,20 @@ class User:
         return User(
             created_at=datetime.fromisoformat(data["created_at"]),
             user_id=data["user_id"],
-            firstname=data["firstname"],
-            lastname=data["lastname"],
-            email=data["email"],
-            phone=data["phone"],
-            phone_verified=datetime.fromisoformat(data["phone_verified"]),
+            firstname=data.get("firstname"),
+            lastname=data.get("lastname"),
+            email=data.get("email"),
+            phone=data.get("phone"),
+            phone_verified=as_or_none(
+                datetime.fromisoformat, data.get("phone_verified")
+            ),
             pin_verified=data["pin_verified"],
             account_id=data["account_id"],
             trading_plan=data["trading_plan"],
             data_plan=data["data_plan"],
-            tax_allowance=data["tax_allowance"],
-            tax_allowance_start=datetime.fromisoformat(
-                data["tax_allowance_start"]
-            ).date(),
-            tax_allowance_end=datetime.fromisoformat(data["tax_allowance_end"]).date(),
+            tax_allowance=data.get("tax_allowance"),
+            tax_allowance_start=as_or_none(to_date, data.get("tax_allowance_start")),
+            tax_allowance_end=as_or_none(to_date, data.get("tax_allowance_end")),
             optin_order_push=data["optin_order_push"],
             optin_order_email=data["optin_order_email"],
             country=data["country"],
