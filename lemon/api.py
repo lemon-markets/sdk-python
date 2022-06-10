@@ -26,7 +26,7 @@ class Api:
 
 def create(
     api_token: str,
-    env: Literal["paper", "money"] = "money",
+    env: Literal["paper", "money"] = "paper",
     timeout: float = 5,
     retry_count: int = 3,
     retry_backoff_factor: float = 0.1,

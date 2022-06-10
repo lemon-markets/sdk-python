@@ -1,9 +1,7 @@
 import os
 import warnings
-from dataclasses import asdict
 from datetime import date, datetime, time, timedelta
 from operator import attrgetter
-from pprint import pprint
 from time import sleep
 from typing import Literal, Set
 
@@ -11,7 +9,12 @@ import pytest
 
 from lemon import api
 from lemon.api import Api
-from lemon.trading.model import Account, CreateOrderResponse, GetOrderResponse, GetPerformanceResponse
+from lemon.trading.model import (
+    Account,
+    CreateOrderResponse,
+    GetOrderResponse,
+    GetPerformanceResponse,
+)
 
 API_KEY = os.getenv("API_KEY", None)
 
@@ -253,7 +256,6 @@ def test_venues_by_mic(uut: Api):
 @pytest.mark.e2e
 def test_user_e2e(uut: Api):
     response = uut.trading.user.get()
-    pprint(asdict(response))
     user = response.results
 
     assert user.email is not None
