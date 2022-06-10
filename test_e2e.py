@@ -291,6 +291,13 @@ def test_orders_e2e(uut: Api):
             break
         sleep(1)
 
+    # check performance
+    response = uut.trading.positions.get_performance(isin='US88160R1014')
+    assert len(response.results) == 1
+
+    # fetch statements
+    uut.trading.positions.get_statements(isin='US88160R1014')
+
     # close order
     response = uut.trading.orders.create(
         isin='US88160R1014',
