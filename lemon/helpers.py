@@ -1,11 +1,12 @@
 import json
 from dataclasses import asdict
 from datetime import date, datetime, time
-from typing import Any, Callable, Dict, Literal, Optional
+from typing import Any, Callable, Dict, Optional
 from urllib.parse import urljoin
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
+from typing_extensions import Literal
 
 from lemon.config import Config
 from lemon.errors import (

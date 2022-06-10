@@ -1,5 +1,7 @@
 from datetime import datetime
-from typing import List, Literal, Optional, Union
+from typing import List, Optional, Union
+
+from typing_extensions import Literal
 
 from lemon.helpers import ApiClient, Days, Sorting
 from lemon.market_data.model import GetOhlcResponse

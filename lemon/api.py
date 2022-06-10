@@ -1,4 +1,6 @@
-from typing import Literal, Optional
+from typing import Optional
+
+from typing_extensions import Literal
 
 from lemon.config import (
     LIVE_TRADING_API_URL,
