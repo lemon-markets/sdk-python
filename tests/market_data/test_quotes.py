@@ -120,8 +120,6 @@ class TestQuotesApi(CommonMarketDataApiTests):
             isin=["XMUN"], decimals=True
         ).results[0]
 
-        assert isinstance(quote.b_v, float)
-        assert isinstance(quote.a_v, float)
         assert isinstance(quote.b, float)
         assert isinstance(quote.a, float)
 
@@ -136,8 +134,6 @@ class TestQuotesApi(CommonMarketDataApiTests):
             isin=["XMUN"], decimals=False
         ).results[0]
 
-        assert isinstance(quote.b_v, int)
-        assert isinstance(quote.a_v, int)
         assert isinstance(quote.b, int)
         assert isinstance(quote.a, int)
 

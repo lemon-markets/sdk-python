@@ -13,6 +13,7 @@ DUMMY_PAYLOAD = {
         {
             "isin": "US19260Q1076",
             "p": 274.0,
+            "pbv": 35,
             "v": 2,
             "t": "2021-10-28T09:05:14.474+00:00",
             "mic": "XMUN",
@@ -31,6 +32,7 @@ DUMMY_PAYLOAD_WITH_EPOCH = {
         {
             "isin": "US19260Q1076",
             "p": 274.0,
+            "pbv": 35,
             "v": 2,
             "t": 13344142,
             "mic": "XMUN",
@@ -49,6 +51,7 @@ DUMMY_RESPONSE = GetTradesResponse(
         Trade(
             isin="US19260Q1076",
             p=274,
+            pbv=35,
             v=2,
             t=datetime.fromisoformat("2021-10-28T09:05:14.474+00:00"),
             mic="XMUN",
@@ -115,7 +118,7 @@ class TestTradesApi(CommonMarketDataApiTests):
         ).results[0]
 
         assert isinstance(trade.p, float)
-        assert isinstance(trade.v, float)
+        assert isinstance(trade.pbv, float)
 
     def test_get_trades_non_decimal_form(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -129,7 +132,7 @@ class TestTradesApi(CommonMarketDataApiTests):
         ).results[0]
 
         assert isinstance(trade.p, int)
-        assert isinstance(trade.v, int)
+        assert isinstance(trade.pbv, int)
 
     def test_get_trades_epoch_form(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

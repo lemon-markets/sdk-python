@@ -16,7 +16,7 @@ class Venues:
         page: Optional[int] = None,
     ) -> GetVenuesResponse:
         resp = self._client.get(
-            "/venues",
+            "venues",
             params={
                 "mic": mic,
                 "sorting": sorting,
