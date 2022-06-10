@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Literal, Optional
+from typing import Literal
 
 from lemon.config import (
     LIVE_TRADING_API_URL,
@@ -27,21 +27,17 @@ class Api:
 def create(
     api_token: str,
     env: Literal["paper", "money"] = "money",
-    market_data_api_url: str = MARKET_DATA_API_URL,
-    trading_api_url: Optional[str] = None,
     timeout: float = 5,
     retry_count: int = 3,
     retry_backoff_factor: float = 0.1,
 ) -> Api:
-    if trading_api_url is None:
-        trading_api_url = (
-            LIVE_TRADING_API_URL if env == "money" else PAPER_TRADING_API_URL
-        )
     return Api(
         Config(
             api_token=api_token,
-            market_data_api_url=market_data_api_url,
-            trading_api_url=trading_api_url,
+            market_data_api_url=MARKET_DATA_API_URL,
+            trading_api_url=LIVE_TRADING_API_URL
+            if env == "money"
+            else PAPER_TRADING_API_URL,
             timeout=timeout,
             retry_count=retry_count,
             retry_backoff_factor=retry_backoff_factor,
