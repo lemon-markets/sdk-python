@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from lemon.helpers import ApiClient, Sorting
-from lemon.market_data.venues.models import GetVenuesResponse
+from lemon.market_data.model import GetVenuesResponse
 
 
 class Venues:

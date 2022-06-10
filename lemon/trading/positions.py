@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from lemon.helpers import ApiClient, Sorting
-from lemon.trading.positions.models import (
+from lemon.trading.model import (
     GetPerformanceResponse,
     GetPositionsResponse,
     GetStatementsResponse,

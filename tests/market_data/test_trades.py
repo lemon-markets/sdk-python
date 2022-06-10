@@ -4,7 +4,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
-from lemon.market_data.trades.models import GetTradesResponse, Trade
+from lemon.market_data.model import GetTradesResponse, Trade
 from tests.market_data.conftest import CommonMarketDataApiTests
 
 DUMMY_PAYLOAD = {

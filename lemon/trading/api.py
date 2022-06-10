@@ -1,32 +1,33 @@
+from functools import cached_property
 from typing import Any, Dict, Optional
 
 import requests
 
 from lemon.config import Config
 from lemon.helpers import ApiClient
-from lemon.trading.account.api import Account
-from lemon.trading.orders.api import Orders
-from lemon.trading.positions.api import Positions
-from lemon.trading.user.api import User
+from lemon.trading.account import Account
+from lemon.trading.orders import Orders
+from lemon.trading.positions import Positions
+from lemon.trading.user import User
 
 
 class TradingApi:
     def __init__(self, config: Config):
         self._client = ApiClient(config.trading_api_url, config)
 
-    @property
+    @cached_property
     def account(self) -> Account:
         return Account(self._client)
 
-    @property
+    @cached_property
     def orders(self) -> Orders:
         return Orders(self._client)
 
-    @property
+    @cached_property
     def positions(self) -> Positions:
         return Positions(self._client)
 
-    @property
+    @cached_property
     def user(self) -> User:
         return User(self._client)
 

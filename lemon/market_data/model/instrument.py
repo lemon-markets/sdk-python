@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Literal, Optional
 
 
 @dataclass
-class Venue:
+class InstrumentVenue:
     name: str
     title: str
     mic: str
@@ -13,8 +13,8 @@ class Venue:
     currency: str
 
     @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "Venue":
-        return Venue(
+    def _from_data(data: Dict[str, Any]) -> "InstrumentVenue":
+        return InstrumentVenue(
             name=data["name"],
             title=data["title"],
             mic=data["mic"],
@@ -35,7 +35,7 @@ class Instrument:
     title: Optional[str]
     symbol: Optional[str]
     type: InstrumentType
-    venues: List[Venue]
+    venues: List[InstrumentVenue]
 
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "Instrument":
@@ -43,10 +43,10 @@ class Instrument:
             isin=data["isin"],
             wkn=data["wkn"],
             name=data["name"],
-            title=data["title"],
-            symbol=data["symbol"],
+            title=data.get("title"),
+            symbol=data.get("symbol"),
             type=data["type"],
-            venues=[Venue._from_data(entry) for entry in data["venues"]],
+            venues=[InstrumentVenue._from_data(entry) for entry in data["venues"]],
         )
 
 

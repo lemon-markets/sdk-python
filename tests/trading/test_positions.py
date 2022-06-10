@@ -4,7 +4,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
-from lemon.trading.positions.models import (
+from lemon.trading.model import (
     GetPerformanceResponse,
     GetPositionsResponse,
     GetStatementsResponse,

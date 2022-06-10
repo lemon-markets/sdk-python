@@ -1,37 +1,38 @@
+from functools import cached_property
 from typing import Any, Dict, Optional
 
 import requests
 
 from lemon.config import Config
 from lemon.helpers import ApiClient
-from lemon.market_data.instruments.api import Instruments
-from lemon.market_data.ohlc.api import Ohlc
-from lemon.market_data.quotes.api import Quotes
-from lemon.market_data.trades.api import Trades
-from lemon.market_data.venues.api import Venues
+from lemon.market_data.instruments import Instruments
+from lemon.market_data.ohlc import Ohlc
+from lemon.market_data.quotes import Quotes
+from lemon.market_data.trades import Trades
+from lemon.market_data.venues import Venues
 
 
 class MarketDataApi:
     def __init__(self, config: Config):
         self._client = ApiClient(config.market_data_api_url, config)
 
-    @property
+    @cached_property
     def venues(self) -> Venues:
         return Venues(self._client)
 
-    @property
+    @cached_property
     def instruments(self) -> Instruments:
         return Instruments(self._client)
 
-    @property
+    @cached_property
     def trades(self) -> Trades:
         return Trades(self._client)
 
-    @property
+    @cached_property
     def quotes(self) -> Quotes:
         return Quotes(self._client)
 
-    @property
+    @cached_property
     def ohlc(self) -> Ohlc:
         return Ohlc(self._client)
 

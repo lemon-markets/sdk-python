@@ -1,29 +1,34 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Literal, Optional, Union
 
-from lemon.helpers import ApiClient, Sorting
-from lemon.market_data.trades.models import GetTradesResponse
+from lemon.helpers import ApiClient, Days, Sorting
+from lemon.market_data.model import GetOhlcResponse
 
 
-class Trades:
+class Ohlc:
     def __init__(self, client: ApiClient):
         self._client = client
 
-    def get_latest(
+    def get(
         self,
+        period: Literal["m1", "h1", "d1"],
         isin: List[str],
         mic: Optional[str] = None,
+        from_: Union[datetime, Literal["latest"], None] = None,
+        to: Union[datetime, Days, None] = None,
         decimals: Optional[bool] = None,
         epoch: Optional[bool] = None,
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
         page: Optional[int] = None,
-    ) -> GetTradesResponse:
+    ) -> GetOhlcResponse:
         resp = self._client.get(
-            "trades/latest",
+            f"ohlc/{period}",
             params={
                 "mic": mic,
                 "isin": isin,
+                "from": from_,
+                "to": f"P{to}D" if isinstance(to, Days) else to,
                 "decimals": decimals,
                 "epoch": epoch,
                 "sorting": sorting,
@@ -31,7 +36,7 @@ class Trades:
                 "page": page,
             },
         )
-        return GetTradesResponse._from_data(
+        return GetOhlcResponse._from_data(
             data=resp.json(),
             t_type=float if decimals else int,
             k_type=int if epoch else datetime.fromisoformat,  # type: ignore
