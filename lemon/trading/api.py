@@ -1,4 +1,3 @@
-from functools import cached_property
 from typing import Any, Dict, Optional
 
 import requests
@@ -14,22 +13,34 @@ from lemon.trading.user import User
 class TradingApi:
     def __init__(self, config: Config):
         self._client = ApiClient(config.trading_api_url, config)
+        self._account: Optional[Account] = None
+        self._orders: Optional[Orders] = None
+        self._positions: Optional[Positions] = None
+        self._user: Optional[User] = None
 
-    @cached_property
+    @property
     def account(self) -> Account:
-        return Account(self._client)
+        if self._account is None:
+            self._account = Account(self._client)
+        return self._account
 
-    @cached_property
+    @property
     def orders(self) -> Orders:
-        return Orders(self._client)
+        if self._orders is None:
+            self._orders = Orders(self._client)
+        return self._orders
 
-    @cached_property
+    @property
     def positions(self) -> Positions:
-        return Positions(self._client)
+        if self._positions is None:
+            self._positions = Positions(self._client)
+        return self._positions
 
-    @cached_property
+    @property
     def user(self) -> User:
-        return User(self._client)
+        if self._user is None:
+            self._user = User(self._client)
+        return self._user
 
     def get(
         self,
