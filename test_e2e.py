@@ -1,5 +1,7 @@
 import os
+from dataclasses import asdict
 from datetime import datetime, timedelta, date, time
+from pprint import pprint
 from typing import Literal
 
 import pytest
@@ -8,6 +10,7 @@ from operator import attrgetter
 
 from lemon import api
 from lemon.api import Api
+from lemon.trading.account.models import Account
 
 API_KEY = os.getenv('API_KEY', None)
 
@@ -257,8 +260,12 @@ def test_user_e2e(uut: Api):
 
 def test_account_e2e(uut: Api):
     response = uut.trading.account.get()
-
-    account = response.results
-
+    account: Account = response.results
     assert account.created_at
 
+    uut.trading.account.update(
+        address_city="Wrocław",
+        address_street_number="101",
+        address_country="PL",
+        address_postal_code="12345",
+    )
