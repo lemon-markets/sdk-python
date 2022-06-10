@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from lemon.helpers import Environment
+from lemon.helpers import Environment, as_or_none
 
 OrderSide = Literal["sell", "buy"]
 OrderStatus = Literal[
@@ -45,36 +45,31 @@ class RegulatoryInformation:
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "RegulatoryInformation":
         return RegulatoryInformation(
-            costs_entry=int(data["costs_entry"])
-            if data["costs_entry"] is not None
-            else None,
-            costs_entry_pct=data["costs_entry_pct"],
+            costs_entry=as_or_none(int, data.get('costs_entry')),
+            costs_entry_pct=data.get("costs_entry_pct"),
             costs_running=int(data["costs_running"]),
-            costs_running_pct=data["costs_running_pct"],
+            costs_running_pct=data.get("costs_running_pct"),
             costs_product=int(data["costs_product"]),
             costs_product_pct=data["costs_product_pct"],
             costs_exit=int(data["costs_exit"]),
-            costs_exit_pct=data["costs_exit_pct"],
-            yield_reduction_year=int(data["yield_reduction_year"])
-            if data["yield_reduction_year"] is not None
-            else None,
-            yield_reduction_year_pct=data["yield_reduction_year_pct"],
-            yield_reduction_year_following=int(data["yield_reduction_year_following"])
-            if data["yield_reduction_year_following"] is not None
-            else None,
-            yield_reduction_year_following_pct=data[
+            costs_exit_pct=data.get("costs_exit_pct"),
+            yield_reduction_year=as_or_none(int, data.get('yield_reduction_year')),
+            yield_reduction_year_pct=data.get("yield_reduction_year_pct"),
+            yield_reduction_year_following=as_or_none(int, data.get(
+                'yield_reduction_year_following')),
+            yield_reduction_year_following_pct=data.get(
                 "yield_reduction_year_following_pct"
-            ],
+            ),
             yield_reduction_year_exit=int(data["yield_reduction_year_exit"]),
             yield_reduction_year_exit_pct=data["yield_reduction_year_exit_pct"],
-            estimated_holding_duration_years=data["estimated_holding_duration_years"],
-            estimated_yield_reduction_total=int(data["estimated_yield_reduction_total"])
-            if data["estimated_yield_reduction_total"] is not None
-            else None,
-            estimated_yield_reduction_total_pct=data[
+            estimated_holding_duration_years=data.get(
+                "estimated_holding_duration_years"),
+            estimated_yield_reduction_total=as_or_none(int, data.get(
+                'estimated_yield_reduction_total')),
+            estimated_yield_reduction_total_pct=data.get(
                 "estimated_yield_reduction_total_pct"
-            ],
-            KIID=data["KIID"],
+            ),
+            KIID=data.get("KIID"),
             legal_disclaimer=data["legal_disclaimer"],
         )
 
@@ -120,51 +115,27 @@ class Order:
             created_at=datetime.fromisoformat(data["created_at"]),
             side=data["side"],
             quantity=int(data["quantity"]),
-            stop_price=int(data["stop_price"])
-            if data["stop_price"] is not None
-            else None,
-            limit_price=int(data["limit_price"])
-            if data["limit_price"] is not None
-            else None,
-            estimated_price=int(data["estimated_price"])
-            if data["estimated_price"] is not None
-            else None,
-            estimated_price_total=int(data["estimated_price_total"])
-            if data["estimated_price_total"] is not None
-            else None,
+            stop_price=as_or_none(int, data.get('stop_price')),
+            limit_price=as_or_none(int, data.get('limit_price')),
+            estimated_price=as_or_none(int, data.get("estimated_price")),
+            estimated_price_total=as_or_none(int, data.get('estimated_price_total')),
             venue=data["venue"],
             status=data["status"],
             type=data["type"],
             executed_quantity=int(data["executed_quantity"]),
             executed_price=int(data["executed_price"]),
-            executed_price_total=int(data["executed_price_total"])
-            if data["executed_price_total"] is not None
-            else None,
-            activated_at=datetime.fromisoformat(data["activated_at"])
-            if data["activated_at"] is not None
-            else None,
-            executed_at=datetime.fromisoformat(data["executed_at"])
-            if data["executed_at"] is not None
-            else None,
-            rejected_at=datetime.fromisoformat(data["rejected_at"])
-            if data["rejected_at"] is not None
-            else None,
-            cancelled_at=datetime.fromisoformat(data["cancelled_at"])
-            if data["cancelled_at"] is not None
-            else None,
-            notes=data["notes"],
-            charge=int(data["charge"]) if data["charge"] is not None else None,
-            chargeable_at=datetime.fromisoformat(data["chargeable_at"])
-            if data["chargeable_at"] is not None
-            else None,
-            key_creation_id=data["key_creation_id"],
-            key_activation_id=data["key_activation_id"],
-            regulatory_information=RegulatoryInformation._from_data(
-                data["regulatory_information"]
-            )
-            if data["regulatory_information"] is not None
-            else None,
-            idempotency=data["idempotency"],
+            executed_price_total=as_or_none(int, data.get('executed_price_total')),
+            activated_at=as_or_none(datetime.fromisoformat, data.get("activated_at")),
+            executed_at=as_or_none(datetime.fromisoformat, data.get("executed_at")),
+            rejected_at=as_or_none(datetime.fromisoformat, data.get("rejected_at")),
+            cancelled_at=as_or_none(datetime.fromisoformat, data.get("cancelled_at")),
+            notes=data.get("notes"),
+            charge=as_or_none(int, data.get('charge')),
+            chargeable_at=as_or_none(datetime.fromisoformat, data.get("chargeable_at")),
+            key_creation_id=data.get("key_creation_id"),
+            key_activation_id=data.get("key_activation_id"),
+            regulatory_information=as_or_none(RegulatoryInformation._from_data, data.get('regulatory_information')),
+            idempotency=data.get("idempotency"),
         )
 
 
