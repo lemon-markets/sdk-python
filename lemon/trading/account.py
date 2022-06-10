@@ -2,7 +2,7 @@ from datetime import date
 from typing import Literal, Optional, Union
 
 from lemon.helpers import ApiClient, Sorting
-from lemon.trading.account.models import (
+from lemon.trading.model import (
     BankStatementType,
     GetAccountResponse,
     GetBankStatementsResponse,

@@ -183,8 +183,8 @@ class BankStatement:
             type=data["type"],
             date=datetime.fromisoformat(data["date"]).date(),
             amount=int(data["amount"]),
-            isin=data["isin"],
-            isin_title=data["isin_title"],
+            isin=data.get("isin"),
+            isin_title=data.get("isin_title"),
             created_at=datetime.fromisoformat(data["created_at"]),
             quantity=as_or_none(int, data.get("quantity")),
         )

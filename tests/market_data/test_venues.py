@@ -5,7 +5,7 @@ import pytz
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
-from lemon.market_data.venues.models import GetVenuesResponse, OpeningHours, Venue
+from lemon.market_data.model import GetVenuesResponse, OpeningHours, Venue
 from tests.market_data.conftest import CommonMarketDataApiTests
 
 DUMMY_PAYLOAD = {

@@ -123,7 +123,7 @@ class ApiClient:
 
     def _handle_common_errors(self, response: requests.Response) -> None:
         error = response.json()
-        error_code = error["error_code"]
+        error_code = error.get("error_code")
         if error_code == ErrorCodes.UNAUTHORIZED:
             raise AuthenticationError._from_data(error)
         if error_code == ErrorCodes.INTERNAL_ERROR:

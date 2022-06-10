@@ -2,7 +2,7 @@ from datetime import date
 from typing import Optional, Union
 
 from lemon.helpers import ApiClient, Days
-from lemon.trading.orders.models import (
+from lemon.trading.model import (
     ActivateOrderResponse,
     CreateOrderResponse,
     DeleteOrderResponse,

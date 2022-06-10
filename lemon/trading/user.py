@@ -1,5 +1,5 @@
 from lemon.helpers import ApiClient
-from lemon.trading.user.models import GetUserResponse
+from lemon.trading.model import GetUserResponse
 
 
 class User:

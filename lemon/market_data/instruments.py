@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from lemon.helpers import ApiClient, Sorting
-from lemon.market_data.instruments.models import GetInstrumentsResponse, InstrumentType
+from lemon.market_data.model import GetInstrumentsResponse, InstrumentType
 
 
 class Instruments:
