@@ -82,7 +82,9 @@ class Orders:
         )
         return CreateOrderResponse._from_data(resp.json())
 
-    def activate(self, order_id: str, pin: str) -> ActivateOrderResponse:
+    def activate(
+        self, order_id: str, pin: Optional[str] = None
+    ) -> ActivateOrderResponse:
         resp = self._client.post(
             f"orders/{order_id}/activate",
             json={"pin": pin},

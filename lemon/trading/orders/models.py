@@ -50,7 +50,7 @@ class RegulatoryInformation:
             costs_running=int(data["costs_running"]),
             costs_running_pct=data.get("costs_running_pct"),
             costs_product=int(data["costs_product"]),
-            costs_product_pct=data["costs_product_pct"],
+            costs_product_pct=data.get("costs_product_pct"),
             costs_exit=int(data["costs_exit"]),
             costs_exit_pct=data.get("costs_exit_pct"),
             yield_reduction_year=as_or_none(int, data.get("yield_reduction_year")),

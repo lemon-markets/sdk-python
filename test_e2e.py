@@ -2,6 +2,7 @@ import os
 from dataclasses import asdict
 from datetime import datetime, timedelta, date, time
 from pprint import pprint
+from time import sleep
 from typing import Literal
 
 import pytest
@@ -269,3 +270,52 @@ def test_account_e2e(uut: Api):
         address_country="PL",
         address_postal_code="12345",
     )
+
+
+def test_orders_e2e(uut: Api):
+    # open order
+    response = uut.trading.orders.create(
+        isin='US88160R1014',
+        side='buy',
+        quantity=1,
+        venue="xmun"
+    )
+    order_id = response.results.id
+    assert order_id is not None
+
+    uut.trading.orders.activate(order_id)
+
+    while 1:
+        response = uut.trading.orders.get_order(order_id)
+        if response.results.status == 'executed':
+            break
+        sleep(1)
+
+    # close order
+    response = uut.trading.orders.create(
+        isin='US88160R1014',
+        side='sell',
+        quantity=1,
+        venue="xmun"
+    )
+    order_id = response.results.id
+    assert order_id is not None
+
+    uut.trading.orders.activate(order_id)
+
+    while 1:
+        response = uut.trading.orders.get_order(order_id)
+        if response.results.status == 'executed':
+            break
+        sleep(1)
+
+    # delete order
+    response = uut.trading.orders.create(
+        isin='US88160R1014',
+        side='buy',
+        quantity=1,
+        venue="xmun"
+    )
+    order_id = response.results.id
+    assert order_id is not None
+    uut.trading.orders.delete(order_id)

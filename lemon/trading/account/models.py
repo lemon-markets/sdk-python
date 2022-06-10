@@ -186,7 +186,7 @@ class BankStatement:
             isin=data["isin"],
             isin_title=data["isin_title"],
             created_at=datetime.fromisoformat(data["created_at"]),
-            quantity=as_or_none(int, data.get('quantity')),
+            quantity=as_or_none(int, data.get("quantity")),
         )
 
 
