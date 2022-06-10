@@ -9,7 +9,7 @@ class Config:
         api_token: str,
         market_data_api_url: str,
         trading_api_url: str,
-        timeout: int,
+        timeout: float,
         retry_count: int,
         retry_backoff_factor: float,
     ):

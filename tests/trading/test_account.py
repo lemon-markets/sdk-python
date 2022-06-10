@@ -4,7 +4,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
-from lemon.trading.account.models import (
+from lemon.trading.model import (
     Account,
     BankStatement,
     Document,

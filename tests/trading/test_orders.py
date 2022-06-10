@@ -4,7 +4,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
-from lemon.trading.orders.models import (
+from lemon.trading.model import (
     ActivateOrderResponse,
     CreatedOrder,
     CreateOrderResponse,
@@ -495,14 +495,14 @@ class TestCreateOrderApi(CommonTradingApiTests):
 
 class TestActivateOrderApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
-        return client.trading.orders.activate(order_id="DE0008232125", pin="1234")
+        return client.trading.orders.activate(order_id="DE0008232125")
 
     @pytest.fixture
     def api_call_kwargs(self):
         return {
             "uri": "/orders/DE0008232125/activate",
             "method": "POST",
-            "json": {"pin": "1234"},
+            "json": {"pin": None},
         }
 
     def test_activate_order(self, client: Api, httpserver: HTTPServer):

@@ -4,7 +4,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
-from lemon.trading.user.models import GetUserResponse, User
+from lemon.trading.model import GetUserResponse, User
 from tests.trading.conftest import CommonTradingApiTests
 
 DUMMY_USER_PAYLOAD = {

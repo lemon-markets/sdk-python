@@ -2,10 +2,10 @@ from datetime import datetime
 from typing import List, Optional
 
 from lemon.helpers import ApiClient, Sorting
-from lemon.market_data.quotes.models import GetQuotesResponse
+from lemon.market_data.model import GetTradesResponse
 
 
-class Quotes:
+class Trades:
     def __init__(self, client: ApiClient):
         self._client = client
 
@@ -18,12 +18,12 @@ class Quotes:
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
         page: Optional[int] = None,
-    ) -> GetQuotesResponse:
+    ) -> GetTradesResponse:
         resp = self._client.get(
-            "quotes/latest",
+            "trades/latest",
             params={
-                "isin": isin,
                 "mic": mic,
+                "isin": isin,
                 "decimals": decimals,
                 "epoch": epoch,
                 "sorting": sorting,
@@ -31,7 +31,7 @@ class Quotes:
                 "page": page,
             },
         )
-        return GetQuotesResponse._from_data(
+        return GetTradesResponse._from_data(
             data=resp.json(),
             t_type=float if decimals else int,
             k_type=int if epoch else datetime.fromisoformat,  # type: ignore
