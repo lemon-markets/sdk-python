@@ -1,9 +1,5 @@
 name: publish
-on:
-  workflow_dispatch:
-    branches:
-      - master
-      - github_ci
+on: [workflow_dispatch]
 
 jobs:
   deploy:
