@@ -4,3 +4,4 @@
 *.pyc
 .doit.db
 .env
+.coverage

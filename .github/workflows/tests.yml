@@ -24,7 +24,7 @@ jobs:
 
       - name: Run test suite
         run: |
-          pytest tests -m "not e2e"
+          pytest --cov-config .coveragerc --cov=lemon tests -xm "not e2e"
 
   check:
     runs-on: ubuntu-latest

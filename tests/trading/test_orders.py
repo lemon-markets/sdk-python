@@ -437,7 +437,7 @@ class TestCreateOrderApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
         return client.trading.orders.create(
             isin="DE0008232125",
-            expires_at=date(year=2021, month=11, day=7),
+            expires_at=7,
             side="buy",
             quantity=1000,
             venue="xmun",
@@ -450,7 +450,7 @@ class TestCreateOrderApi(CommonTradingApiTests):
             "method": "POST",
             "json": {
                 "isin": "DE0008232125",
-                "expires_at": "2021-11-07",
+                "expires_at": "P7D",
                 "side": "buy",
                 "quantity": 1000,
                 "venue": "xmun",
