@@ -1,6 +1,7 @@
 # lemon.markets Python Library
 
 [![Licence](https://img.shields.io/github/license/lemon-markets/sdk-python)](./LICENSE)
+[![GiTests](https://img.shields.io/github/workflow/status/lemon-markets/sdk-python/tests/main?label=tests)](https://github.com/lemon-markets/sdk-python/actions)
 [![Python versions](https://img.shields.io/pypi/pyversions/lemon.svg)](https://pypi.python.org/pypi/lemon/)
 [![pypi](https://img.shields.io/pypi/v/lemon)](https://pypi.python.org/pypi/lemon/)
 
