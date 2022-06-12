@@ -11,7 +11,7 @@ class CommonMarketDataApiTests(CommonApiTests):
     def httpserver(self, market_data_httpserver: HTTPServer):
         return market_data_httpserver
 
-    def test_handle_invalid_query_error(
+    def test_handle_market_data_error(
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
