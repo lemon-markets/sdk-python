@@ -1,20 +1,17 @@
 import enum
 from datetime import datetime
-from typing import Any, Dict, Type, TypeVar
-
-TApiError = TypeVar("TApiError", bound="ApiError")
-
-
-class ErrorCodes(str, enum.Enum):
-    UNAUTHORIZED = "unauthorized"
-    ENTITY_NOT_FOUND = "entity_not_found"
-    INTERNAL_ERROR = "internal_error"
-    INVALID_QUERY = "invalid_query"
-    UNKNOWN_ERROR = "unknown_error"
+from typing import Any, Dict
 
 
 class BaseError(Exception):
     pass
+
+
+class ErrorCodes(str, enum.Enum):
+    UNAUTHORIZED = "unauthorized"
+    TOKEN_INVALID = "token_invalid"
+    ENTITY_NOT_FOUND = "entity_not_found"
+    INTERNAL_ERROR = "internal_error"
 
 
 class ApiError(BaseError):
@@ -25,7 +22,7 @@ class ApiError(BaseError):
         self.error_message = error_message
 
     @classmethod
-    def _from_data(cls: Type[TApiError], data: Dict[str, str]) -> TApiError:
+    def _from_data(cls, data: Dict[str, str]) -> "ApiError":
         return cls(
             time=datetime.fromisoformat(data["time"]),
             error_code=ErrorCodes(data["error_code"]),
@@ -33,15 +30,15 @@ class ApiError(BaseError):
         )
 
 
-class AuthenticationError(ApiError):
-    pass
-
-
 class EntityNotFoundError(ApiError):
     ERROR_SUFFIX = "_not_found"
 
     def __init__(
-        self, time: datetime, error_code: ErrorCodes, error_message: str, entity: str
+        self,
+        time: datetime,
+        error_code: ErrorCodes,
+        error_message: str,
+        entity: str,
     ):
         super().__init__(time, error_code, error_message)
         self.entity = entity
@@ -56,14 +53,6 @@ class EntityNotFoundError(ApiError):
         )
 
 
-class InternalServerError(ApiError):
-    pass
-
-
-class InvalidQueryError(ApiError):
-    pass
-
-
 class UnknownError(BaseError):
     def __init__(self, data: Any):
         super().__init__(data)
@@ -72,6 +61,28 @@ class UnknownError(BaseError):
     @classmethod
     def _from_data(cls, data: Dict[str, str]) -> "UnknownError":
         return cls(data=data)
+
+
+class MarketDataErrorCodes(str, enum.Enum):
+    INVALID_QUERY = "invalid_query"
+
+
+class MarketDataApiError(BaseError):
+    def __init__(
+        self, time: datetime, error_code: MarketDataErrorCodes, error_message: str
+    ):
+        super().__init__(time, error_code, error_message)
+        self.time = time
+        self.error_code = error_code
+        self.error_message = error_message
+
+    @classmethod
+    def _from_data(cls, data: Dict[str, str]) -> "MarketDataApiError":
+        return cls(
+            time=datetime.fromisoformat(data["time"]),
+            error_code=MarketDataErrorCodes(data["error_code"]),
+            error_message=data["error_message"],
+        )
 
 
 class TradingErrorCodes(str, enum.Enum):
@@ -102,7 +113,6 @@ class TradingErrorCodes(str, enum.Enum):
     # NOT_EXISTS = "not_exists"
     # ORDER_TOTAL_PRICE_TOO_LOW = "order_total_price_too_low"
     # RISK_LIMIT_LT_BACKFIRE = "risk_limit_lt_backfire"
-    # TOKEN_INVALID = "token_invalid"
     # USER_NOT_ALLOWED = "user_not_allowed"
 
 

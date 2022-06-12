@@ -4,14 +4,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api, create
-from lemon.errors import (
-    AuthenticationError,
-    EntityNotFoundError,
-    ErrorCodes,
-    InternalServerError,
-    InvalidQueryError,
-    UnknownError,
-)
+from lemon.errors import ApiError, EntityNotFoundError, ErrorCodes, UnknownError
 
 
 def build_error(error_code: str) -> Dict[str, str]:
@@ -79,7 +72,16 @@ class CommonApiTests:
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
             build_error(ErrorCodes.UNAUTHORIZED.value), status=400
         )
-        with pytest.raises(AuthenticationError):
+        with pytest.raises(ApiError):
+            self.make_api_call(client)
+
+    def test_handle_token_invalid_error(
+        self, client: Api, httpserver: HTTPServer, api_call_kwargs
+    ):
+        httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
+            build_error(ErrorCodes.TOKEN_INVALID.value), status=400
+        )
+        with pytest.raises(ApiError):
             self.make_api_call(client)
 
     def test_handle_entity_not_found_error(
@@ -97,16 +99,7 @@ class CommonApiTests:
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
             build_error(ErrorCodes.INTERNAL_ERROR.value), status=400
         )
-        with pytest.raises(InternalServerError):
-            self.make_api_call(client)
-
-    def test_handle_invalid_query_error(
-        self, client: Api, httpserver: HTTPServer, api_call_kwargs
-    ):
-        httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error(ErrorCodes.INVALID_QUERY.value), status=400
-        )
-        with pytest.raises(InvalidQueryError):
+        with pytest.raises(ApiError):
             self.make_api_call(client)
 
     def test_handle_unknown_api_error(

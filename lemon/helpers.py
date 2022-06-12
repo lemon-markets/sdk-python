@@ -7,11 +7,11 @@ from requests.adapters import HTTPAdapter, Retry
 
 from lemon.config import Config
 from lemon.errors import (
-    AuthenticationError,
+    ApiError,
     EntityNotFoundError,
     ErrorCodes,
-    InternalServerError,
-    InvalidQueryError,
+    MarketDataApiError,
+    MarketDataErrorCodes,
     TradingApiError,
     TradingErrorCodes,
     UnknownError,
@@ -130,14 +130,10 @@ class ApiClient:
         error_code: Optional[str] = error.get("error_code")
         if error_code is None:
             raise UnknownError._from_data(error)
-        if error_code == ErrorCodes.UNAUTHORIZED:
-            raise AuthenticationError._from_data(error)
         if error_code.endswith(EntityNotFoundError.ERROR_SUFFIX):
             raise EntityNotFoundError._from_data(error)
-        if error_code == ErrorCodes.INTERNAL_ERROR:
-            raise InternalServerError._from_data(error)
-        if error_code == ErrorCodes.INVALID_QUERY:
-            raise InvalidQueryError._from_data(error)
+        if error_code in ErrorCodes.__members__.values():
+            raise ApiError._from_data(error)
 
 
 def as_or_none(type_: Callable[[Any], Any], value: Any) -> Any:
@@ -149,6 +145,9 @@ def to_date(x: str) -> date:
 
 
 def handle_market_data_errors(error: Dict[str, str]) -> NoReturn:
+    error_code: Optional[str] = error.get("error_code")
+    if error_code in MarketDataErrorCodes.__members__.values():
+        raise MarketDataApiError._from_data(error)
     raise UnknownError._from_data(error)
 
 
