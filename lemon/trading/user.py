@@ -1,4 +1,4 @@
-from lemon.helpers import ApiClient
+from lemon.helpers import ApiClient, handle_trading_errors
 from lemon.trading.model import GetUserResponse
 
 
@@ -8,4 +8,6 @@ class User:
 
     def get(self) -> GetUserResponse:
         resp = self._client.get("user")
+        if not resp.ok:
+            handle_trading_errors(resp.json())
         return GetUserResponse._from_data(resp.json())

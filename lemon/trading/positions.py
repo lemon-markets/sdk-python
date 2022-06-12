@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from lemon.helpers import ApiClient, Sorting
+from lemon.helpers import ApiClient, Sorting, handle_trading_errors
 from lemon.trading.model import (
     GetPerformanceResponse,
     GetPositionsResponse,
@@ -28,6 +28,8 @@ class Positions:
                 "page": page,
             },
         )
+        if not resp.ok:
+            handle_trading_errors(resp.json())
         return GetPositionsResponse._from_data(resp.json())
 
     def get_statements(
@@ -52,6 +54,8 @@ class Positions:
                 "page": page,
             },
         )
+        if not resp.ok:
+            handle_trading_errors(resp.json())
         return GetStatementsResponse._from_data(resp.json())
 
     def get_performance(
@@ -74,4 +78,6 @@ class Positions:
                 "page": page,
             },
         )
+        if not resp.ok:
+            handle_trading_errors(resp.json())
         return GetPerformanceResponse._from_data(resp.json())

@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional, Union
 
-from lemon.helpers import ApiClient, Days
+from lemon.helpers import ApiClient, Days, handle_trading_errors
 from lemon.trading.model import (
     ActivateOrderResponse,
     CreateOrderResponse,
@@ -45,6 +45,8 @@ class Orders:
                 "page": page,
             },
         )
+        if not resp.ok:
+            handle_trading_errors(resp.json())
         return GetOrdersResponse._from_data(resp.json())
 
     def create(
@@ -80,6 +82,8 @@ class Orders:
                 "idempotency": idempotency,
             },
         )
+        if not resp.ok:
+            handle_trading_errors(resp.json())
         return CreateOrderResponse._from_data(resp.json())
 
     def activate(
@@ -89,12 +93,18 @@ class Orders:
             f"orders/{order_id}/activate",
             json={"pin": pin},
         )
+        if not resp.ok:
+            handle_trading_errors(resp.json())
         return ActivateOrderResponse._from_data(resp.json())
 
     def get_order(self, order_id: str) -> GetOrderResponse:
         resp = self._client.get(f"orders/{order_id}")
+        if not resp.ok:
+            handle_trading_errors(resp.json())
         return GetOrderResponse._from_data(resp.json())
 
     def delete(self, order_id: str) -> DeleteOrderResponse:
         resp = self._client.delete(f"orders/{order_id}")
+        if not resp.ok:
+            handle_trading_errors(resp.json())
         return DeleteOrderResponse._from_data(resp.json())
