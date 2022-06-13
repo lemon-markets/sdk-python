@@ -5,10 +5,10 @@ from pytest_httpserver import HTTPServer
 
 from lemon.api import Api, create
 from lemon.errors import (
+    APIError,
     AuthenticationError,
     BusinessLogicError,
     InternalServerError,
-    UnexpectedError,
 )
 
 
@@ -113,5 +113,5 @@ class CommonApiTests:
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
             {"foo": "bar"}, status=400
         )
-        with pytest.raises(UnexpectedError):
+        with pytest.raises(APIError):
             self.make_api_call(client)

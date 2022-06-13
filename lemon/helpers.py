@@ -2,7 +2,7 @@ import json
 from dataclasses import asdict
 from datetime import date, datetime, time
 from functools import wraps
-from typing import Any, Callable, Dict, Literal, Optional
+from typing import Any, Callable, Dict, Literal, Optional, ParamSpec
 from urllib.parse import urljoin
 
 import requests
@@ -10,11 +10,12 @@ from requests.adapters import HTTPAdapter, Retry
 
 from lemon.config import Config
 from lemon.errors import (
+    APIConnectionError,
+    APIError,
     AuthenticationError,
     BusinessLogicError,
     InternalServerError,
     InvalidRequestError,
-    UnexpectedError,
 )
 
 Sorting = Literal["asc", "desc"]
@@ -49,7 +50,7 @@ def handle_errors(response: requests.Response) -> None:
     error = response.json()
     error_code: Optional[str] = error.get("error_code")
     if error_code is None:
-        raise UnexpectedError._from_data(error)
+        raise APIError._from_data(error)
     if error_code == "invalid_request":
         raise InvalidRequestError._from_data(error)
     if error_code == "internal_error":
@@ -60,12 +61,19 @@ def handle_errors(response: requests.Response) -> None:
     raise BusinessLogicError._from_data(error)
 
 
+P = ParamSpec("P")
+
+
 def _handle_error(
-    func: Callable[..., requests.Response]
-) -> Callable[..., requests.Response]:
+    func: Callable[P, requests.Response]
+) -> Callable[P, requests.Response]:
     @wraps(func)
-    def inner(*arg: Any, **kwargs: Any) -> requests.Response:
-        response = func(*arg, **kwargs)
+    def inner(*arg: P.args, **kwargs: P.kwargs) -> requests.Response:
+        try:
+            response = func(*arg, **kwargs)
+        except requests.RequestException as exc:
+            raise APIConnectionError() from exc
+
         if not response.ok:
             handle_errors(response)
         return response
