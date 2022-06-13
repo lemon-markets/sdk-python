@@ -2,11 +2,11 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Dict, Optional
 
-from lemon.helpers import Environment, SerializableMixin, as_or_none, to_date
+from lemon.helpers import BaseModel, Environment, as_or_none, to_date
 
 
 @dataclass
-class User(SerializableMixin):
+class User(BaseModel):
     created_at: datetime
     user_id: str
     firstname: Optional[str]
@@ -55,7 +55,7 @@ class User(SerializableMixin):
 
 
 @dataclass
-class GetUserResponse(SerializableMixin):
+class GetUserResponse(BaseModel):
     time: datetime
     mode: Environment
     results: User

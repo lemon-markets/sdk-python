@@ -2,13 +2,13 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from lemon.helpers import Environment, SerializableMixin, as_or_none, to_date
+from lemon.helpers import BaseModel, Environment, as_or_none, to_date
 
 Plan = Literal["go", "investor", "trader"]
 
 
 @dataclass
-class Account(SerializableMixin):
+class Account(BaseModel):
     created_at: datetime
     account_id: str
     firstname: Optional[str]
@@ -83,7 +83,7 @@ class Account(SerializableMixin):
 
 
 @dataclass
-class GetAccountResponse(SerializableMixin):
+class GetAccountResponse(BaseModel):
     time: datetime
     mode: Environment
     results: Account
@@ -98,7 +98,7 @@ class GetAccountResponse(SerializableMixin):
 
 
 @dataclass
-class Withdrawal(SerializableMixin):
+class Withdrawal(BaseModel):
     id: str
     amount: int
     created_at: datetime
@@ -117,7 +117,7 @@ class Withdrawal(SerializableMixin):
 
 
 @dataclass
-class GetWithdrawalsResponse(SerializableMixin):
+class GetWithdrawalsResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Withdrawal]
@@ -138,7 +138,7 @@ class GetWithdrawalsResponse(SerializableMixin):
 
 
 @dataclass
-class WithdrawResponse(SerializableMixin):
+class WithdrawResponse(BaseModel):
     time: datetime
     mode: Environment
 
@@ -164,7 +164,7 @@ BankStatementType = Literal[
 
 
 @dataclass
-class BankStatement(SerializableMixin):
+class BankStatement(BaseModel):
     id: str
     account_id: str
     type: BankStatementType
@@ -191,7 +191,7 @@ class BankStatement(SerializableMixin):
 
 
 @dataclass
-class GetBankStatementsResponse(SerializableMixin):
+class GetBankStatementsResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[BankStatement]
@@ -212,7 +212,7 @@ class GetBankStatementsResponse(SerializableMixin):
 
 
 @dataclass
-class Document(SerializableMixin):
+class Document(BaseModel):
     id: str
     name: str
     created_at: datetime
@@ -239,7 +239,7 @@ class Document(SerializableMixin):
 
 
 @dataclass
-class GetDocumentsResponse(SerializableMixin):
+class GetDocumentsResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Document]
@@ -260,7 +260,7 @@ class GetDocumentsResponse(SerializableMixin):
 
 
 @dataclass
-class DocumentUrl(SerializableMixin):
+class DocumentUrl(BaseModel):
     public_url: Optional[str]
 
     @staticmethod
@@ -269,7 +269,7 @@ class DocumentUrl(SerializableMixin):
 
 
 @dataclass
-class GetDocumentResponse(SerializableMixin):
+class GetDocumentResponse(BaseModel):
     time: datetime
     mode: Environment
     results: DocumentUrl

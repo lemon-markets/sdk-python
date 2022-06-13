@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 import pytz
 
-from lemon.helpers import SerializableMixin
+from lemon.helpers import BaseModel
 
 
 def _build_time(time: str, timezone: tzinfo) -> time:
@@ -12,7 +12,7 @@ def _build_time(time: str, timezone: tzinfo) -> time:
 
 
 @dataclass
-class OpeningHours(SerializableMixin):
+class OpeningHours(BaseModel):
     start: time
     end: time
 
@@ -26,7 +26,7 @@ class OpeningHours(SerializableMixin):
 
 
 @dataclass
-class Venue(SerializableMixin):
+class Venue(BaseModel):
     name: str
     title: str
     mic: str
@@ -50,7 +50,7 @@ class Venue(SerializableMixin):
 
 
 @dataclass
-class GetVenuesResponse(SerializableMixin):
+class GetVenuesResponse(BaseModel):
     time: datetime
     results: List[Venue]
     total: int

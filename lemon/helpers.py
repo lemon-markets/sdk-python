@@ -149,7 +149,7 @@ class JSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
-class SerializableMixin:
+class BaseModel:
     def dict(self) -> Dict[str, Any]:
         return asdict(self)
 

@@ -113,7 +113,7 @@ def test_ohlc_by_from(uut: Api):
 
     # 2
     response = uut.market_data.ohlc.get(
-        isin=["US88160R1014"], period="m1", from_=datetime.now() - timedelta(days=1)
+        isin=["US88160R1014"], period="m1", from_=datetime.now() - timedelta(days=7)
     )
 
     assert len(response.results)

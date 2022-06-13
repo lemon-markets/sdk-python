@@ -2,13 +2,13 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from lemon.helpers import Environment, SerializableMixin, as_or_none, to_date
+from lemon.helpers import BaseModel, Environment, as_or_none, to_date
 
 StatementType = Literal["order_buy", "order_sell", "split", "import", "snx"]
 
 
 @dataclass
-class Position(SerializableMixin):
+class Position(BaseModel):
     isin: str
     isin_title: str
     quantity: int
@@ -29,7 +29,7 @@ class Position(SerializableMixin):
 
 
 @dataclass
-class GetPositionsResponse(SerializableMixin):
+class GetPositionsResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Position]
@@ -50,7 +50,7 @@ class GetPositionsResponse(SerializableMixin):
 
 
 @dataclass
-class Statement(SerializableMixin):
+class Statement(BaseModel):
     id: str
     order_id: Optional[str]
     external_id: Optional[str]
@@ -77,7 +77,7 @@ class Statement(SerializableMixin):
 
 
 @dataclass
-class GetStatementsResponse(SerializableMixin):
+class GetStatementsResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Statement]
@@ -98,7 +98,7 @@ class GetStatementsResponse(SerializableMixin):
 
 
 @dataclass
-class Performance(SerializableMixin):
+class Performance(BaseModel):
     isin: str
     isin_title: str
     profit: int
@@ -127,7 +127,7 @@ class Performance(SerializableMixin):
 
 
 @dataclass
-class GetPerformanceResponse(SerializableMixin):
+class GetPerformanceResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Performance]

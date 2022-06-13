@@ -2,11 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Union
 
-from lemon.helpers import SerializableMixin
+from lemon.helpers import BaseModel
 
 
 @dataclass
-class Trade(SerializableMixin):
+class Trade(BaseModel):
     isin: str
     p: Union[int, float]
     pbv: Union[int, float]
@@ -31,7 +31,7 @@ class Trade(SerializableMixin):
 
 
 @dataclass
-class GetTradesResponse(SerializableMixin):
+class GetTradesResponse(BaseModel):
     time: datetime
     results: List[Trade]
     total: int

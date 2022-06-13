@@ -2,11 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Union
 
-from lemon.helpers import SerializableMixin
+from lemon.helpers import BaseModel
 
 
 @dataclass
-class OhlcData(SerializableMixin):
+class OhlcData(BaseModel):
     isin: str
     o: Union[int, float]
     h: Union[int, float]
@@ -37,7 +37,7 @@ class OhlcData(SerializableMixin):
 
 
 @dataclass
-class GetOhlcResponse(SerializableMixin):
+class GetOhlcResponse(BaseModel):
     time: datetime
     results: List[OhlcData]
     total: int
