@@ -3,7 +3,8 @@ import warnings
 from datetime import date, datetime, time, timedelta
 from operator import attrgetter
 from time import sleep
-from typing import Literal, Set
+from typing import Set
+from typing_extensions import Literal
 
 import pytest
 
