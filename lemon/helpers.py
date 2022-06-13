@@ -2,15 +2,15 @@ import json
 from dataclasses import asdict
 from datetime import date, datetime, time
 from functools import wraps
-from typing import Any, Callable, Dict, Literal, Optional, ParamSpec
+from typing import Any, Callable, Dict, Optional
 from urllib.parse import urljoin
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
+from typing_extensions import Literal, ParamSpec
 
 from lemon.config import Config
 from lemon.errors import (
-    APIConnectionError,
     APIError,
     AuthenticationError,
     BusinessLogicError,
@@ -69,11 +69,7 @@ def _handle_error(
 ) -> Callable[P, requests.Response]:
     @wraps(func)
     def inner(*arg: P.args, **kwargs: P.kwargs) -> requests.Response:
-        try:
-            response = func(*arg, **kwargs)
-        except requests.RequestException as exc:
-            raise APIConnectionError() from exc
-
+        response = func(*arg, **kwargs)
         if not response.ok:
             handle_errors(response)
         return response

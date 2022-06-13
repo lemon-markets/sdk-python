@@ -62,7 +62,3 @@ class APIError(BaseLemonError):
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(data={self.data})"
-
-
-class APIConnectionError(BaseLemonError):
-    ...
