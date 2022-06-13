@@ -1,7 +1,6 @@
 import os
 from distutils.core import setup
 
-from pkg_resources import parse_requirements
 from setuptools import find_packages
 
 version_content = {}
@@ -43,6 +42,6 @@ setup(
         "API Documentation": "https://docs.lemon.markets/",
     },
     packages=find_packages(include=["lemon", "lemon.*"]),
-    install_requires=parse_requirements("requirements.txt"),
+    install_requires=["requests", "pytz", "typing-extensions"],
     python_requires=">=3.7",
 )

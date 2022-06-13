@@ -1,4 +1,3 @@
-from functools import cached_property
 from typing import Any, Dict, Optional
 
 import requests
@@ -15,26 +14,41 @@ from lemon.market_data.venues import Venues
 class MarketDataApi:
     def __init__(self, config: Config):
         self._client = ApiClient(config.market_data_api_url, config)
+        self._venues: Optional[Venues] = None
+        self._instruments: Optional[Instruments] = None
+        self._trades: Optional[Trades] = None
+        self._quotes: Optional[Quotes] = None
+        self._ohlc: Optional[Ohlc] = None
 
-    @cached_property
+    @property
     def venues(self) -> Venues:
-        return Venues(self._client)
+        if self._venues is None:
+            self._venues = Venues(self._client)
+        return self._venues
 
-    @cached_property
+    @property
     def instruments(self) -> Instruments:
-        return Instruments(self._client)
+        if self._instruments is None:
+            self._instruments = Instruments(self._client)
+        return self._instruments
 
-    @cached_property
+    @property
     def trades(self) -> Trades:
-        return Trades(self._client)
+        if self._trades is None:
+            self._trades = Trades(self._client)
+        return self._trades
 
-    @cached_property
+    @property
     def quotes(self) -> Quotes:
-        return Quotes(self._client)
+        if self._quotes is None:
+            self._quotes = Quotes(self._client)
+        return self._quotes
 
-    @cached_property
+    @property
     def ohlc(self) -> Ohlc:
-        return Ohlc(self._client)
+        if self._ohlc is None:
+            self._ohlc = Ohlc(self._client)
+        return self._ohlc
 
     def get(
         self,

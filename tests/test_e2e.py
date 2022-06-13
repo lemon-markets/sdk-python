@@ -3,9 +3,10 @@ import warnings
 from datetime import date, datetime, time, timedelta
 from operator import attrgetter
 from time import sleep
-from typing import Literal, Set
+from typing import Set
 
 import pytest
+from typing_extensions import Literal
 
 from lemon import api
 from lemon.api import Api

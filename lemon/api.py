@@ -1,5 +1,6 @@
-from functools import cached_property
-from typing import Literal
+from typing import Optional
+
+from typing_extensions import Literal
 
 from lemon.config import (
     LIVE_TRADING_API_URL,
@@ -14,14 +15,20 @@ from lemon.trading.api import TradingApi
 class Api:
     def __init__(self, config: Config):
         self._config = config
+        self._market_data: Optional[MarketDataApi] = None
+        self._trading: Optional[TradingApi] = None
 
-    @cached_property
+    @property
     def market_data(self) -> MarketDataApi:
-        return MarketDataApi(self._config)
+        if self._market_data is None:
+            self._market_data = MarketDataApi(self._config)
+        return self._market_data
 
-    @cached_property
+    @property
     def trading(self) -> TradingApi:
-        return TradingApi(self._config)
+        if self._trading is None:
+            self._trading = TradingApi(self._config)
+        return self._trading
 
 
 def create(

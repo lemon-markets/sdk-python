@@ -1,5 +1,7 @@
 from datetime import date
-from typing import Literal, Optional, Union
+from typing import Optional, Union
+
+from typing_extensions import Literal
 
 from lemon.helpers import ApiClient, Sorting
 from lemon.trading.model import (
