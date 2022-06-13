@@ -9,6 +9,7 @@ import pytest
 
 from lemon import api
 from lemon.api import Api
+from lemon.errors import AuthenticationError, BusinessLogicError, InvalidRequestError
 from lemon.trading.model import (
     Account,
     CreateOrderResponse,
@@ -327,3 +328,22 @@ def test_orders_e2e(uut: Api):
     response: GetOrderResponse = uut.trading.orders.get_order(order_id)
 
     assert response.results.status == "canceled"
+
+
+@pytest.mark.e2e
+def test_raise_invalid_requests_error(uut):
+    with pytest.raises(InvalidRequestError):
+        uut.trading.orders.get(side="unknown")
+
+
+@pytest.mark.e2e
+def test_raise_authentication_error(uut):
+    uut._config.token = "invalid-token"
+    with pytest.raises(AuthenticationError):
+        uut.trading.orders.get_order("")
+
+
+@pytest.mark.e2e
+def test_raise_business_logic_error(uut):
+    with pytest.raises(BusinessLogicError):
+        uut.trading.orders.get_order("invalid")
