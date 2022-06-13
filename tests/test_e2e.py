@@ -338,9 +338,9 @@ def test_raise_invalid_requests_error(uut):
 
 @pytest.mark.e2e
 def test_raise_authentication_error(uut):
-    uut._config.token = "invalid-token"
+    uut._config.api_token = "invalid-token"
     with pytest.raises(AuthenticationError):
-        uut.trading.orders.get_order("")
+        uut.market_data.instruments.get()
 
 
 @pytest.mark.e2e
