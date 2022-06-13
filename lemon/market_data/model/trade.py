@@ -2,9 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Union
 
+from lemon.helpers import BaseModel
+
 
 @dataclass
-class Trade:
+class Trade(BaseModel):
     isin: str
     p: Union[int, float]
     pbv: Union[int, float]
@@ -29,7 +31,7 @@ class Trade:
 
 
 @dataclass
-class GetTradesResponse:
+class GetTradesResponse(BaseModel):
     time: datetime
     results: List[Trade]
     total: int

@@ -2,9 +2,11 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Union
 
+from lemon.helpers import BaseModel
+
 
 @dataclass
-class OhlcData:
+class OhlcData(BaseModel):
     isin: str
     o: Union[int, float]
     h: Union[int, float]
@@ -35,7 +37,7 @@ class OhlcData:
 
 
 @dataclass
-class GetOhlcResponse:
+class GetOhlcResponse(BaseModel):
     time: datetime
     results: List[OhlcData]
     total: int

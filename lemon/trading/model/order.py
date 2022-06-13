@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from lemon.helpers import Environment, as_or_none
+from lemon.helpers import BaseModel, Environment, as_or_none
 
 OrderSide = Literal["sell", "buy"]
 OrderStatus = Literal[
@@ -21,7 +21,7 @@ Venue = Literal["xmun", "allday"]
 
 
 @dataclass
-class RegulatoryInformation:
+class RegulatoryInformation(BaseModel):
     costs_entry: Optional[int]
     costs_entry_pct: Optional[str]
     costs_running: int
@@ -78,7 +78,7 @@ class RegulatoryInformation:
 
 
 @dataclass
-class Order:
+class Order(BaseModel):
     id: str
     isin: str
     isin_title: str
@@ -145,7 +145,7 @@ class Order:
 
 
 @dataclass
-class GetOrdersResponse:
+class GetOrdersResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Order]
@@ -166,7 +166,7 @@ class GetOrdersResponse:
 
 
 @dataclass
-class CreatedOrder:
+class CreatedOrder(BaseModel):
     id: str
     status: OrderStatus
     created_at: datetime
@@ -213,7 +213,7 @@ class CreatedOrder:
 
 
 @dataclass
-class CreateOrderResponse:
+class CreateOrderResponse(BaseModel):
     time: datetime
     mode: Environment
     results: CreatedOrder
@@ -228,7 +228,7 @@ class CreateOrderResponse:
 
 
 @dataclass
-class ActivateOrderResponse:
+class ActivateOrderResponse(BaseModel):
     time: datetime
     mode: Environment
 
@@ -241,7 +241,7 @@ class ActivateOrderResponse:
 
 
 @dataclass
-class GetOrderResponse:
+class GetOrderResponse(BaseModel):
     time: datetime
     mode: Environment
     results: Order
@@ -256,7 +256,7 @@ class GetOrderResponse:
 
 
 @dataclass
-class DeleteOrderResponse:
+class DeleteOrderResponse(BaseModel):
     time: datetime
     mode: Environment
 

@@ -1,4 +1,6 @@
-from datetime import date, datetime
+import json
+from dataclasses import asdict
+from datetime import date, datetime, time
 from typing import Any, Callable, Dict, Literal, NoReturn, Optional
 from urllib.parse import urljoin
 
@@ -156,3 +158,18 @@ def handle_trading_errors(error: Dict[str, str]) -> NoReturn:
     if error_code in TradingErrorCodes.__members__.values():
         raise TradingApiError._from_data(error)
     raise UnknownError._from_data(error)
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o: Any) -> Any:
+        if isinstance(o, (datetime, date, time)):
+            return o.isoformat()
+        return super().default(o)
+
+
+class BaseModel:
+    def dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+    def json(self) -> str:
+        return json.dumps(asdict(self), cls=JSONEncoder)

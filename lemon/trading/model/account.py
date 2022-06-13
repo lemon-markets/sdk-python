@@ -2,13 +2,13 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from lemon.helpers import Environment, as_or_none, to_date
+from lemon.helpers import BaseModel, Environment, as_or_none, to_date
 
 Plan = Literal["go", "investor", "trader"]
 
 
 @dataclass
-class Account:
+class Account(BaseModel):
     created_at: datetime
     account_id: str
     firstname: Optional[str]
@@ -83,7 +83,7 @@ class Account:
 
 
 @dataclass
-class GetAccountResponse:
+class GetAccountResponse(BaseModel):
     time: datetime
     mode: Environment
     results: Account
@@ -98,7 +98,7 @@ class GetAccountResponse:
 
 
 @dataclass
-class Withdrawal:
+class Withdrawal(BaseModel):
     id: str
     amount: int
     created_at: datetime
@@ -117,7 +117,7 @@ class Withdrawal:
 
 
 @dataclass
-class GetWithdrawalsResponse:
+class GetWithdrawalsResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Withdrawal]
@@ -138,7 +138,7 @@ class GetWithdrawalsResponse:
 
 
 @dataclass
-class WithdrawResponse:
+class WithdrawResponse(BaseModel):
     time: datetime
     mode: Environment
 
@@ -164,7 +164,7 @@ BankStatementType = Literal[
 
 
 @dataclass
-class BankStatement:
+class BankStatement(BaseModel):
     id: str
     account_id: str
     type: BankStatementType
@@ -191,7 +191,7 @@ class BankStatement:
 
 
 @dataclass
-class GetBankStatementsResponse:
+class GetBankStatementsResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[BankStatement]
@@ -212,7 +212,7 @@ class GetBankStatementsResponse:
 
 
 @dataclass
-class Document:
+class Document(BaseModel):
     id: str
     name: str
     created_at: datetime
@@ -239,7 +239,7 @@ class Document:
 
 
 @dataclass
-class GetDocumentsResponse:
+class GetDocumentsResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Document]
@@ -260,7 +260,7 @@ class GetDocumentsResponse:
 
 
 @dataclass
-class DocumentUrl:
+class DocumentUrl(BaseModel):
     public_url: Optional[str]
 
     @staticmethod
@@ -269,7 +269,7 @@ class DocumentUrl:
 
 
 @dataclass
-class GetDocumentResponse:
+class GetDocumentResponse(BaseModel):
     time: datetime
     mode: Environment
     results: DocumentUrl
