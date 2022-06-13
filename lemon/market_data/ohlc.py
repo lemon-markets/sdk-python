@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Literal, Optional, Union
 
-from lemon.helpers import ApiClient, Days, Sorting, handle_market_data_errors
+from lemon.helpers import ApiClient, Days, Sorting
 from lemon.market_data.model import GetOhlcResponse
 
 
@@ -36,8 +36,6 @@ class Ohlc:
                 "page": page,
             },
         )
-        if not resp.ok:
-            handle_market_data_errors(resp.json())
         return GetOhlcResponse._from_data(
             data=resp.json(),
             t_type=float if decimals else int,

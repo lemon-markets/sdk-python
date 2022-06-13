@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from lemon.helpers import ApiClient, Sorting, handle_market_data_errors
+from lemon.helpers import ApiClient, Sorting
 from lemon.market_data.model import GetInstrumentsResponse, InstrumentType
 
 
@@ -34,6 +34,4 @@ class Instruments:
                 "page": page,
             },
         )
-        if not resp.ok:
-            handle_market_data_errors(resp.json())
         return GetInstrumentsResponse._from_data(resp.json())

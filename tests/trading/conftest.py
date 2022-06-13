@@ -2,7 +2,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
-from lemon.errors import TradingApiError, TradingErrorCodes
+from lemon.errors import BusinessLogicError
 from tests.conftest import CommonApiTests, build_error
 
 
@@ -15,7 +15,7 @@ class CommonTradingApiTests(CommonApiTests):
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error(TradingErrorCodes.PIN_INVALID.value), status=400
+            build_error("pin_invalid"), status=400
         )
-        with pytest.raises(TradingApiError):
+        with pytest.raises(BusinessLogicError):
             self.make_api_call(client)

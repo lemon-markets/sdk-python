@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Literal, Optional, Union
 
-from lemon.helpers import ApiClient, Sorting, handle_trading_errors
+from lemon.helpers import ApiClient, Sorting
 from lemon.trading.model import (
     BankStatementType,
     GetAccountResponse,
@@ -19,8 +19,6 @@ class Account:
 
     def get(self) -> GetAccountResponse:
         resp = self._client.get("account")
-        if not resp.ok:
-            handle_trading_errors(resp.json())
         return GetAccountResponse._from_data(resp.json())
 
     def update(
@@ -41,8 +39,6 @@ class Account:
                 "address_country": address_country,
             },
         )
-        if not resp.ok:
-            handle_trading_errors(resp.json())
         return GetAccountResponse._from_data(resp.json())
 
     def get_withdrawals(
@@ -55,8 +51,6 @@ class Account:
                 "page": page,
             },
         )
-        if not resp.ok:
-            handle_trading_errors(resp.json())
         return GetWithdrawalsResponse._from_data(resp.json())
 
     def withdraw(
@@ -73,8 +67,6 @@ class Account:
                 "idempotency": idempotency,
             },
         )
-        if not resp.ok:
-            handle_trading_errors(resp.json())
         return WithdrawResponse._from_data(resp.json())
 
     def get_bank_statements(
@@ -97,8 +89,6 @@ class Account:
                 "page": page,
             },
         )
-        if not resp.ok:
-            handle_trading_errors(resp.json())
         return GetBankStatementsResponse._from_data(resp.json())
 
     def get_documents(
@@ -115,8 +105,6 @@ class Account:
                 "page": page,
             },
         )
-        if not resp.ok:
-            handle_trading_errors(resp.json())
         return GetDocumentsResponse._from_data(resp.json())
 
     def get_document(
@@ -126,6 +114,4 @@ class Account:
             f"account/documents/{document_id}",
             params={"no_redirect": no_redirect},
         )
-        if not resp.ok:
-            handle_trading_errors(resp.json())
         return GetDocumentResponse._from_data(resp.json())

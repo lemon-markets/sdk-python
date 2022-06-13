@@ -1,7 +1,8 @@
 import json
 from dataclasses import asdict
 from datetime import date, datetime, time
-from typing import Any, Callable, Dict, Literal, NoReturn, Optional
+from functools import wraps
+from typing import Any, Callable, Dict, Literal, Optional
 from urllib.parse import urljoin
 
 import requests
@@ -9,19 +10,67 @@ from requests.adapters import HTTPAdapter, Retry
 
 from lemon.config import Config
 from lemon.errors import (
-    ApiError,
-    EntityNotFoundError,
-    ErrorCodes,
-    MarketDataApiError,
-    MarketDataErrorCodes,
-    TradingApiError,
-    TradingErrorCodes,
-    UnknownError,
+    AuthenticationError,
+    BusinessLogicError,
+    InternalServerError,
+    InvalidRequestError,
+    UnexpectedError,
 )
 
 Sorting = Literal["asc", "desc"]
 Environment = Literal["paper", "money"]
 Days = int
+
+
+def as_or_none(type_: Callable[[Any], Any], value: Any) -> Any:
+    return type_(value) if value is not None else None
+
+
+def to_date(x: str) -> date:
+    return datetime.fromisoformat(x).date()
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o: Any) -> Any:
+        if isinstance(o, (datetime, date, time)):
+            return o.isoformat()
+        return super().default(o)
+
+
+class BaseModel:
+    def dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+    def json(self) -> str:
+        return json.dumps(asdict(self), cls=JSONEncoder)
+
+
+def handle_errors(response: requests.Response) -> None:
+    error = response.json()
+    error_code: Optional[str] = error.get("error_code")
+    if error_code is None:
+        raise UnexpectedError._from_data(error)
+    if error_code == "invalid_request":
+        raise InvalidRequestError._from_data(error)
+    if error_code == "internal_error":
+        raise InternalServerError._from_data(error)
+    if error_code in ["unauthorized", "token_invalid"]:
+        raise AuthenticationError._from_data(error)
+
+    raise BusinessLogicError._from_data(error)
+
+
+def _handle_error(
+    func: Callable[..., requests.Response]
+) -> Callable[..., requests.Response]:
+    @wraps(func)
+    def inner(*arg: Any, **kwargs: Any) -> requests.Response:
+        response = func(*arg, **kwargs)
+        if not response.ok:
+            handle_errors(response)
+        return response
+
+    return inner
 
 
 class ApiClient:
@@ -39,6 +88,7 @@ class ApiClient:
         self._session.mount("http://", HTTPAdapter(max_retries=retries))
         self._session.mount("https://", HTTPAdapter(max_retries=retries))
 
+    @_handle_error
     def get(
         self,
         url: str,
@@ -47,19 +97,14 @@ class ApiClient:
     ) -> requests.Response:
         url = urljoin(self._base_url, url)
         headers = headers or {}
-        resp = self._session.get(
+        return self._session.get(
             url,
             params=params,
             headers={"Authorization": f"Bearer {self._config.api_token}", **headers},
             timeout=self._config.timeout,
         )
 
-        if resp.ok:
-            return resp
-
-        self._handle_common_errors(resp)
-        return resp
-
+    @_handle_error
     def put(
         self,
         url: str,
@@ -69,7 +114,7 @@ class ApiClient:
     ) -> requests.Response:
         url = urljoin(self._base_url, url)
         headers = headers or {}
-        resp = self._session.put(
+        return self._session.put(
             url,
             json=json,
             params=params,
@@ -77,12 +122,7 @@ class ApiClient:
             timeout=self._config.timeout,
         )
 
-        if resp.ok:
-            return resp
-
-        self._handle_common_errors(resp)
-        return resp
-
+    @_handle_error
     def post(
         self,
         url: str,
@@ -92,7 +132,7 @@ class ApiClient:
     ) -> requests.Response:
         url = urljoin(self._base_url, url)
         headers = headers or {}
-        resp = self._session.post(
+        return self._session.post(
             url,
             json=json,
             params=params,
@@ -100,12 +140,7 @@ class ApiClient:
             timeout=self._config.timeout,
         )
 
-        if resp.ok:
-            return resp
-
-        self._handle_common_errors(resp)
-        return resp
-
+    @_handle_error
     def delete(
         self,
         url: str,
@@ -114,62 +149,9 @@ class ApiClient:
     ) -> requests.Response:
         url = urljoin(self._base_url, url)
         headers = headers or {}
-        resp = self._session.delete(
+        return self._session.delete(
             url,
             params=params,
             headers={"Authorization": f"Bearer {self._config.api_token}", **headers},
             timeout=self._config.timeout,
         )
-
-        if resp.ok:
-            return resp
-
-        self._handle_common_errors(resp)
-        return resp
-
-    def _handle_common_errors(self, response: requests.Response) -> None:
-        error = response.json()
-        error_code: Optional[str] = error.get("error_code")
-        if error_code is None:
-            raise UnknownError._from_data(error)
-        if error_code.endswith(EntityNotFoundError.ERROR_SUFFIX):
-            raise EntityNotFoundError._from_data(error)
-        if error_code in ErrorCodes.__members__.values():
-            raise ApiError._from_data(error)
-
-
-def as_or_none(type_: Callable[[Any], Any], value: Any) -> Any:
-    return type_(value) if value is not None else None
-
-
-def to_date(x: str) -> date:
-    return datetime.fromisoformat(x).date()
-
-
-def handle_market_data_errors(error: Dict[str, str]) -> NoReturn:
-    error_code: Optional[str] = error.get("error_code")
-    if error_code in MarketDataErrorCodes.__members__.values():
-        raise MarketDataApiError._from_data(error)
-    raise UnknownError._from_data(error)
-
-
-def handle_trading_errors(error: Dict[str, str]) -> NoReturn:
-    error_code: Optional[str] = error.get("error_code")
-    if error_code in TradingErrorCodes.__members__.values():
-        raise TradingApiError._from_data(error)
-    raise UnknownError._from_data(error)
-
-
-class JSONEncoder(json.JSONEncoder):
-    def default(self, o: Any) -> Any:
-        if isinstance(o, (datetime, date, time)):
-            return o.isoformat()
-        return super().default(o)
-
-
-class BaseModel:
-    def dict(self) -> Dict[str, Any]:
-        return asdict(self)
-
-    def json(self) -> str:
-        return json.dumps(asdict(self), cls=JSONEncoder)

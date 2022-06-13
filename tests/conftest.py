@@ -4,7 +4,12 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api, create
-from lemon.errors import ApiError, EntityNotFoundError, ErrorCodes, UnknownError
+from lemon.errors import (
+    AuthenticationError,
+    BusinessLogicError,
+    InternalServerError,
+    UnexpectedError,
+)
 
 
 def build_error(error_code: str) -> Dict[str, str]:
@@ -70,45 +75,36 @@ class CommonApiTests:
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error(ErrorCodes.UNAUTHORIZED.value), status=400
+            build_error("unauthorized"), status=400
         )
-        with pytest.raises(ApiError):
+        with pytest.raises(AuthenticationError):
             self.make_api_call(client)
 
     def test_handle_token_invalid_error(
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error(ErrorCodes.TOKEN_INVALID.value), status=400
+            build_error("token_invalid"), status=400
         )
-        with pytest.raises(ApiError):
+        with pytest.raises(AuthenticationError):
             self.make_api_call(client)
 
     def test_handle_entity_not_found_error(
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error(ErrorCodes.ENTITY_NOT_FOUND.value), status=400
+            build_error("account_not_found"), status=400
         )
-        with pytest.raises(EntityNotFoundError):
+        with pytest.raises(BusinessLogicError):
             self.make_api_call(client)
 
     def test_handle_internal_error(
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error(ErrorCodes.INTERNAL_ERROR.value), status=400
+            build_error("internal_error"), status=400
         )
-        with pytest.raises(ApiError):
-            self.make_api_call(client)
-
-    def test_handle_unknown_api_error(
-        self, client: Api, httpserver: HTTPServer, api_call_kwargs
-    ):
-        httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error("foo_bar"), status=400
-        )
-        with pytest.raises(UnknownError):
+        with pytest.raises(InternalServerError):
             self.make_api_call(client)
 
     def test_handle_unknown_error(
@@ -117,5 +113,5 @@ class CommonApiTests:
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
             {"foo": "bar"}, status=400
         )
-        with pytest.raises(UnknownError):
+        with pytest.raises(UnexpectedError):
             self.make_api_call(client)
