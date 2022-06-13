@@ -1,8 +1,5 @@
-from typing import Any, Dict, Optional
+from typing import Optional
 
-import requests
-
-from lemon.config import Config
 from lemon.helpers import ApiClient
 from lemon.market_data.instruments import Instruments
 from lemon.market_data.ohlc import Ohlc
@@ -11,9 +8,22 @@ from lemon.market_data.trades import Trades
 from lemon.market_data.venues import Venues
 
 
-class MarketDataApi:
-    def __init__(self, config: Config):
-        self._client = ApiClient(config.market_data_api_url, config)
+class MarketDataApi(ApiClient):
+    def __init__(
+        self,
+        api_token: str,
+        market_data_api_url: str,
+        timeout: float,
+        retry_count: int,
+        retry_backoff_factor: float,
+    ):
+        super().__init__(
+            base_url=market_data_api_url,
+            api_token=api_token,
+            timeout=timeout,
+            retry_count=retry_count,
+            retry_backoff_factor=retry_backoff_factor,
+        )
         self._venues: Optional[Venues] = None
         self._instruments: Optional[Instruments] = None
         self._trades: Optional[Trades] = None
@@ -23,63 +33,29 @@ class MarketDataApi:
     @property
     def venues(self) -> Venues:
         if self._venues is None:
-            self._venues = Venues(self._client)
+            self._venues = Venues(self)
         return self._venues
 
     @property
     def instruments(self) -> Instruments:
         if self._instruments is None:
-            self._instruments = Instruments(self._client)
+            self._instruments = Instruments(self)
         return self._instruments
 
     @property
     def trades(self) -> Trades:
         if self._trades is None:
-            self._trades = Trades(self._client)
+            self._trades = Trades(self)
         return self._trades
 
     @property
     def quotes(self) -> Quotes:
         if self._quotes is None:
-            self._quotes = Quotes(self._client)
+            self._quotes = Quotes(self)
         return self._quotes
 
     @property
     def ohlc(self) -> Ohlc:
         if self._ohlc is None:
-            self._ohlc = Ohlc(self._client)
+            self._ohlc = Ohlc(self)
         return self._ohlc
-
-    def get(
-        self,
-        url: str,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-    ) -> requests.Response:
-        return self._client.get(url=url, params=params, headers=headers)
-
-    def put(
-        self,
-        url: str,
-        json: Any,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-    ) -> requests.Response:
-        return self._client.put(url=url, json=json, params=params, headers=headers)
-
-    def post(
-        self,
-        url: str,
-        json: Any,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-    ) -> requests.Response:
-        return self._client.post(url=url, json=json, params=params, headers=headers)
-
-    def delete(
-        self,
-        url: str,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-    ) -> requests.Response:
-        return self._client.delete(url=url, params=params, headers=headers)

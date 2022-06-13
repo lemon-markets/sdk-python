@@ -1,8 +1,5 @@
-from typing import Any, Dict, Optional
+from typing import Optional
 
-import requests
-
-from lemon.config import Config
 from lemon.helpers import ApiClient
 from lemon.trading.account import Account
 from lemon.trading.orders import Orders
@@ -10,9 +7,22 @@ from lemon.trading.positions import Positions
 from lemon.trading.user import User
 
 
-class TradingApi:
-    def __init__(self, config: Config):
-        self._client = ApiClient(config.trading_api_url, config)
+class TradingApi(ApiClient):
+    def __init__(
+        self,
+        api_token: str,
+        trading_api_url: str,
+        timeout: float,
+        retry_count: int,
+        retry_backoff_factor: float,
+    ):
+        super().__init__(
+            base_url=trading_api_url,
+            api_token=api_token,
+            timeout=timeout,
+            retry_count=retry_count,
+            retry_backoff_factor=retry_backoff_factor,
+        )
         self._account: Optional[Account] = None
         self._orders: Optional[Orders] = None
         self._positions: Optional[Positions] = None
@@ -21,57 +31,23 @@ class TradingApi:
     @property
     def account(self) -> Account:
         if self._account is None:
-            self._account = Account(self._client)
+            self._account = Account(self)
         return self._account
 
     @property
     def orders(self) -> Orders:
         if self._orders is None:
-            self._orders = Orders(self._client)
+            self._orders = Orders(self)
         return self._orders
 
     @property
     def positions(self) -> Positions:
         if self._positions is None:
-            self._positions = Positions(self._client)
+            self._positions = Positions(self)
         return self._positions
 
     @property
     def user(self) -> User:
         if self._user is None:
-            self._user = User(self._client)
+            self._user = User(self)
         return self._user
-
-    def get(
-        self,
-        url: str,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-    ) -> requests.Response:
-        return self._client.get(url=url, params=params, headers=headers)
-
-    def put(
-        self,
-        url: str,
-        json: Any,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-    ) -> requests.Response:
-        return self._client.put(url=url, json=json, params=params, headers=headers)
-
-    def post(
-        self,
-        url: str,
-        json: Any,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-    ) -> requests.Response:
-        return self._client.post(url=url, json=json, params=params, headers=headers)
-
-    def delete(
-        self,
-        url: str,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, Any]] = None,
-    ) -> requests.Response:
-        return self._client.delete(url=url, params=params, headers=headers)
