@@ -112,6 +112,7 @@ class Order(BaseModel):
 
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "Order":
+        print(data)
         return Order(
             id=data["id"],
             isin=data["isin"],

@@ -5,10 +5,10 @@ from pytest_httpserver import HTTPServer
 
 from lemon.api import Api, create
 from lemon.errors import (
+    APIError,
     AuthenticationError,
-    ErrorCodes,
+    BusinessLogicError,
     InternalServerError,
-    InvalidQueryError,
 )
 
 
@@ -75,25 +75,43 @@ class CommonApiTests:
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error(ErrorCodes.UNAUTHORIZED.value), status=400
+            build_error("unauthorized"), status=400
         )
         with pytest.raises(AuthenticationError):
+            self.make_api_call(client)
+
+    def test_handle_token_invalid_error(
+        self, client: Api, httpserver: HTTPServer, api_call_kwargs
+    ):
+        httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
+            build_error("token_invalid"), status=400
+        )
+        with pytest.raises(AuthenticationError):
+            self.make_api_call(client)
+
+    def test_handle_entity_not_found_error(
+        self, client: Api, httpserver: HTTPServer, api_call_kwargs
+    ):
+        httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
+            build_error("account_not_found"), status=400
+        )
+        with pytest.raises(BusinessLogicError):
             self.make_api_call(client)
 
     def test_handle_internal_error(
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error(ErrorCodes.INTERNAL_ERROR.value), status=400
+            build_error("internal_error"), status=400
         )
         with pytest.raises(InternalServerError):
             self.make_api_call(client)
 
-    def test_handle_invalid_query_error(
+    def test_handle_unknown_error(
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error(ErrorCodes.INVALID_QUERY.value), status=400
+            {"foo": "bar"}, status=400
         )
-        with pytest.raises(InvalidQueryError):
+        with pytest.raises(APIError):
             self.make_api_call(client)

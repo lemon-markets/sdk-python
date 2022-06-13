@@ -3,13 +3,19 @@ import warnings
 from datetime import date, datetime, time, timedelta
 from operator import attrgetter
 from time import sleep
-from typing import Set
+from typing import Literal, Set
 
 import pytest
-from typing_extensions import Literal
 
 from lemon import api
 from lemon.api import Api
+from lemon.errors import AuthenticationError, BusinessLogicError, InvalidRequestError
+from lemon.trading.model import (
+    Account,
+    CreateOrderResponse,
+    GetOrderResponse,
+    GetPerformanceResponse,
+)
 
 API_KEY = os.getenv("API_KEY", None)
 
@@ -260,7 +266,7 @@ def test_user_e2e(uut: Api):
 @pytest.mark.e2e
 def test_account_e2e(uut: Api):
     response = uut.trading.account.get()
-    account = response.results
+    account: Account = response.results
     assert account.created_at
 
     uut.trading.account.update(
@@ -274,7 +280,7 @@ def test_account_e2e(uut: Api):
 @pytest.mark.e2e
 def test_orders_e2e(uut: Api):
     # open order
-    r1 = uut.trading.orders.create(
+    r1: CreateOrderResponse = uut.trading.orders.create(
         isin="US88160R1014", side="buy", quantity=1, venue="xmun"
     )
     order_id = r1.results.id
@@ -283,13 +289,15 @@ def test_orders_e2e(uut: Api):
     uut.trading.orders.activate(order_id)
 
     while 1:
-        r2 = uut.trading.orders.get_order(order_id)
+        r2: GetOrderResponse = uut.trading.orders.get_order(order_id)
         if r2.results.status == "executed":
             break
         sleep(1)
 
     # check performance
-    r3 = uut.trading.positions.get_performance(isin="US88160R1014")
+    r3: GetPerformanceResponse = uut.trading.positions.get_performance(
+        isin="US88160R1014"
+    )
     assert len(r3.results) == 1
 
     # fetch statements
@@ -305,7 +313,7 @@ def test_orders_e2e(uut: Api):
     uut.trading.orders.activate(order_id)
 
     while 1:
-        r5 = uut.trading.orders.get_order(order_id)
+        r5: GetOrderResponse = uut.trading.orders.get_order(order_id)
         if r5.results.status == "executed":
             break
         sleep(1)
@@ -317,6 +325,25 @@ def test_orders_e2e(uut: Api):
     order_id = r6.results.id
     assert order_id is not None
     uut.trading.orders.delete(order_id)
-    response = uut.trading.orders.get_order(order_id)
+    response: GetOrderResponse = uut.trading.orders.get_order(order_id)
 
     assert response.results.status == "canceled"
+
+
+@pytest.mark.e2e
+def test_raise_invalid_requests_error(uut):
+    with pytest.raises(InvalidRequestError):
+        uut.trading.orders.get(side="unknown")
+
+
+@pytest.mark.e2e
+def test_raise_authentication_error(uut):
+    uut._config.api_token = "invalid-token"
+    with pytest.raises(AuthenticationError):
+        uut.market_data.instruments.get()
+
+
+@pytest.mark.e2e
+def test_raise_business_logic_error(uut):
+    with pytest.raises(BusinessLogicError):
+        uut.trading.orders.get_order("invalid")
