@@ -1,4 +1,6 @@
-from datetime import date, datetime
+import json
+from dataclasses import asdict
+from datetime import date, datetime, time
 from typing import Any, Callable, Dict, Literal, Optional
 from urllib.parse import urljoin
 
@@ -138,3 +140,18 @@ def as_or_none(type_: Callable[[Any], Any], value: Any) -> Any:
 
 def to_date(x: str) -> date:
     return datetime.fromisoformat(x).date()
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o: Any) -> Any:
+        if isinstance(o, (datetime, date, time)):
+            return o.isoformat()
+        return super().default(o)
+
+
+class BaseModel:
+    def dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+    def json(self) -> str:
+        return json.dumps(asdict(self), cls=JSONEncoder)

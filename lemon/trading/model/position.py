@@ -2,13 +2,13 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Dict, List, Literal, Optional
 
-from lemon.helpers import Environment, as_or_none, to_date
+from lemon.helpers import BaseModel, Environment, as_or_none, to_date
 
 StatementType = Literal["order_buy", "order_sell", "split", "import", "snx"]
 
 
 @dataclass
-class Position:
+class Position(BaseModel):
     isin: str
     isin_title: str
     quantity: int
@@ -29,7 +29,7 @@ class Position:
 
 
 @dataclass
-class GetPositionsResponse:
+class GetPositionsResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Position]
@@ -50,7 +50,7 @@ class GetPositionsResponse:
 
 
 @dataclass
-class Statement:
+class Statement(BaseModel):
     id: str
     order_id: Optional[str]
     external_id: Optional[str]
@@ -77,7 +77,7 @@ class Statement:
 
 
 @dataclass
-class GetStatementsResponse:
+class GetStatementsResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Statement]
@@ -98,7 +98,7 @@ class GetStatementsResponse:
 
 
 @dataclass
-class Performance:
+class Performance(BaseModel):
     isin: str
     isin_title: str
     profit: int
@@ -127,7 +127,7 @@ class Performance:
 
 
 @dataclass
-class GetPerformanceResponse:
+class GetPerformanceResponse(BaseModel):
     time: datetime
     mode: Environment
     results: List[Performance]
