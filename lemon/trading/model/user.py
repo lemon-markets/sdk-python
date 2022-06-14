@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Dict, Optional
 
-from lemon.helpers import BaseModel, Environment, as_or_none, to_date
+from lemon.types import BaseModel, Environment, to_date, to_type
 
 
 @dataclass
@@ -36,16 +36,14 @@ class User(BaseModel):
             lastname=data.get("lastname"),
             email=data.get("email"),
             phone=data.get("phone"),
-            phone_verified=as_or_none(
-                datetime.fromisoformat, data.get("phone_verified")
-            ),
+            phone_verified=to_type(datetime.fromisoformat, data.get("phone_verified")),
             pin_verified=data["pin_verified"],
             account_id=data["account_id"],
             trading_plan=data["trading_plan"],
             data_plan=data["data_plan"],
             tax_allowance=data.get("tax_allowance"),
-            tax_allowance_start=as_or_none(to_date, data.get("tax_allowance_start")),
-            tax_allowance_end=as_or_none(to_date, data.get("tax_allowance_end")),
+            tax_allowance_start=to_type(to_date, data.get("tax_allowance_start")),
+            tax_allowance_end=to_type(to_date, data.get("tax_allowance_end")),
             optin_order_push=data["optin_order_push"],
             optin_order_email=data["optin_order_email"],
             country=data["country"],

@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from typing_extensions import Literal
 
-from lemon.helpers import BaseModel, Environment, as_or_none, to_date
+from lemon.types import BaseModel, Environment, to_date, to_type
 
 StatementType = Literal["order_buy", "order_sell", "split", "import", "snx"]
 
@@ -25,8 +25,8 @@ class Position(BaseModel):
             isin_title=data["isin_title"],
             quantity=int(data["quantity"]),
             buy_price_avg=int(data["buy_price_avg"]),
-            estimated_price_total=as_or_none(int, data.get("estimated_price_total")),
-            estimated_price=as_or_none(int, data.get("estimated_price")),
+            estimated_price_total=to_type(int, data.get("estimated_price_total")),
+            estimated_price=to_type(int, data.get("estimated_price")),
         )
 
 
@@ -122,8 +122,8 @@ class Performance(BaseModel):
             quantity_bought=int(data["quantity_bought"]),
             quantity_sold=int(data["quantity_sold"]),
             quantity_open=int(data["quantity_open"]),
-            opened_at=as_or_none(datetime.fromisoformat, data.get("opened_at")),
-            closed_at=as_or_none(datetime.fromisoformat, data.get("closed_at")),
+            opened_at=to_type(datetime.fromisoformat, data.get("opened_at")),
+            closed_at=to_type(datetime.fromisoformat, data.get("closed_at")),
             fees=int(data["fees"]),
         )
 

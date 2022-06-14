@@ -1,9 +1,9 @@
-from lemon.helpers import ApiClient
+from lemon.base import Client
 from lemon.trading.model import GetUserResponse
 
 
 class User:
-    def __init__(self, client: ApiClient):
+    def __init__(self, client: Client):
         self._client = client
 
     def get(self) -> GetUserResponse:

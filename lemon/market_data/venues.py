@@ -1,11 +1,12 @@
 from typing import List, Optional
 
-from lemon.helpers import ApiClient, Sorting
+from lemon.base import Client
 from lemon.market_data.model import GetVenuesResponse
+from lemon.types import Sorting
 
 
 class Venues:
-    def __init__(self, client: ApiClient):
+    def __init__(self, client: Client):
         self._client = client
 
     def get(

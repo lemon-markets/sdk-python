@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Optional, Union
 
-from lemon.helpers import ApiClient, Days
+from lemon.base import Client
 from lemon.trading.model import (
     ActivateOrderResponse,
     CreateOrderResponse,
@@ -13,10 +13,11 @@ from lemon.trading.model import (
     OrderType,
     Venue,
 )
+from lemon.types import Days
 
 
 class Orders:
-    def __init__(self, client: ApiClient):
+    def __init__(self, client: Client):
         self._client = client
 
     def get(

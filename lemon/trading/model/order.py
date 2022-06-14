@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from typing_extensions import Literal
 
-from lemon.helpers import BaseModel, Environment, as_or_none
+from lemon.types import BaseModel, Environment, to_type
 
 OrderSide = Literal["sell", "buy"]
 OrderStatus = Literal[
@@ -47,7 +47,7 @@ class RegulatoryInformation(BaseModel):
     @staticmethod
     def _from_data(data: Dict[str, Any]) -> "RegulatoryInformation":
         return RegulatoryInformation(
-            costs_entry=as_or_none(int, data.get("costs_entry")),
+            costs_entry=to_type(int, data.get("costs_entry")),
             costs_entry_pct=data.get("costs_entry_pct"),
             costs_running=int(data["costs_running"]),
             costs_running_pct=data.get("costs_running_pct"),
@@ -55,9 +55,9 @@ class RegulatoryInformation(BaseModel):
             costs_product_pct=data.get("costs_product_pct"),
             costs_exit=int(data["costs_exit"]),
             costs_exit_pct=data.get("costs_exit_pct"),
-            yield_reduction_year=as_or_none(int, data.get("yield_reduction_year")),
+            yield_reduction_year=to_type(int, data.get("yield_reduction_year")),
             yield_reduction_year_pct=data.get("yield_reduction_year_pct"),
-            yield_reduction_year_following=as_or_none(
+            yield_reduction_year_following=to_type(
                 int, data.get("yield_reduction_year_following")
             ),
             yield_reduction_year_following_pct=data.get(
@@ -68,7 +68,7 @@ class RegulatoryInformation(BaseModel):
             estimated_holding_duration_years=data.get(
                 "estimated_holding_duration_years"
             ),
-            estimated_yield_reduction_total=as_or_none(
+            estimated_yield_reduction_total=to_type(
                 int, data.get("estimated_yield_reduction_total")
             ),
             estimated_yield_reduction_total_pct=data.get(
@@ -121,26 +121,26 @@ class Order(BaseModel):
             created_at=datetime.fromisoformat(data["created_at"]),
             side=data["side"],
             quantity=int(data["quantity"]),
-            stop_price=as_or_none(int, data.get("stop_price")),
-            limit_price=as_or_none(int, data.get("limit_price")),
-            estimated_price=as_or_none(int, data.get("estimated_price")),
-            estimated_price_total=as_or_none(int, data.get("estimated_price_total")),
+            stop_price=to_type(int, data.get("stop_price")),
+            limit_price=to_type(int, data.get("limit_price")),
+            estimated_price=to_type(int, data.get("estimated_price")),
+            estimated_price_total=to_type(int, data.get("estimated_price_total")),
             venue=data["venue"],
             status=data["status"],
             type=data["type"],
             executed_quantity=int(data["executed_quantity"]),
             executed_price=int(data["executed_price"]),
-            executed_price_total=as_or_none(int, data.get("executed_price_total")),
-            activated_at=as_or_none(datetime.fromisoformat, data.get("activated_at")),
-            executed_at=as_or_none(datetime.fromisoformat, data.get("executed_at")),
-            rejected_at=as_or_none(datetime.fromisoformat, data.get("rejected_at")),
-            cancelled_at=as_or_none(datetime.fromisoformat, data.get("cancelled_at")),
+            executed_price_total=to_type(int, data.get("executed_price_total")),
+            activated_at=to_type(datetime.fromisoformat, data.get("activated_at")),
+            executed_at=to_type(datetime.fromisoformat, data.get("executed_at")),
+            rejected_at=to_type(datetime.fromisoformat, data.get("rejected_at")),
+            cancelled_at=to_type(datetime.fromisoformat, data.get("cancelled_at")),
             notes=data.get("notes"),
-            charge=as_or_none(int, data.get("charge")),
-            chargeable_at=as_or_none(datetime.fromisoformat, data.get("chargeable_at")),
+            charge=to_type(int, data.get("charge")),
+            chargeable_at=to_type(datetime.fromisoformat, data.get("chargeable_at")),
             key_creation_id=data.get("key_creation_id"),
             key_activation_id=data.get("key_activation_id"),
-            regulatory_information=as_or_none(
+            regulatory_information=to_type(
                 RegulatoryInformation._from_data, data.get("regulatory_information")
             ),
             idempotency=data.get("idempotency"),
@@ -202,14 +202,14 @@ class CreatedOrder(BaseModel):
             expires_at=datetime.fromisoformat(data["expires_at"]),
             side=data["side"],
             quantity=int(data["quantity"]),
-            stop_price=as_or_none(int, data.get("stop_price")),
-            limit_price=as_or_none(int, data.get("limit_price")),
+            stop_price=to_type(int, data.get("stop_price")),
+            limit_price=to_type(int, data.get("limit_price")),
             venue=data.get("venue"),
             estimated_price=int(data["estimated_price"]),
             estimated_price_total=int(data["estimated_price_total"]),
             notes=data.get("notes"),
-            charge=as_or_none(int, data.get("charge")),
-            chargeable_at=as_or_none(datetime.fromisoformat, data.get("chargeable_at")),
+            charge=to_type(int, data.get("charge")),
+            chargeable_at=to_type(datetime.fromisoformat, data.get("chargeable_at")),
             key_creation_id=data.get("key_creation_id"),
             idempotency=data.get("idempotency"),
         )
