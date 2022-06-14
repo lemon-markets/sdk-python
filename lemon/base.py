@@ -50,6 +50,8 @@ class Client:
         timeout: float,
         retry_count: int,
         retry_backoff_factor: float,
+        pool_connections: int,
+        pool_maxsize: int,
     ):
         self._base_url = base_url
         self._api_token = api_token
@@ -62,8 +64,22 @@ class Client:
             allowed_methods=["HEAD", "GET", "DELETE", "OPTIONS", "TRACE"],
         )
 
-        self._session.mount("http://", HTTPAdapter(max_retries=retries))
-        self._session.mount("https://", HTTPAdapter(max_retries=retries))
+        self._session.mount(
+            "http://",
+            HTTPAdapter(
+                max_retries=retries,
+                pool_connections=pool_connections,
+                pool_maxsize=pool_maxsize,
+            ),
+        )
+        self._session.mount(
+            "https://",
+            HTTPAdapter(
+                max_retries=retries,
+                pool_connections=pool_connections,
+                pool_maxsize=pool_maxsize,
+            ),
+        )
 
     @_handle_error
     def get(

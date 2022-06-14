@@ -14,6 +14,8 @@ class MarketDataAPI(Client):
         timeout: float,
         retry_count: int,
         retry_backoff_factor: float,
+        pool_connections: int,
+        pool_maxsize: int,
     ):
         super().__init__(
             base_url=market_data_api_url,
@@ -21,6 +23,8 @@ class MarketDataAPI(Client):
             timeout=timeout,
             retry_count=retry_count,
             retry_backoff_factor=retry_backoff_factor,
+            pool_connections=pool_connections,
+            pool_maxsize=pool_maxsize,
         )
         self._venues = Venues(self)
         self._instruments = Instruments(self)

@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from typing_extensions import Literal
 
-from lemon.types import BaseModel, Environment, to_type
+from lemon.types import BaseModel, Environment
 
 OrderSide = Literal["sell", "buy"]
 OrderStatus = Literal[
@@ -44,40 +44,6 @@ class RegulatoryInformation(BaseModel):
     KIID: Optional[str]
     legal_disclaimer: str
 
-    @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "RegulatoryInformation":
-        return RegulatoryInformation(
-            costs_entry=to_type(int, data.get("costs_entry")),
-            costs_entry_pct=data.get("costs_entry_pct"),
-            costs_running=int(data["costs_running"]),
-            costs_running_pct=data.get("costs_running_pct"),
-            costs_product=int(data["costs_product"]),
-            costs_product_pct=data.get("costs_product_pct"),
-            costs_exit=int(data["costs_exit"]),
-            costs_exit_pct=data.get("costs_exit_pct"),
-            yield_reduction_year=to_type(int, data.get("yield_reduction_year")),
-            yield_reduction_year_pct=data.get("yield_reduction_year_pct"),
-            yield_reduction_year_following=to_type(
-                int, data.get("yield_reduction_year_following")
-            ),
-            yield_reduction_year_following_pct=data.get(
-                "yield_reduction_year_following_pct"
-            ),
-            yield_reduction_year_exit=int(data["yield_reduction_year_exit"]),
-            yield_reduction_year_exit_pct=data["yield_reduction_year_exit_pct"],
-            estimated_holding_duration_years=data.get(
-                "estimated_holding_duration_years"
-            ),
-            estimated_yield_reduction_total=to_type(
-                int, data.get("estimated_yield_reduction_total")
-            ),
-            estimated_yield_reduction_total_pct=data.get(
-                "estimated_yield_reduction_total_pct"
-            ),
-            KIID=data.get("KIID"),
-            legal_disclaimer=data["legal_disclaimer"],
-        )
-
 
 @dataclass
 class Order(BaseModel):
@@ -110,42 +76,6 @@ class Order(BaseModel):
     regulatory_information: Optional[RegulatoryInformation]
     idempotency: Optional[str]
 
-    @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "Order":
-        print(data)
-        return Order(
-            id=data["id"],
-            isin=data["isin"],
-            isin_title=data["isin_title"],
-            expires_at=datetime.fromisoformat(data["expires_at"]),
-            created_at=datetime.fromisoformat(data["created_at"]),
-            side=data["side"],
-            quantity=int(data["quantity"]),
-            stop_price=to_type(int, data.get("stop_price")),
-            limit_price=to_type(int, data.get("limit_price")),
-            estimated_price=to_type(int, data.get("estimated_price")),
-            estimated_price_total=to_type(int, data.get("estimated_price_total")),
-            venue=data["venue"],
-            status=data["status"],
-            type=data["type"],
-            executed_quantity=int(data["executed_quantity"]),
-            executed_price=int(data["executed_price"]),
-            executed_price_total=to_type(int, data.get("executed_price_total")),
-            activated_at=to_type(datetime.fromisoformat, data.get("activated_at")),
-            executed_at=to_type(datetime.fromisoformat, data.get("executed_at")),
-            rejected_at=to_type(datetime.fromisoformat, data.get("rejected_at")),
-            cancelled_at=to_type(datetime.fromisoformat, data.get("cancelled_at")),
-            notes=data.get("notes"),
-            charge=to_type(int, data.get("charge")),
-            chargeable_at=to_type(datetime.fromisoformat, data.get("chargeable_at")),
-            key_creation_id=data.get("key_creation_id"),
-            key_activation_id=data.get("key_activation_id"),
-            regulatory_information=to_type(
-                RegulatoryInformation._from_data, data.get("regulatory_information")
-            ),
-            idempotency=data.get("idempotency"),
-        )
-
 
 @dataclass
 class GetOrdersResponse(BaseModel):
@@ -155,17 +85,6 @@ class GetOrdersResponse(BaseModel):
     total: int
     page: int
     pages: int
-
-    @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "GetOrdersResponse":
-        return GetOrdersResponse(
-            time=datetime.fromisoformat(data["time"]),
-            mode=data["mode"],
-            results=[Order._from_data(entry) for entry in data["results"]],
-            total=int(data["total"]),
-            page=int(data["page"]),
-            pages=int(data["pages"]),
-        )
 
 
 @dataclass
@@ -189,31 +108,6 @@ class CreatedOrder(BaseModel):
     key_creation_id: Optional[str]
     idempotency: Optional[str]
 
-    @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "CreatedOrder":
-        return CreatedOrder(
-            id=data["id"],
-            status=data["status"],
-            created_at=datetime.fromisoformat(data["created_at"]),
-            regulatory_information=RegulatoryInformation._from_data(
-                data["regulatory_information"]
-            ),
-            isin=data["isin"],
-            expires_at=datetime.fromisoformat(data["expires_at"]),
-            side=data["side"],
-            quantity=int(data["quantity"]),
-            stop_price=to_type(int, data.get("stop_price")),
-            limit_price=to_type(int, data.get("limit_price")),
-            venue=data.get("venue"),
-            estimated_price=int(data["estimated_price"]),
-            estimated_price_total=int(data["estimated_price_total"]),
-            notes=data.get("notes"),
-            charge=to_type(int, data.get("charge")),
-            chargeable_at=to_type(datetime.fromisoformat, data.get("chargeable_at")),
-            key_creation_id=data.get("key_creation_id"),
-            idempotency=data.get("idempotency"),
-        )
-
 
 @dataclass
 class CreateOrderResponse(BaseModel):
@@ -221,26 +115,11 @@ class CreateOrderResponse(BaseModel):
     mode: Environment
     results: CreatedOrder
 
-    @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "CreateOrderResponse":
-        return CreateOrderResponse(
-            time=datetime.fromisoformat(data["time"]),
-            mode=data["mode"],
-            results=CreatedOrder._from_data(data["results"]),
-        )
-
 
 @dataclass
 class ActivateOrderResponse(BaseModel):
     time: datetime
     mode: Environment
-
-    @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "ActivateOrderResponse":
-        return ActivateOrderResponse(
-            time=datetime.fromisoformat(data["time"]),
-            mode=data["mode"],
-        )
 
 
 @dataclass
@@ -249,23 +128,8 @@ class GetOrderResponse(BaseModel):
     mode: Environment
     results: Order
 
-    @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "GetOrderResponse":
-        return GetOrderResponse(
-            time=datetime.fromisoformat(data["time"]),
-            mode=data["mode"],
-            results=Order._from_data(data["results"]),
-        )
-
 
 @dataclass
 class DeleteOrderResponse(BaseModel):
     time: datetime
     mode: Environment
-
-    @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "DeleteOrderResponse":
-        return DeleteOrderResponse(
-            time=datetime.fromisoformat(data["time"]),
-            mode=data["mode"],
-        )

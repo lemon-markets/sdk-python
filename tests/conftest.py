@@ -68,6 +68,8 @@ def client(market_data_httpserver: HTTPServer, trading_httpserver: HTTPServer) -
         timeout=1,
         retry_count=1,
         retry_backoff_factor=1,
+        pool_connections=5,
+        pool_maxsize=5,
     )
 
 
