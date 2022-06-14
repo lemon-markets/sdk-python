@@ -2,13 +2,12 @@ from typing import Optional
 
 from typing_extensions import Literal
 
-from lemon.config import (
-    LIVE_TRADING_API_URL,
-    MARKET_DATA_API_URL,
-    PAPER_TRADING_API_URL,
-)
 from lemon.market_data.api import MarketDataApi
 from lemon.trading.api import TradingApi
+
+MARKET_DATA_API_URL = "https://data.lemon.markets/v1/"
+LIVE_TRADING_API_URL = "https://trading.lemon.markets/v1/"
+PAPER_TRADING_API_URL = "https://paper-trading.lemon.markets/v1/"
 
 
 class Api:
