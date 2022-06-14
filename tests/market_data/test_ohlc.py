@@ -205,3 +205,7 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
         ).respond_with_json(DUMMY_PAYLOAD)
 
         assert client.market_data.ohlc.get(period="h1", isin=["XMUN"]) == DUMMY_RESPONSE
+
+    def test_raise_on_invalid_input(self, client: Api):
+        with pytest.raises(ValueError):
+            client.market_data.ohlc.get(period="", isin=["XMUN"])  # type: ignore

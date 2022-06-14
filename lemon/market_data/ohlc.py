@@ -25,6 +25,9 @@ class Ohlc:
         limit: Optional[int] = None,
         page: Optional[int] = None,
     ) -> GetOhlcResponse:
+        if len(period) != 2:
+            raise ValueError("Invalid period value")
+
         resp = self._client.get(
             f"ohlc/{period}",
             params={

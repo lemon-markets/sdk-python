@@ -511,3 +511,7 @@ class TestGetDocumentApi(CommonTradingApiTests):
         ).respond_with_json(DUMMY_GET_DOCUMENT_PAYLOAD)
 
         assert client.trading.account.get_document("foo") == DUMMY_GET_DOCUMENT_RESPONSE
+
+    def test_raise_on_invalid_input(self, client: Api):
+        with pytest.raises(ValueError):
+            client.trading.account.get_document("")

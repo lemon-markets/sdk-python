@@ -1,3 +1,4 @@
+from threading import Lock
 from typing import Optional
 
 from lemon.base import Client
@@ -29,33 +30,39 @@ class MarketDataAPI(Client):
         self._trades: Optional[Trades] = None
         self._quotes: Optional[Quotes] = None
         self._ohlc: Optional[Ohlc] = None
+        self._lock = Lock()
 
     @property
     def venues(self) -> Venues:
-        if self._venues is None:
-            self._venues = Venues(self)
+        with self._lock:
+            if self._venues is None:
+                self._venues = Venues(self)
         return self._venues
 
     @property
     def instruments(self) -> Instruments:
-        if self._instruments is None:
-            self._instruments = Instruments(self)
+        with self._lock:
+            if self._instruments is None:
+                self._instruments = Instruments(self)
         return self._instruments
 
     @property
     def trades(self) -> Trades:
-        if self._trades is None:
-            self._trades = Trades(self)
+        with self._lock:
+            if self._trades is None:
+                self._trades = Trades(self)
         return self._trades
 
     @property
     def quotes(self) -> Quotes:
-        if self._quotes is None:
-            self._quotes = Quotes(self)
+        with self._lock:
+            if self._quotes is None:
+                self._quotes = Quotes(self)
         return self._quotes
 
     @property
     def ohlc(self) -> Ohlc:
-        if self._ohlc is None:
-            self._ohlc = Ohlc(self)
+        with self._lock:
+            if self._ohlc is None:
+                self._ohlc = Ohlc(self)
         return self._ohlc

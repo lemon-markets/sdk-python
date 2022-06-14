@@ -1,3 +1,4 @@
+from threading import Lock
 from typing import Optional
 
 from typing_extensions import Literal
@@ -28,29 +29,32 @@ class Api:
         self._retry_backoff_factor = retry_backoff_factor
         self._market_data: Optional[MarketDataAPI] = None
         self._trading: Optional[TradingAPI] = None
+        self._lock = Lock()
 
     @property
     def market_data(self) -> MarketDataAPI:
-        if self._market_data is None:
-            self._market_data = MarketDataAPI(
-                api_token=self._api_token,
-                market_data_api_url=self._market_data_api_url,
-                timeout=self._timeout,
-                retry_count=self._retry_count,
-                retry_backoff_factor=self._retry_backoff_factor,
-            )
+        with self._lock:
+            if self._market_data is None:
+                self._market_data = MarketDataAPI(
+                    api_token=self._api_token,
+                    market_data_api_url=self._market_data_api_url,
+                    timeout=self._timeout,
+                    retry_count=self._retry_count,
+                    retry_backoff_factor=self._retry_backoff_factor,
+                )
         return self._market_data
 
     @property
     def trading(self) -> TradingAPI:
-        if self._trading is None:
-            self._trading = TradingAPI(
-                api_token=self._api_token,
-                trading_api_url=self._trading_api_url,
-                timeout=self._timeout,
-                retry_count=self._retry_count,
-                retry_backoff_factor=self._retry_backoff_factor,
-            )
+        with self._lock:
+            if self._trading is None:
+                self._trading = TradingAPI(
+                    api_token=self._api_token,
+                    trading_api_url=self._trading_api_url,
+                    timeout=self._timeout,
+                    retry_count=self._retry_count,
+                    retry_backoff_factor=self._retry_backoff_factor,
+                )
         return self._trading
 
 

@@ -1,3 +1,4 @@
+from threading import Lock
 from typing import Optional
 
 from lemon.base import Client
@@ -27,27 +28,32 @@ class TradingAPI(Client):
         self._orders: Optional[Orders] = None
         self._positions: Optional[Positions] = None
         self._user: Optional[User] = None
+        self._lock = Lock()
 
     @property
     def account(self) -> Account:
-        if self._account is None:
-            self._account = Account(self)
+        with self._lock:
+            if self._account is None:
+                self._account = Account(self)
         return self._account
 
     @property
     def orders(self) -> Orders:
-        if self._orders is None:
-            self._orders = Orders(self)
+        with self._lock:
+            if self._orders is None:
+                self._orders = Orders(self)
         return self._orders
 
     @property
     def positions(self) -> Positions:
-        if self._positions is None:
-            self._positions = Positions(self)
+        with self._lock:
+            if self._positions is None:
+                self._positions = Positions(self)
         return self._positions
 
     @property
     def user(self) -> User:
-        if self._user is None:
-            self._user = User(self)
+        with self._lock:
+            if self._user is None:
+                self._user = User(self)
         return self._user
