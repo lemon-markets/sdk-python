@@ -9,7 +9,6 @@ import requests
 from requests.adapters import HTTPAdapter, Retry
 from typing_extensions import Literal, ParamSpec
 
-from lemon.config import Config
 from lemon.errors import (
     APIError,
     AuthenticationError,
@@ -78,13 +77,21 @@ def _handle_error(
 
 
 class ApiClient:
-    def __init__(self, base_url: str, config: Config):
+    def __init__(
+        self,
+        base_url: str,
+        api_token: str,
+        timeout: float,
+        retry_count: int,
+        retry_backoff_factor: float,
+    ):
         self._base_url = base_url
-        self._config = config
+        self._api_token = api_token
+        self._timeout = timeout
         self._session = requests.Session()
         retries = Retry(
-            total=config.retry_count,
-            backoff_factor=config.retry_backoff_factor,
+            total=retry_count,
+            backoff_factor=retry_backoff_factor,
             status_forcelist=[429, 500, 502, 503, 504],
             allowed_methods=["HEAD", "GET", "DELETE", "OPTIONS", "TRACE"],
         )
@@ -104,8 +111,8 @@ class ApiClient:
         return self._session.get(
             url,
             params=params,
-            headers={"Authorization": f"Bearer {self._config.api_token}", **headers},
-            timeout=self._config.timeout,
+            headers={"Authorization": f"Bearer {self._api_token}", **headers},
+            timeout=self._timeout,
         )
 
     @_handle_error
@@ -122,8 +129,8 @@ class ApiClient:
             url,
             json=json,
             params=params,
-            headers={"Authorization": f"Bearer {self._config.api_token}", **headers},
-            timeout=self._config.timeout,
+            headers={"Authorization": f"Bearer {self._api_token}", **headers},
+            timeout=self._timeout,
         )
 
     @_handle_error
@@ -140,8 +147,8 @@ class ApiClient:
             url,
             json=json,
             params=params,
-            headers={"Authorization": f"Bearer {self._config.api_token}", **headers},
-            timeout=self._config.timeout,
+            headers={"Authorization": f"Bearer {self._api_token}", **headers},
+            timeout=self._timeout,
         )
 
     @_handle_error
@@ -156,6 +163,6 @@ class ApiClient:
         return self._session.delete(
             url,
             params=params,
-            headers={"Authorization": f"Bearer {self._config.api_token}", **headers},
-            timeout=self._config.timeout,
+            headers={"Authorization": f"Bearer {self._api_token}", **headers},
+            timeout=self._timeout,
         )
