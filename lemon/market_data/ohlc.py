@@ -3,12 +3,13 @@ from typing import List, Optional, Union
 
 from typing_extensions import Literal
 
-from lemon.helpers import ApiClient, Days, Sorting
+from lemon.base import Client
 from lemon.market_data.model import GetOhlcResponse
+from lemon.types import Days, Sorting
 
 
 class Ohlc:
-    def __init__(self, client: ApiClient):
+    def __init__(self, client: Client):
         self._client = client
 
     def get(

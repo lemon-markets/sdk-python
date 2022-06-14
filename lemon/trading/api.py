@@ -1,13 +1,13 @@
 from typing import Optional
 
-from lemon.helpers import ApiClient
+from lemon.base import Client
 from lemon.trading.account import Account
 from lemon.trading.orders import Orders
 from lemon.trading.positions import Positions
 from lemon.trading.user import User
 
 
-class TradingApi(ApiClient):
+class TradingAPI(Client):
     def __init__(
         self,
         api_token: str,

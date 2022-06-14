@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 import pytz
 
-from lemon.helpers import BaseModel
+from lemon.types import BaseModel
 
 
 def _build_time(time: str, timezone: tzinfo) -> time:

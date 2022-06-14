@@ -1,2 +1,6 @@
 [report]
 show_missing=True
+
+[coverage:run]
+omit =
+    lemon/version.py

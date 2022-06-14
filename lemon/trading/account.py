@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 from typing_extensions import Literal
 
-from lemon.helpers import ApiClient, Sorting
+from lemon.base import Client
 from lemon.trading.model import (
     BankStatementType,
     GetAccountResponse,
@@ -13,10 +13,11 @@ from lemon.trading.model import (
     GetWithdrawalsResponse,
     WithdrawResponse,
 )
+from lemon.types import Sorting
 
 
 class Account:
-    def __init__(self, client: ApiClient):
+    def __init__(self, client: Client):
         self._client = client
 
     def get(self) -> GetAccountResponse:

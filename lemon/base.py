@@ -1,13 +1,10 @@
-import json
-from dataclasses import asdict
-from datetime import date, datetime, time
 from functools import wraps
 from typing import Any, Callable, Dict, Optional
 from urllib.parse import urljoin
 
 import requests
 from requests.adapters import HTTPAdapter, Retry
-from typing_extensions import Literal, ParamSpec
+from typing_extensions import ParamSpec
 
 from lemon.errors import (
     APIError,
@@ -16,49 +13,6 @@ from lemon.errors import (
     InternalServerError,
     InvalidRequestError,
 )
-
-Sorting = Literal["asc", "desc"]
-Environment = Literal["paper", "money"]
-Days = int
-
-
-def as_or_none(type_: Callable[[Any], Any], value: Any) -> Any:
-    return type_(value) if value is not None else None
-
-
-def to_date(x: str) -> date:
-    return datetime.fromisoformat(x).date()
-
-
-class JSONEncoder(json.JSONEncoder):
-    def default(self, o: Any) -> Any:
-        if isinstance(o, (datetime, date, time)):
-            return o.isoformat()
-        return super().default(o)
-
-
-class BaseModel:
-    def dict(self) -> Dict[str, Any]:
-        return asdict(self)
-
-    def json(self) -> str:
-        return json.dumps(asdict(self), cls=JSONEncoder)
-
-
-def handle_errors(response: requests.Response) -> None:
-    error = response.json()
-    error_code: Optional[str] = error.get("error_code")
-    if error_code is None:
-        raise APIError._from_data(error)
-    if error_code == "invalid_request":
-        raise InvalidRequestError._from_data(error)
-    if error_code == "internal_error":
-        raise InternalServerError._from_data(error)
-    if error_code in ["unauthorized", "token_invalid"]:
-        raise AuthenticationError._from_data(error)
-
-    raise BusinessLogicError._from_data(error)
-
 
 P = ParamSpec("P")
 
@@ -70,13 +24,25 @@ def _handle_error(
     def inner(*arg: P.args, **kwargs: P.kwargs) -> requests.Response:
         response = func(*arg, **kwargs)
         if not response.ok:
-            handle_errors(response)
+            error = response.json()
+            error_code: Optional[str] = error.get("error_code")
+            if error_code is None:
+                raise APIError._from_data(error)
+            if error_code == "invalid_request":
+                raise InvalidRequestError._from_data(error)
+            if error_code == "internal_error":
+                raise InternalServerError._from_data(error)
+            if error_code in ["unauthorized", "token_invalid"]:
+                raise AuthenticationError._from_data(error)
+
+            raise BusinessLogicError._from_data(error)
+
         return response
 
     return inner
 
 
-class ApiClient:
+class Client:
     def __init__(
         self,
         base_url: str,

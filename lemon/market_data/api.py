@@ -1,6 +1,6 @@
 from typing import Optional
 
-from lemon.helpers import ApiClient
+from lemon.base import Client
 from lemon.market_data.instruments import Instruments
 from lemon.market_data.ohlc import Ohlc
 from lemon.market_data.quotes import Quotes
@@ -8,7 +8,7 @@ from lemon.market_data.trades import Trades
 from lemon.market_data.venues import Venues
 
 
-class MarketDataApi(ApiClient):
+class MarketDataAPI(Client):
     def __init__(
         self,
         api_token: str,

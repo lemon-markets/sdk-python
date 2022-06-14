@@ -2,8 +2,8 @@ from typing import Optional
 
 from typing_extensions import Literal
 
-from lemon.market_data.api import MarketDataApi
-from lemon.trading.api import TradingApi
+from lemon.market_data.api import MarketDataAPI
+from lemon.trading.api import TradingAPI
 
 MARKET_DATA_API_URL = "https://data.lemon.markets/v1/"
 LIVE_TRADING_API_URL = "https://trading.lemon.markets/v1/"
@@ -26,13 +26,13 @@ class Api:
         self._timeout = timeout
         self._retry_count = retry_count
         self._retry_backoff_factor = retry_backoff_factor
-        self._market_data: Optional[MarketDataApi] = None
-        self._trading: Optional[TradingApi] = None
+        self._market_data: Optional[MarketDataAPI] = None
+        self._trading: Optional[TradingAPI] = None
 
     @property
-    def market_data(self) -> MarketDataApi:
+    def market_data(self) -> MarketDataAPI:
         if self._market_data is None:
-            self._market_data = MarketDataApi(
+            self._market_data = MarketDataAPI(
                 api_token=self._api_token,
                 market_data_api_url=self._market_data_api_url,
                 timeout=self._timeout,
@@ -42,9 +42,9 @@ class Api:
         return self._market_data
 
     @property
-    def trading(self) -> TradingApi:
+    def trading(self) -> TradingAPI:
         if self._trading is None:
-            self._trading = TradingApi(
+            self._trading = TradingAPI(
                 api_token=self._api_token,
                 trading_api_url=self._trading_api_url,
                 timeout=self._timeout,

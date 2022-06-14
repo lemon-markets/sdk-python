@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from typing_extensions import Literal
 
-from lemon.helpers import BaseModel
+from lemon.types import BaseModel
 
 
 @dataclass

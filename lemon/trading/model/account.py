@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 
 from typing_extensions import Literal
 
-from lemon.helpers import BaseModel, Environment, as_or_none, to_date
+from lemon.types import BaseModel, Environment, to_date, to_type
 
 Plan = Literal["go", "investor", "trader"]
 
@@ -65,22 +65,20 @@ class Account(BaseModel):
             iban_brokerage=data.get("iban_brokerage"),
             iban_origin=data.get("iban_origin"),
             bank_name_origin=data.get("bank_name_origin"),
-            balance=as_or_none(int, data.get("balance")),
-            cash_to_invest=as_or_none(int, data.get("cash_to_invest")),
-            cash_to_withdraw=as_or_none(int, data.get("cash_to_withdraw")),
-            amount_bought_intraday=as_or_none(int, data.get("amount_bought_intraday")),
-            amount_sold_intraday=as_or_none(int, data.get("amount_sold_intraday")),
-            amount_open_orders=as_or_none(int, data.get("amount_open_orders")),
-            amount_open_withdrawals=as_or_none(
-                int, data.get("amount_open_withdrawals")
-            ),
-            amount_estimate_taxes=as_or_none(int, data.get("amount_estimate_taxes")),
-            approved_at=as_or_none(datetime.fromisoformat, data.get("approved_at")),
+            balance=to_type(int, data.get("balance")),
+            cash_to_invest=to_type(int, data.get("cash_to_invest")),
+            cash_to_withdraw=to_type(int, data.get("cash_to_withdraw")),
+            amount_bought_intraday=to_type(int, data.get("amount_bought_intraday")),
+            amount_sold_intraday=to_type(int, data.get("amount_sold_intraday")),
+            amount_open_orders=to_type(int, data.get("amount_open_orders")),
+            amount_open_withdrawals=to_type(int, data.get("amount_open_withdrawals")),
+            amount_estimate_taxes=to_type(int, data.get("amount_estimate_taxes")),
+            approved_at=to_type(datetime.fromisoformat, data.get("approved_at")),
             trading_plan=data["trading_plan"],
             data_plan=data["data_plan"],
-            tax_allowance=as_or_none(int, data.get("tax_allowance")),
-            tax_allowance_start=as_or_none(to_date, data.get("tax_allowance_start")),
-            tax_allowance_end=as_or_none(to_date, data.get("tax_allowance_end")),
+            tax_allowance=to_type(int, data.get("tax_allowance")),
+            tax_allowance_start=to_type(to_date, data.get("tax_allowance_start")),
+            tax_allowance_end=to_type(to_date, data.get("tax_allowance_end")),
         )
 
 
@@ -113,7 +111,7 @@ class Withdrawal(BaseModel):
             id=data["id"],
             amount=int(data["amount"]),
             created_at=datetime.fromisoformat(data["created_at"]),
-            date=as_or_none(to_date, data.get("date")),
+            date=to_type(to_date, data.get("date")),
             idempotency=data.get("idempotency"),
         )
 
@@ -188,7 +186,7 @@ class BankStatement(BaseModel):
             isin=data.get("isin"),
             isin_title=data.get("isin_title"),
             created_at=datetime.fromisoformat(data["created_at"]),
-            quantity=as_or_none(int, data.get("quantity")),
+            quantity=to_type(int, data.get("quantity")),
         )
 
 
@@ -231,12 +229,10 @@ class Document(BaseModel):
             created_at=datetime.fromisoformat(data["created_at"]),
             category=data["category"],
             link=data["link"],
-            viewed_first_at=as_or_none(
+            viewed_first_at=to_type(
                 datetime.fromisoformat, data.get("viewed_first_at")
             ),
-            viewed_last_at=as_or_none(
-                datetime.fromisoformat, data.get("viewed_last_at")
-            ),
+            viewed_last_at=to_type(datetime.fromisoformat, data.get("viewed_last_at")),
         )
 
 
