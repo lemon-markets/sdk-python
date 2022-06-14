@@ -113,7 +113,8 @@ class Account:
     def get_document(
         self, document_id: str, no_redirect: Optional[bool] = None
     ) -> GetDocumentResponse:
-        if len(document_id) == 0:
+        document_id = document_id.strip()
+        if not document_id:
             raise ValueError("document_id is empty string")
 
         resp = self._client.get(

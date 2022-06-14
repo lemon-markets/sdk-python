@@ -1,6 +1,3 @@
-from threading import Lock
-from typing import Optional
-
 from lemon.base import Client
 from lemon.trading.account import Account
 from lemon.trading.orders import Orders
@@ -24,36 +21,23 @@ class TradingAPI(Client):
             retry_count=retry_count,
             retry_backoff_factor=retry_backoff_factor,
         )
-        self._account: Optional[Account] = None
-        self._orders: Optional[Orders] = None
-        self._positions: Optional[Positions] = None
-        self._user: Optional[User] = None
-        self._lock = Lock()
+        self._account = Account(self)
+        self._orders = Orders(self)
+        self._positions = Positions(self)
+        self._user = User(self)
 
     @property
     def account(self) -> Account:
-        with self._lock:
-            if self._account is None:
-                self._account = Account(self)
         return self._account
 
     @property
     def orders(self) -> Orders:
-        with self._lock:
-            if self._orders is None:
-                self._orders = Orders(self)
         return self._orders
 
     @property
     def positions(self) -> Positions:
-        with self._lock:
-            if self._positions is None:
-                self._positions = Positions(self)
         return self._positions
 
     @property
     def user(self) -> User:
-        with self._lock:
-            if self._user is None:
-                self._user = User(self)
         return self._user

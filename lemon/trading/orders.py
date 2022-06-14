@@ -86,7 +86,8 @@ class Orders:
     def activate(
         self, order_id: str, pin: Optional[str] = None
     ) -> ActivateOrderResponse:
-        if len(order_id) == 0:
+        order_id = order_id.strip()
+        if not order_id:
             raise ValueError("order_id is empty string")
 
         resp = self._client.post(
@@ -96,14 +97,16 @@ class Orders:
         return ActivateOrderResponse._from_data(resp.json())
 
     def get_order(self, order_id: str) -> GetOrderResponse:
-        if len(order_id) == 0:
+        order_id = order_id.strip()
+        if not order_id:
             raise ValueError("order_id is empty string")
 
         resp = self._client.get(f"orders/{order_id}")
         return GetOrderResponse._from_data(resp.json())
 
     def delete(self, order_id: str) -> DeleteOrderResponse:
-        if len(order_id) == 0:
+        order_id = order_id.strip()
+        if not order_id:
             raise ValueError("order_id is empty string")
 
         resp = self._client.delete(f"orders/{order_id}")

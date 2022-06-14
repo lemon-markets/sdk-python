@@ -25,7 +25,8 @@ class Ohlc:
         limit: Optional[int] = None,
         page: Optional[int] = None,
     ) -> GetOhlcResponse:
-        if len(period) != 2:
+        period = period.strip().lower()  # type: ignore
+        if not period:
             raise ValueError("Invalid period value")
 
         resp = self._client.get(
