@@ -86,9 +86,11 @@ The library may throw those exceptions:
 - [`lemon.errors.AuthenticationError`](./lemon/errors.py) - thrown when an authorization error is received from the API.
 - [`lemon.errors.InternalServerError`](./lemon/errors.py) - is thrown when an internal server error is received from the API.
 - [`lemon.errors.APIError`](./lemon/errors.py) - is thrown when an unknown error is received.
-- [`requests.RequestExceptions`](https://requests.readthedocs.io/en/latest/api/#requests.RequestException) - thrown by `requests` on network problem, timeout, max retry count reached etc.
+- [`requests.RequestExceptions`](https://requests.readthedocs.io/en/latest/api/#requests.RequestException) - thrown by `requests` on network error, timeout, max retry count reached etc.
 
-More information about exceptions that can be thrown by `request` can be found [here](https://requests.readthedocs.io/en/latest/user/quickstart/#errors-and-exceptions).
+More information about exceptions that can be thrown by `requests` can be found [here](https://requests.readthedocs.io/en/latest/user/quickstart/#errors-and-exceptions).
+
+List of all error codes can be found [here](https://docs.lemon.markets/error-handling).
 
 # Direct API calls
 
