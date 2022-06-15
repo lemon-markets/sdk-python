@@ -35,7 +35,7 @@ class LemonError(BaseLemonError):
         )
 
 
-class InvalidRequestError(LemonError):
+class InvalidQueryError(LemonError):
     ...
 
 

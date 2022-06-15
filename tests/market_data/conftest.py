@@ -2,7 +2,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
-from lemon.errors import InvalidRequestError
+from lemon.errors import InvalidQueryError
 from tests.conftest import CommonApiTests, build_error
 
 
@@ -15,7 +15,7 @@ class CommonMarketDataApiTests(CommonApiTests):
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error("invalid_request"), status=400
+            build_error("invalid_query"), status=400
         )
-        with pytest.raises(InvalidRequestError):
+        with pytest.raises(InvalidQueryError):
             self.make_api_call(client)

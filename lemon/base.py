@@ -11,7 +11,7 @@ from lemon.errors import (
     AuthenticationError,
     BusinessLogicError,
     InternalServerError,
-    InvalidRequestError,
+    InvalidQueryError,
 )
 
 P = ParamSpec("P")
@@ -28,8 +28,8 @@ def _handle_error(
             error_code: Optional[str] = error.get("error_code")
             if error_code is None:
                 raise APIError._from_data(error)
-            if error_code == "invalid_request":
-                raise InvalidRequestError._from_data(error)
+            if error_code == "invalid_query":
+                raise InvalidQueryError._from_data(error)
             if error_code == "internal_error":
                 raise InternalServerError._from_data(error)
             if error_code in ["unauthorized", "token_invalid"]:
