@@ -3,7 +3,7 @@ from typing import Dict, Generator
 import pytest
 from pytest_httpserver import HTTPServer
 
-from lemon.api import Api, create
+from lemon.api import Api
 from lemon.errors import (
     APIError,
     AuthenticationError,
@@ -60,11 +60,14 @@ def clear_stubs_queue(
 
 @pytest.fixture
 def client(market_data_httpserver: HTTPServer, trading_httpserver: HTTPServer) -> Api:
-    client_ = create(api_token="foobar")
-    client_._market_data_api_url = market_data_httpserver.url_for("")
-    client_._trading_api_url = trading_httpserver.url_for("")
-
-    return client_
+    return Api(
+        api_token="foobar",
+        market_data_api_url=market_data_httpserver.url_for(""),
+        trading_api_url=trading_httpserver.url_for(""),
+        timeout=1,
+        retry_count=1,
+        retry_backoff_factor=1,
+    )
 
 
 class CommonApiTests:

@@ -492,6 +492,37 @@ class TestCreateOrderApi(CommonTradingApiTests):
             == DUMMY_CREATE_ORDER_RESPONSE
         )
 
+    def test_create_order__no_expiration(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/orders",
+            method="POST",
+            json={
+                "isin": "DE0008232125",
+                "expires_at": None,
+                "side": "buy",
+                "quantity": 1000,
+                "venue": "xmun",
+                "stop_price": 1000,
+                "limit_price": 500,
+                "notes": "foo",
+                "idempotency": "bar",
+            },
+        ).respond_with_json(DUMMY_CREATE_ORDER_PAYLOAD)
+        assert (
+            client.trading.orders.create(
+                isin="DE0008232125",
+                expires_at=None,
+                side="buy",
+                quantity=1000,
+                venue="xmun",
+                stop_price=1000,
+                limit_price=500,
+                notes="foo",
+                idempotency="bar",
+            )
+            == DUMMY_CREATE_ORDER_RESPONSE
+        )
+
 
 class TestActivateOrderApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
@@ -515,6 +546,10 @@ class TestActivateOrderApi(CommonTradingApiTests):
             client.trading.orders.activate(order_id="DE0008232125", pin="1234")
             == DUMMY_ACTIVATE_ORDER_RESPONSE
         )
+
+    def test_raise_on_invalid_input(self, client: Api):
+        with pytest.raises(ValueError):
+            client.trading.orders.activate("")
 
 
 class TestGetOrderApi(CommonTradingApiTests):
@@ -554,6 +589,10 @@ class TestGetOrderApi(CommonTradingApiTests):
             == DUMMY_ORDER_RESPONSE
         )
 
+    def test_raise_on_invalid_input(self, client: Api):
+        with pytest.raises(ValueError):
+            client.trading.orders.get_order("")
+
 
 class TestDeleteOrderApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
@@ -591,3 +630,7 @@ class TestDeleteOrderApi(CommonTradingApiTests):
             client.trading.orders.delete(order_id="DE0008232125")
             == DUMMY_DELETE_ORDER_RESPONSE
         )
+
+    def test_raise_on_invalid_input(self, client: Api):
+        with pytest.raises(ValueError):
+            client.trading.orders.delete("")
