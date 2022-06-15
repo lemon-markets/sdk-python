@@ -10,7 +10,7 @@ from typing_extensions import Literal
 
 from lemon import api
 from lemon.api import Api
-from lemon.errors import AuthenticationError, BusinessLogicError, InvalidRequestError
+from lemon.errors import AuthenticationError, BusinessLogicError, InvalidQueryError
 from lemon.trading.model import (
     Account,
     CreateOrderResponse,
@@ -333,7 +333,7 @@ def test_orders_e2e(uut: Api):
 
 @pytest.mark.e2e
 def test_raise_invalid_requests_error(uut):
-    with pytest.raises(InvalidRequestError):
+    with pytest.raises(InvalidQueryError):
         uut.trading.orders.get(side="unknown")
 
 
