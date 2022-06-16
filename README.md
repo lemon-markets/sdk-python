@@ -55,7 +55,7 @@ import requests
 
 from lemon import api, errors
 
-client = api.create(api_token="...")
+client = api.create(market_data_api_token="...", trading_api_token="...")
 
 try:
     # list instruments
@@ -73,7 +73,7 @@ try:
     print(quotes.results[0].b_v)
 except errors.BusinessLogicError as exc:
     print(exc.error_message)
-except errors.InvalidRequestError as exc:
+except errors.InvalidQueryError as exc:
     print(exc.error_message)
 except errors.AuthenticationError as exc:
     print(exc.error_message)
@@ -95,7 +95,7 @@ import requests
 
 from lemon import api, errors
 
-client = api.create(api_token="...", env="money")
+client = api.create(market_data_api_token="...", trading_api_token="...", env="money")
 
 try:
     # create order
@@ -104,7 +104,7 @@ try:
     )
 except errors.BusinessLogicError as exc:
     print(exc.error_message)
-except errors.InvalidRequestError as exc:
+except errors.InvalidQueryError as exc:
     print(exc.error_message)
 except errors.AuthenticationError as exc:
     print(exc.error_message)
@@ -120,7 +120,8 @@ except requests.RequestException:
 
 `lemon.api.create` allows to configure wide set of parameters:
 
-- `api_token` - a token to be used in the authentication process.
+- `market_data_api_token` - a token to be used in the authentication process for Market Data API.
+- `trading_api_token` - a token to be used in the authentication process for Trading API.
 - `env` - selects trading environment to be used.
 - `timeout` - how long to wait for the server to send data before giving up.
 - `retry_count` - the maximum number of retries each connection should attempt.
@@ -133,14 +134,14 @@ except requests.RequestException:
 Unsuccessful requests throws exceptions. The library may throw those exceptions:
 
 - [`lemon.errors.APIError`](./lemon/errors.py) - is thrown when an unknown error is received.
-- [`lemon.errors.InvalidRequestError`](./lemon/errors.py) - thrown when an invalid request error is received from the API.
+- [`lemon.errors.InvalidQueryError`](./lemon/errors.py) - thrown when an invalid request error is received from the API.
 - [`lemon.errors.AuthenticationError`](./lemon/errors.py) - thrown when an authorization error is received from the API.
 - [`lemon.errors.InternalServerError`](./lemon/errors.py) - is thrown when an internal server error is received from the API.
 - [`lemon.errors.BusinessLogicError`](./lemon/errors.py) - thrown on receiving any other error from the API.
 - [`requests.RequestExceptions`](https://requests.readthedocs.io/en/latest/api/#requests.RequestException) - thrown by `requests` on network error, timeout, max retry count reached etc.
 - [`ValueError`](https://docs.python.org/3/library/exceptions.html#ValueError) - thrown when the library encounters invalid input.
 
-`lemon.errors.InvalidRequestError`, `lemon.errors.AuthenticationError`, `lemon.errors.InternalServerError` and `lemon.errors.BusinessLogicError`
+`lemon.errors.InvalidQueryError`, `lemon.errors.AuthenticationError`, `lemon.errors.InternalServerError` and `lemon.errors.BusinessLogicError`
 contains those properties:
 
 - `error_code` - contains unique error type identifier.
@@ -160,7 +161,7 @@ import requests
 
 from lemon import api, errors
 
-client = api.create(api_token="...")
+client = api.create(market_data_api_token="...", trading_api_token="...")
 
 try:
     # edit account data
@@ -169,7 +170,7 @@ try:
     ...
 except errors.BusinessLogicError as exc:
     print(exc.error_message)
-except errors.InvalidRequestError as exc:
+except errors.InvalidQueryError as exc:
     print(exc.error_message)
 except errors.AuthenticationError as exc:
     print(exc.error_message)
