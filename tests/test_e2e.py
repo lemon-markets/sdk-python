@@ -18,15 +18,19 @@ from lemon.trading.model import (
     GetPerformanceResponse,
 )
 
-API_KEY = os.getenv("API_KEY", None)
+MARKET_DATA_API_TOKEN = os.getenv("API_TOKEN", None)
+TRADING_API_TOKEN = os.getenv("API_TOKEN", None)
 
 
 @pytest.fixture
 def uut() -> Api:
-    if API_KEY is None:
-        warnings.warn("Please export API_KEY=your_token_here")
+    if MARKET_DATA_API_TOKEN is None or TRADING_API_TOKEN is None:
+        warnings.warn("Please provide MARKET_DATA_API_KEY and TRADING_API_KEY")
         pytest.fail()
-    return api.create(api_token=API_KEY)
+
+    return api.create(
+        market_data_api_token=MARKET_DATA_API_TOKEN, trading_api_token=TRADING_API_TOKEN
+    )
 
 
 @pytest.mark.parametrize("type_", ["stock", "bond", "fund", "etf"])
@@ -339,7 +343,7 @@ def test_raise_invalid_requests_error(uut):
 
 @pytest.mark.e2e
 def test_raise_authentication_error():
-    uut = api.create(api_token="invalid-token")
+    uut = api.create(market_data_api_token="invalid-token", trading_api_token="")
     with pytest.raises(AuthenticationError):
         uut.market_data.instruments.get()
 
