@@ -1,57 +1,13 @@
 import json
 from dataclasses import asdict
 from datetime import date, datetime, time
-from typing import Any, Dict, Type, TypeVar, Union
+from typing import Any, Callable, Dict, Tuple, Type, TypeVar, Union
 
 from typing_extensions import Literal
 
 Sorting = Literal["asc", "desc"]
 Environment = Literal["paper", "money"]
 Days = int
-
-
-BASIC_PARSERS = {
-    datetime: datetime.fromisoformat,
-    date: lambda value: datetime.fromisoformat(value).date(),
-}
-
-
-def _final_parse(type_: Type[Any], value: Any) -> Any:
-    if issubclass(type_, BaseModel):
-        return type_._from_data(value)
-    parser = BASIC_PARSERS.get(type_)
-    if parser is not None:
-        return parser(value)  # type: ignore
-    return type_(value)
-
-
-def _unpack_by_origin(origin: Any, type_: Type[Any]) -> Type[Any]:
-    if origin is Union:
-        l, r = type_.__args__
-        type_ = l if l is not None else r
-
-    if origin is Literal:
-        type_ = str
-
-    origin = getattr(type_, "__origin__", None)
-    if origin is None:
-        return type_
-    return _unpack_by_origin(origin, type_)
-
-
-def _parse_as(type_: Type[Any], value: Any) -> Any:
-    if value is None:
-        return None
-
-    origin = getattr(type_, "__origin__", None)
-    if origin is list:
-        type_ = type_.__args__[0]
-        return [_parse_as(type_, item) for item in value]
-
-    if origin is not None:
-        type_ = _unpack_by_origin(origin, type_)
-
-    return _final_parse(type_, value)
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -61,10 +17,59 @@ class JSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
+BASIC_PARSERS = {
+    datetime: datetime.fromisoformat,
+    date: lambda value: datetime.fromisoformat(value).date(),
+}
+
+
+def _make_parser(type_: Type[Any]) -> Callable[[Any], Any]:
+    origin = getattr(type_, "__origin__", None)
+
+    if origin is None:
+        if issubclass(type_, BaseModel):
+            return type_._from_data
+        parser = BASIC_PARSERS.get(type_)
+        if parser is not None:
+            return parser
+        return type_
+
+    if origin is list:
+        type_ = type_.__args__[0]
+        parser = _make_parser(type_)
+        return lambda val: [parser(item) for item in val]  # type: ignore
+
+    if origin is Union:
+        l, r = type_.__args__
+        type_ = l if l is not None else r
+        return _make_parser(type_)
+
+    if origin is Literal:
+        return str
+
+    raise ValueError(f"Unsupported type {type_}")
+
+
+class ParserMeta(type):
+    def __new__(cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]) -> "ParserMeta":
+        if "__annotations__" not in dct:
+            return super().__new__(cls, name, bases, dct)
+
+        annotations = dct["__annotations__"]
+        dct["_parsers"] = {
+            key: _make_parser(type_) for key, type_ in annotations.items()
+        }
+        dct["__slots__"] = tuple(annotations.keys())
+
+        return super().__new__(cls, name, bases, dct)
+
+
 TBaseModel = TypeVar("TBaseModel", bound="BaseModel")
 
 
-class BaseModel:
+class BaseModel(metaclass=ParserMeta):
+    __slots__ = tuple()  # type: ignore
+
     def dict(self) -> Dict[str, Any]:
         return asdict(self)
 
@@ -73,8 +78,10 @@ class BaseModel:
 
     @classmethod
     def _from_data(cls: Type[TBaseModel], data: Dict[str, Any]) -> TBaseModel:
-        kwargs = {
-            key: _parse_as(type_, data.get(key))
-            for key, type_ in cls.__annotations__.items()  # pylint: disable=E1101
-        }
+        kwargs = {}
+
+        for key, parser in cls._parsers.items():  # type: ignore # pylint: disable=E1101
+            val = data.get(key)
+            kwargs[key] = parser(val) if val is not None else None
+
         return cls(**kwargs)
