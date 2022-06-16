@@ -61,7 +61,8 @@ def clear_stubs_queue(
 @pytest.fixture
 def client(market_data_httpserver: HTTPServer, trading_httpserver: HTTPServer) -> Api:
     return Api(
-        api_token="foobar",
+        market_data_key="foobar",
+        trading_key="barbaz",
         market_data_api_url=market_data_httpserver.url_for(""),
         trading_api_url=trading_httpserver.url_for(""),
         timeout=1,
