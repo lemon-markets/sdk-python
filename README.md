@@ -1,187 +1,223 @@
-# lemon.markets Python Library
+# lemon.markets Python SDK
 
 [![License](https://img.shields.io/github/license/lemon-markets/sdk-python)](./LICENSE)
 [![Tests](https://img.shields.io/github/workflow/status/lemon-markets/sdk-python/tests/main?label=tests)](https://github.com/lemon-markets/sdk-python/actions)
 [![Python versions](https://img.shields.io/pypi/pyversions/lemon.svg)](https://pypi.python.org/pypi/lemon/)
 [![PyPI](https://img.shields.io/pypi/v/lemon)](https://pypi.python.org/pypi/lemon/)
 
-The lemon.markets Python Library provides convenient access to the [lemon.markets](https://docs.lemon.markets/) API from applications written in the Python language.
-The library contains synchronous client that can be shared across threads.
+[lemon.markets](https://lemon.markets) Python SDK facilitates communication with the
+[lemon.markets](https://lemon.markets) API for Python programs. The library implements all calls to the endpoints
+defined in the Market Data API and Trading API. We currently do not support asynchronous calls.
 
-The library fully supports:
+## Documentation
 
-- [Market Data API](https://docs.lemon.markets/market-data/overview)
+See the [API docs](https://docs.lemon.markets/).
 
-  - [GET /instruments/](https://docs.lemon.markets/market-data/instruments-tradingvenues#get-instruments)
-  - [GET /ohlc/{x1}/](https://docs.lemon.markets/market-data/historical-data#get-ohlcx1)
-  - [GET /quotes/latest/](https://docs.lemon.markets/market-data/historical-data#get-quoteslatest)
-  - [GET /trades/latest/](https://docs.lemon.markets/market-data/historical-data#get-tradeslatest)
-  - [GET /venues/](https://docs.lemon.markets/market-data/instruments-tradingvenues#get-venues)
+## Installation
 
-- [Trading API](https://docs.lemon.markets/trading/overview)
+You can install library using [pip](http://pypi.python.org/pypi/pip):
 
-  - [GET /account/](https://docs.lemon.markets/trading/account#get-account)
-  - [PUT /account/](https://docs.lemon.markets/trading/account#put-account)
-  - [GET /account/withdrawals/](https://docs.lemon.markets/trading/account#get-accountwithdrawals)
-  - [POST /account/withdrawals/](https://docs.lemon.markets/trading/account#post-accountwithdrawals)
-  - [GET /account/bankstatements/](https://docs.lemon.markets/trading/account#get-accountbankstatements)
-  - [GET /account/documents/](https://docs.lemon.markets/trading/account#get-accountdocuments)
-  - [PUT /account/documents/{document_id}/](https://docs.lemon.markets/trading/account#get-accountdocumentsdocument_id)
-  - [GET /orders/](https://docs.lemon.markets/trading/orders#get-orders)
-  - [POST /orders/](https://docs.lemon.markets/trading/orders#post-orders)
-  - [POST /orders/{order_id}/activate/](https://docs.lemon.markets/trading/orders#post-ordersorder_idactivate)
-  - [GET /orders/{order_id}/](https://docs.lemon.markets/trading/orders#get-ordersorder_id)
-  - [DELETE /orders/{order_id}/](https://docs.lemon.markets/trading/orders#delete-ordersorder_id)
-  - [GET /positions/](https://docs.lemon.markets/trading/positions#get-positions)
-  - [GET /positions/statements/](https://docs.lemon.markets/trading/positions#get-positionsstatements)
-  - [GET /positions/performance/](https://docs.lemon.markets/trading/positions#get-positionsperformance)
-  - GET /user/
+```bash
+pip install lemon
+````
 
-# Installation
+Requirements:
 
-You can install the library by using [pip](http://pypi.python.org/pypi/pip):
+- Python 3.7+
+- `requests`
 
-    pip install lemon
+## Usage
 
-# Example usage
+### SDK client
 
-Before making API calls, we need to provide API token.
-Information on how to generate an API token can be found [here](https://docs.lemon.markets/authentication).
-
-**Market API**
+To create and configure SDK client you will need have separate API tokens for `Market Data API` and `Trading API`
+and point out which environment you want to use for trading - paper or money (default is paper).
+The description of creating and using API tokens is described [here](https://docs.lemon.markets/authentication).
+Snippet below shows how to properly create SDK client object:
 
 ```python
-import requests
+from lemon import api
 
-from lemon import api, errors
-
-client = api.create(market_data_api_token="...", trading_api_token="...")
-
-try:
-    # list instruments
-    instruments = client.market_data.instruments.get(isin="US88160R1014")
-    print(instruments.results[0].name)
-
-    # list ohlc
-    ohlc = client.market_data.ohlc.get(
-        isin=["US88160R1014"], period="m1", from_="latest"
-    )
-    print(ohlc.results[0].pbv)
-
-    # list quotes
-    quotes = client.market_data.quotes.get_latest(isin=["US88160R1014"])
-    print(quotes.results[0].b_v)
-except errors.BusinessLogicError as exc:
-    print(exc.error_message)
-except errors.InvalidQueryError as exc:
-    print(exc.error_message)
-except errors.AuthenticationError as exc:
-    print(exc.error_message)
-except errors.InternalServerError as exc:
-    print(exc.error_message)
-except errors.APIError as exc:
-    print(exc.data)
-except requests.RequestException:
-    print("timeout or maximum number of retries exceeded")
+client = api.create(
+    market_data_api_token='your-market-data-api-token',
+    trading_api_token='your-trading-api-token',
+    env='paper'  # or env='money'
+)
 ```
 
-**Trading API**
+`lemon.api.create` method allows also to configure:
 
-You can pass `money` or `paper` to the `env` parameter in order to select appropriate trading environment.
-More information about lemon.market environments can be found [here](https://docs.lemon.markets/trading/overview#general-things).
+- `timeout` - default timeout for requests
+- `retry_count` - default number of retries for requests
+- `retry_backoff_factor` - default retry backoff factor for retries
+
+SDK client consists of two parts:
+
+- `matket_data` - contains references to Market Data API endpoints
+- `trading` - contains references to Trading API endpoints. SDK communicates with either paper or money environment,
+  depending on the client configuration.
+
+
+### Market Data API usage
 
 ```python
-import requests
+from lemon import api
+from datetime import datetime
 
-from lemon import api, errors
+client = api.create(
+    market_data_api_token='your-market-data-api-token',
+    trading_api_token='your-trading-api-token',
+)
 
-client = api.create(market_data_api_token="...", trading_api_token="...", env="money")
+# get venues
+response = client.market_data.venues.get()
+print(response.results)
 
-try:
-    # create order
-    created_order = client.trading.orders.create(
-        isin="US88160R1014", side="sell", quantity=50
-    )
-except errors.BusinessLogicError as exc:
-    print(exc.error_message)
-except errors.InvalidQueryError as exc:
-    print(exc.error_message)
-except errors.AuthenticationError as exc:
-    print(exc.error_message)
-except errors.InternalServerError as exc:
-    print(exc.error_message)
-except errors.APIError as exc:
-    print(exc.data)
-except requests.RequestException:
-    print("timeout or maximum number of retries exceeded")
+# get instruments
+response = client.market_data.instruments.get(isin=["US88160R1014", "US0231351067"])
+response = client.market_data.instruments.get(search='t*a', tradable=True)
+response = client.market_data.instruments.get(type=['stock', 'etf'], currency=['EUR'], limit=10, sorting='asc')
+
+# get latest ohlc
+response = client.market_data.ohlc.get(isin=['US88160R1014'], from_='latest', epoch=True, decimals=True)
+
+# get ohlc
+response = client.market_data.ohlc.get(isin=['US88160R1014'], from_=datetime(2021, 1, 2))
+
+# get latest quotes
+response = client.market_data.quotes.get_latest(isin=['US88160R1014', 'US0231351067'], epoch=True, sorting='asc')
+
+# get trades
+response = client.market_data.trades.get_latest(isin=['US88160R1014', 'US0231351067'], decimals=True)
 ```
 
-# Configuration
+### Trading API usage
 
-`lemon.api.create` allows to configure wide set of parameters:
+```python
+from lemon import api
 
-- `market_data_api_token` - a token to be used in the authentication process for Market Data API.
-- `trading_api_token` - a token to be used in the authentication process for Trading API.
-- `env` - selects trading environment to be used.
-- `timeout` - how long to wait for the server to send data before giving up.
-- `retry_count` - the maximum number of retries each connection should attempt.
-- `retry_backoff_factor` - a backoff factor to apply between attempts after the second try.
-- `pool_connections` - the number of urllib3 connection pools to cache.
-- `pool_maxsize` - the maximum number of connections to save in the pool.
+client = api.create(...)
 
-# Error handling
+# create buy order
+response = client.trading.orders.create(isin='US88160R1014', side='buy', quantity=1)
+order_id = response.results.id
 
-Unsuccessful requests throws exceptions. The library may throw those exceptions:
+# activate buy order
+response = client.trading.orders.activate(order_id=order_id)
 
-- [`lemon.errors.APIError`](./lemon/errors.py) - is thrown when an unknown error is received.
-- [`lemon.errors.InvalidQueryError`](./lemon/errors.py) - thrown when an invalid request error is received from the API.
-- [`lemon.errors.AuthenticationError`](./lemon/errors.py) - thrown when an authorization error is received from the API.
-- [`lemon.errors.InternalServerError`](./lemon/errors.py) - is thrown when an internal server error is received from the API.
-- [`lemon.errors.BusinessLogicError`](./lemon/errors.py) - thrown on receiving any other error from the API.
-- [`requests.RequestExceptions`](https://requests.readthedocs.io/en/latest/api/#requests.RequestException) - thrown by `requests` on network error, timeout, max retry count reached etc.
-- [`ValueError`](https://docs.python.org/3/library/exceptions.html#ValueError) - thrown when the library encounters invalid input.
+# get order
+response = client.trading.orders.get(order_id=order_id)
 
-`lemon.errors.InvalidQueryError`, `lemon.errors.AuthenticationError`, `lemon.errors.InternalServerError` and `lemon.errors.BusinessLogicError`
-contains those properties:
+# get orders
+response = client.trading.orders.get()
 
-- `error_code` - contains unique error type identifier.
-- `error_message` - contains human-readable description of the error.
+# create sell order
+response = client.trading.orders.create(isin='US88160R1014', side='sell', quantity=1)
+order_id = response.results.id
 
-List of all error codes can be found [here](https://docs.lemon.markets/error-handling).
+# activate sell order
+response = client.trading.orders.activate(order_id=order_id)
 
-More information about exceptions that can be thrown by `requests` can be found [here](https://requests.readthedocs.io/en/latest/user/quickstart/#errors-and-exceptions).
+# get account
+response = client.trading.account.get()
 
-# Direct API calls
+# update account
+response = client.trading.account.update(address_street='Ritterstrasse', address_street='Berlin')
 
+# withdraw money from account
+response = client.trading.account.withdraw(amount=100000, pin="1234")
+
+# get bank statements
+response = client.trading.account.get_bank_statements(type='eod_balance',
+from="beginning")
+
+# get documents
+response = client.trading.account.get_documents()
+
+# get document
+response = client.trading.account.get_document(document_id='doc_xyz')
+
+# get user
+response = client.trading.user.get()
+
+# get positions
+response = client.trading.positions.get(isin='US88160R1014')
+
+# get statements
+response = client.trading.positions.get_statements()
+
+# get performance
+response = client.trading.positions.get_performance()
+### Error handling
+```
+
+### Direct API calls
 Both `client.trading` and `client.market_data` allows calling underlining API directly.
-`get/post/put/delete` methods will handle authorization and error handling. The library will join URLs in the same way as [urllib.parse.urljoin](https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urljoin).
+`GET/POST/PUT/DELETE` methods will handle authorization and error handling. The library will join URLs in the same way
+as [urllib.parse.urljoin](https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urljoin).
 
 ```python
-import requests
+from lemon import api
 
-from lemon import api, errors
-
-client = api.create(market_data_api_token="...", trading_api_token="...")
-
-try:
-    # edit account data
-    resp = client.trading.put(url="account", json={"address_street": address_street})
-    # handle ok response
-    ...
-except errors.BusinessLogicError as exc:
-    print(exc.error_message)
-except errors.InvalidQueryError as exc:
-    print(exc.error_message)
-except errors.AuthenticationError as exc:
-    print(exc.error_message)
-except errors.InternalServerError as exc:
-    print(exc.error_message)
-except errors.APIError as exc:
-    print(exc.data)
-except requests.RequestException:
-    print("timeout or maximum number of retries exceeded")
+client = api.create(...)
+resp = client.trading.put(url="account", json={"address_street": 'New street name'})
 ```
 
-# License
+### Error handling
+The hierarchical error structure available in the SDK is presented below
 
-The library is published under [MIT License](./LICENSE)
+BaseLemonError - The base class for all errors thrown within the SDK
+ LemonError - the base class of errors that are returned at the API level. It contains information directly from the API, such as status, error_code, error_message, time
+     InvalidQueryError - HTTP request validation error
+     AuthenticationError - authorization error
+     InternalServerError - internal API error
+     BusinessLogicError - a business logic error that prevents the request from being fulfilled due to specific conditions that have occurred
+ APIError - API error, thrown in case
+
+Please note that errors coming directly from the `request` module are passed as is.
+```python
+from lemon import api
+
+client = api.create(...)
+
+try:
+    response = client.trading.orders.create(isin='...', side='buy', quantity=1)
+except errors.InvalidRequestError:
+    ...
+except errors.AuthenticationError:
+    ...
+except InternalServerError:
+    ...
+except BusinessLogicError:
+    ...
+except LemonError: # catches InvalidRequestError/AuthenticationError/InternalServerError/BusinessLogicError
+    ...
+except APIError:
+    ...
+except BaseLemonError: # catches all errors defined above
+    ...
+except: # other errors
+    ...
+```
+
+
+### Model serialization
+
+Every response(or response nested structure) can be serialized to python dictionary or JSON:
+
+```python
+from lemon import api
+
+client = api.create(
+    market_data_api_token='your-market-data-api-token',
+    trading_api_token='your-trading-api-token',
+)
+response = client.market_data.instruments.get()
+
+print(response.dict())
+print(response.json())
+print(response.results[0].dict())
+print(response.results[0].json())
+```
+
+
