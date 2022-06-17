@@ -104,7 +104,7 @@ class Orders:
         resp = self._client.get(f"orders/{order_id}")
         return GetOrderResponse._from_data(resp.json())
 
-    def delete(self, order_id: str) -> DeleteOrderResponse:
+    def cancel(self, order_id: str) -> DeleteOrderResponse:
         order_id = order_id.strip()
         if not order_id:
             raise ValueError("order_id is empty string")
