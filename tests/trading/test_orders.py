@@ -596,7 +596,7 @@ class TestGetOrderApi(CommonTradingApiTests):
 
 class TestDeleteOrderApi(CommonTradingApiTests):
     def make_api_call(self, client: Api):
-        return client.trading.orders.delete(order_id="DE0008232125")
+        return client.trading.orders.cancel(order_id="DE0008232125")
 
     @pytest.fixture
     def api_call_kwargs(self):
@@ -611,7 +611,7 @@ class TestDeleteOrderApi(CommonTradingApiTests):
             method="DELETE",
         ).respond_with_json(DUMMY_DELETE_ORDER_PAYLOAD)
         assert (
-            client.trading.orders.delete(order_id="DE0008232125")
+            client.trading.orders.cancel(order_id="DE0008232125")
             == DUMMY_DELETE_ORDER_RESPONSE
         )
 
@@ -627,10 +627,10 @@ class TestDeleteOrderApi(CommonTradingApiTests):
         ).respond_with_json(DUMMY_DELETE_ORDER_PAYLOAD)
 
         assert (
-            client.trading.orders.delete(order_id="DE0008232125")
+            client.trading.orders.cancel(order_id="DE0008232125")
             == DUMMY_DELETE_ORDER_RESPONSE
         )
 
     def test_raise_on_invalid_input(self, client: Api):
         with pytest.raises(ValueError):
-            client.trading.orders.delete("")
+            client.trading.orders.cancel("")
