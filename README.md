@@ -49,11 +49,10 @@ client = api.create(
 - `retry_count` - default number of retries for requests
 - `retry_backoff_factor` - default retry backoff factor for retries
 
-SDK client consists of two parts:
+The SDK client consists of two parts:
 
-- `market_data` - contains references to Market Data API endpoints
-- `trading` - contains references to Trading API endpoints. SDK communicates with either paper or money environment,
-  depending on the client configuration.
+- `market_data` - let's you access the Market Data API endpoints
+- `trading` - let's you access the Trading API endpoints. Choose the desired target environment (paper or money) in the client configuration. 
 
 ### Market Data API usage
 
