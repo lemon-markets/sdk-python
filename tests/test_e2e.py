@@ -329,7 +329,7 @@ def test_orders_e2e(uut: Api):
     )
     order_id = r6.results.id
     assert order_id is not None
-    uut.trading.orders.delete(order_id)
+    uut.trading.orders.cancel(order_id)
     response: GetOrderResponse = uut.trading.orders.get_order(order_id)
 
     assert response.results.status == "canceled"
