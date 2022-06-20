@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import date, datetime, time, tzinfo
-from typing import Any, Dict, List
+from typing import Dict, List
 
 import pytz
 
@@ -34,20 +34,6 @@ class Venue(BaseModel):
     opening_hours: OpeningHours
     opening_days: List[date]
 
-    @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "Venue":
-        return Venue(
-            name=data["name"],
-            title=data["title"],
-            mic=data["mic"],
-            is_open=data["is_open"],
-            opening_hours=OpeningHours._from_data(data["opening_hours"]),
-            opening_days=[
-                datetime.fromisoformat(opening_day).date()
-                for opening_day in data["opening_days"]
-            ],
-        )
-
 
 @dataclass
 class GetVenuesResponse(BaseModel):
@@ -56,13 +42,3 @@ class GetVenuesResponse(BaseModel):
     total: int
     page: int
     pages: int
-
-    @staticmethod
-    def _from_data(data: Dict[str, Any]) -> "GetVenuesResponse":
-        return GetVenuesResponse(
-            time=datetime.fromisoformat(data["time"]),
-            results=[Venue._from_data(entry) for entry in data["results"]],
-            total=int(data["total"]),
-            page=int(data["page"]),
-            pages=int(data["pages"]),
-        )

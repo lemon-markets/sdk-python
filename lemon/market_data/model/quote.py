@@ -16,7 +16,7 @@ class Quote(BaseModel):
     mic: str
 
     @staticmethod
-    def _from_data(
+    def _from_data(  # type: ignore # pylint: disable=W0221
         data: Dict[str, Any],
         t_type: Callable[[Any], Union[int, float]],
         k_type: Callable[[Any], Union[datetime, int]],
@@ -41,7 +41,7 @@ class GetQuotesResponse(BaseModel):
     pages: int
 
     @staticmethod
-    def _from_data(
+    def _from_data(  # type: ignore # pylint: disable=W0221
         data: Dict[str, Any],
         t_type: Callable[[Any], Union[int, float]],
         k_type: Callable[[Any], Union[datetime, int]],
