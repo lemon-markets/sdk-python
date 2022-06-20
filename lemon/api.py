@@ -1,4 +1,3 @@
-from requests.adapters import DEFAULT_POOLSIZE
 from typing_extensions import Literal
 
 from lemon.market_data.api import MarketDataAPI
@@ -19,8 +18,6 @@ class Api:
         timeout: float,
         retry_count: int,
         retry_backoff_factor: float,
-        pool_connections: int,
-        pool_maxsize: int,
     ):
         self._market_data = MarketDataAPI(
             api_token=market_data_api_token,
@@ -28,8 +25,6 @@ class Api:
             timeout=timeout,
             retry_count=retry_count,
             retry_backoff_factor=retry_backoff_factor,
-            pool_connections=pool_connections,
-            pool_maxsize=pool_maxsize,
         )
         self._trading = TradingAPI(
             api_token=trading_api_token,
@@ -37,8 +32,6 @@ class Api:
             timeout=timeout,
             retry_count=retry_count,
             retry_backoff_factor=retry_backoff_factor,
-            pool_connections=pool_connections,
-            pool_maxsize=pool_maxsize,
         )
 
     @property
@@ -57,8 +50,6 @@ def create(
     timeout: float = 5,
     retry_count: int = 3,
     retry_backoff_factor: float = 0.1,
-    pool_connections: int = DEFAULT_POOLSIZE,
-    pool_maxsize: int = DEFAULT_POOLSIZE,
 ) -> Api:
     return Api(
         market_data_api_token=market_data_api_token,
@@ -70,6 +61,4 @@ def create(
         timeout=timeout,
         retry_count=retry_count,
         retry_backoff_factor=retry_backoff_factor,
-        pool_connections=pool_connections,
-        pool_maxsize=pool_maxsize,
     )

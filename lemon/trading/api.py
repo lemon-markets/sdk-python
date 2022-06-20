@@ -13,8 +13,6 @@ class TradingAPI(Client):
         timeout: float,
         retry_count: int,
         retry_backoff_factor: float,
-        pool_connections: int,
-        pool_maxsize: int,
     ):
         super().__init__(
             base_url=trading_api_url,
@@ -22,8 +20,6 @@ class TradingAPI(Client):
             timeout=timeout,
             retry_count=retry_count,
             retry_backoff_factor=retry_backoff_factor,
-            pool_connections=pool_connections,
-            pool_maxsize=pool_maxsize,
         )
         self._account = Account(self)
         self._orders = Orders(self)
