@@ -24,9 +24,11 @@ BASIC_PARSERS = {
 
 
 def _make_parser(type_: Type[Any]) -> Callable[[Any], Any]:
+    # check if given type is from typing module
     origin = getattr(type_, "__origin__", None)
 
     if origin is None:
+        # base type or regular type or class derived from BaseModel
         if issubclass(type_, BaseModel):
             return type_._from_data
         parser = BASIC_PARSERS.get(type_)
@@ -34,24 +36,31 @@ def _make_parser(type_: Type[Any]) -> Callable[[Any], Any]:
             return parser
         return type_
 
+    # typing.List[X]
     if origin is list:
+        # extract X
         type_ = type_.__args__[0]
         parser = _make_parser(type_)
         return lambda val: [parser(item) for item in val]  # type: ignore
 
+    # typing.Optional[X]
     if origin is Union:
+        # extract X
         l, r = type_.__args__
         type_ = l if l is not None else r
         return _make_parser(type_)
 
     if origin is Literal:
+        # we do not parse the content of literal
         return str
 
     raise ValueError(f"Unsupported type {type_}")
 
 
-class ParserMeta(type):
-    def __new__(cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]) -> "ParserMeta":
+class BaseModelMeta(type):
+    def __new__(
+        cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]
+    ) -> "BaseModelMeta":
         if "__annotations__" not in dct:
             return super().__new__(cls, name, bases, dct)
 
@@ -67,7 +76,7 @@ class ParserMeta(type):
 TBaseModel = TypeVar("TBaseModel", bound="BaseModel")
 
 
-class BaseModel(metaclass=ParserMeta):
+class BaseModel(metaclass=BaseModelMeta):
     __slots__ = tuple()  # type: ignore
 
     def dict(self) -> Dict[str, Any]:
