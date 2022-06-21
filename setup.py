@@ -9,11 +9,17 @@ with open(os.path.join("lemon", "version.py"), encoding="utf-8") as f:
 
 version = version_content["VERSION"]
 
+with open("requirements.txt", "r") as fh:
+    requirements = fh.read().splitlines()
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name="lemon",
     version=version,
     description="Official Python client for lemon.markets API",
-    long_description=open("README.md", encoding="utf-8").read(),
+    long_description=long_description,
     long_description_content_type="text/markdown",
     license="MIT",
     classifiers=[
@@ -42,6 +48,6 @@ setup(
         "API Documentation": "https://docs.lemon.markets/",
     },
     packages=find_packages(include=["lemon", "lemon.*"]),
-    install_requires=["requests", "pytz", "typing-extensions"],
+    install_requires=requirements,
     python_requires=">=3.7",
 )
