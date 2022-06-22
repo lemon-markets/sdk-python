@@ -75,7 +75,7 @@ class TestTradesApi(CommonMarketDataApiTests):
         "function_kwargs,query_string",
         [
             ({"isin": ["XMUN"]}, "isin=XMUN"),
-            ({"isin": ["XMUN"], "mic": "XMUN"}, "mic=XMUN&isin=XMUN"),
+            ({"isin": ["XMUN"], "mic": "XMUN"}, "isin=XMUN&mic=XMUN"),
             ({"isin": ["XMUN"], "decimals": False}, "isin=XMUN&decimals=False"),
             ({"isin": ["XMUN"], "epoch": False}, "isin=XMUN&epoch=False"),
             ({"isin": ["XMUN"], "sorting": "asc"}, "isin=XMUN&sorting=asc"),
@@ -91,7 +91,7 @@ class TestTradesApi(CommonMarketDataApiTests):
                     "limit": 100,
                     "page": 3,
                 },
-                "mic=XMUN&isin=XMUN&decimals=False&"
+                "isin=XMUN&mic=XMUN&decimals=False&"
                 "epoch=False&sorting=asc&limit=100&page=3",
             ),
         ],

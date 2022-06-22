@@ -118,7 +118,6 @@ class Account:
             raise ValueError("document_id is empty string")
 
         resp = self._client.get(
-            f"account/documents/{document_id}",
-            params={"no_redirect": no_redirect},
+            f"account/documents/{document_id}", params={"no_redirect": no_redirect}
         )
         return GetDocumentResponse._from_data(resp.json())

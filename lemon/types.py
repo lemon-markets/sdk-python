@@ -17,6 +17,10 @@ class JSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
+def filter_out_optionals(data: Dict[str, Any]) -> Dict[str, Any]:
+    return {k: v for k, v in data.items() if v is not None}
+
+
 BASIC_PARSERS = {
     datetime: datetime.fromisoformat,
     date: lambda value: datetime.fromisoformat(value).date(),

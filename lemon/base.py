@@ -13,6 +13,7 @@ from lemon.errors import (
     InternalServerError,
     InvalidQueryError,
 )
+from lemon.types import filter_out_optionals
 
 P = ParamSpec("P")
 
@@ -76,7 +77,7 @@ class Client:
         headers = headers or {}
         return self._session.get(
             url,
-            params=params,
+            params=filter_out_optionals(params) if params else None,
             headers={"Authorization": f"Bearer {self._api_token}", **headers},
             timeout=self._timeout,
         )
@@ -93,8 +94,8 @@ class Client:
         headers = headers or {}
         return self._session.put(
             url,
-            json=json,
-            params=params,
+            json=filter_out_optionals(json),
+            params=filter_out_optionals(params) if params else None,
             headers={"Authorization": f"Bearer {self._api_token}", **headers},
             timeout=self._timeout,
         )
@@ -111,8 +112,8 @@ class Client:
         headers = headers or {}
         return self._session.post(
             url,
-            json=json,
-            params=params,
+            json=filter_out_optionals(json),
+            params=filter_out_optionals(params) if params else None,
             headers={"Authorization": f"Bearer {self._api_token}", **headers},
             timeout=self._timeout,
         )
@@ -128,7 +129,7 @@ class Client:
         headers = headers or {}
         return self._session.delete(
             url,
-            params=params,
+            params=filter_out_optionals(params) if params else None,
             headers={"Authorization": f"Bearer {self._api_token}", **headers},
             timeout=self._timeout,
         )

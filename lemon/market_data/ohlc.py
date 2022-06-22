@@ -32,8 +32,8 @@ class Ohlc:
         resp = self._client.get(
             f"ohlc/{period}",
             params={
-                "mic": mic,
                 "isin": isin,
+                "mic": mic,
                 "from": from_,
                 "to": f"P{to}D" if isinstance(to, Days) else to,
                 "decimals": decimals,

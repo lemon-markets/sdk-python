@@ -71,9 +71,9 @@ class Orders:
             "orders",
             json={
                 "isin": isin,
-                "expires_at": expires_at_str,
                 "side": side,
                 "quantity": quantity,
+                "expires_at": expires_at_str,
                 "venue": venue,
                 "stop_price": stop_price,
                 "limit_price": limit_price,

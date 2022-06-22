@@ -286,18 +286,22 @@ def test_account_e2e(uut: Api):
 def test_orders_e2e(uut: Api):
     # open order
     r1: CreateOrderResponse = uut.trading.orders.create(
-        isin="US88160R1014", side="buy", quantity=1, venue="xmun"
+        isin="US88160R1014", side="buy", quantity=1
     )
     order_id = r1.results.id
     assert order_id is not None
 
     uut.trading.orders.activate(order_id)
 
+    counter = 0
     while 1:
         r2: GetOrderResponse = uut.trading.orders.get_order(order_id)
         if r2.results.status == "executed":
             break
         sleep(1)
+        if counter == 10:
+            pytest.fail("Failed to open order")
+        counter += 1
 
     # check performance
     r3: GetPerformanceResponse = uut.trading.positions.get_performance(
@@ -309,24 +313,24 @@ def test_orders_e2e(uut: Api):
     uut.trading.positions.get_statements(isin="US88160R1014")
 
     # close order
-    r4 = uut.trading.orders.create(
-        isin="US88160R1014", side="sell", quantity=1, venue="xmun"
-    )
+    r4 = uut.trading.orders.create(isin="US88160R1014", side="sell", quantity=1)
     order_id = r4.results.id
     assert order_id is not None
 
     uut.trading.orders.activate(order_id)
 
+    counter = 0
     while 1:
         r5: GetOrderResponse = uut.trading.orders.get_order(order_id)
         if r5.results.status == "executed":
             break
         sleep(1)
+        if counter == 10:
+            pytest.fail("failed to sell order")
+        counter += 1
 
     # delete order
-    r6 = uut.trading.orders.create(
-        isin="US88160R1014", side="buy", quantity=1, venue="xmun"
-    )
+    r6 = uut.trading.orders.create(isin="US88160R1014", side="buy", quantity=1)
     order_id = r6.results.id
     assert order_id is not None
     uut.trading.orders.cancel(order_id)

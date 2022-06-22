@@ -23,8 +23,8 @@ class Trades:
         resp = self._client.get(
             "trades/latest",
             params={
-                "mic": mic,
                 "isin": isin,
+                "mic": mic,
                 "decimals": decimals,
                 "epoch": epoch,
                 "sorting": sorting,
