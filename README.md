@@ -89,6 +89,7 @@ response = client.market_data.instruments.get(
 # get latest ohlc
 response = client.market_data.ohlc.get(
     isin=['US88160R1014'],
+    period='m1',
     from_='latest',
     epoch=True,
     decimals=True
@@ -97,6 +98,7 @@ response = client.market_data.ohlc.get(
 # get ohlc
 response = client.market_data.ohlc.get(
     isin=['US88160R1014'],
+    period='d1',
     from_=datetime(2021, 1, 2)
 )
 
@@ -125,7 +127,8 @@ client = api.create(...)
 response = client.trading.orders.create(
     isin='US88160R1014',
     side='buy',
-    quantity=1
+    quantity=1,
+    venue='xmun',
 )
 order_id = response.results.id
 
@@ -139,7 +142,12 @@ response = client.trading.orders.get_order(order_id=order_id)
 response = client.trading.orders.get()
 
 # cancel order
-response = client.trading.orders.create(isin='US88160R1014', side='buy', quantity=1)
+response = client.trading.orders.create(
+    isin='US88160R1014', 
+    side='buy', 
+    quantity=1,
+    venue='xmun',
+)
 response = client.trading.orders.cancel(order_id=response.results.id)
 
 # update account
