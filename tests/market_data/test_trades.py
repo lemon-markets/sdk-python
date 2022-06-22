@@ -99,8 +99,6 @@ class TestTradesApi(CommonMarketDataApiTests):
     def test_get_trades(
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
-        print(function_kwargs)
-        print(query_string)
         httpserver.expect_oneshot_request(
             "/trades/latest",
             query_string=query_string,
