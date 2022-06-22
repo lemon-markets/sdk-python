@@ -5,7 +5,7 @@ from typing_extensions import Literal
 
 from lemon.base import Client
 from lemon.market_data.model import GetOhlcResponse
-from lemon.types import Days, Sorting
+from lemon.types import Days, Sorting, only_set
 
 
 class Ohlc:
@@ -31,17 +31,19 @@ class Ohlc:
 
         resp = self._client.get(
             f"ohlc/{period}",
-            params={
-                "mic": mic,
-                "isin": isin,
-                "from": from_,
-                "to": f"P{to}D" if isinstance(to, Days) else to,
-                "decimals": decimals,
-                "epoch": epoch,
-                "sorting": sorting,
-                "limit": limit,
-                "page": page,
-            },
+            params=only_set(
+                {
+                    "mic": mic,
+                    "from": from_,
+                    "to": f"P{to}D" if isinstance(to, Days) else to,
+                    "decimals": decimals,
+                    "epoch": epoch,
+                    "sorting": sorting,
+                    "limit": limit,
+                    "page": page,
+                },
+                isin=isin,
+            ),
         )
         return GetOhlcResponse._from_data(
             data=resp.json(),

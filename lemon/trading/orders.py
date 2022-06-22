@@ -13,7 +13,7 @@ from lemon.trading.model import (
     OrderType,
     Venue,
 )
-from lemon.types import Days
+from lemon.types import Days, only_set
 
 
 class Orders:
@@ -34,17 +34,19 @@ class Orders:
     ) -> GetOrdersResponse:
         resp = self._client.get(
             "orders",
-            params={
-                "from": from_,
-                "to": to,
-                "isin": isin,
-                "side": side,
-                "status": status,
-                "type": type,
-                "key_creation_id": key_creation_id,
-                "limit": limit,
-                "page": page,
-            },
+            params=only_set(
+                {
+                    "from": from_,
+                    "to": to,
+                    "isin": isin,
+                    "side": side,
+                    "status": status,
+                    "type": type,
+                    "key_creation_id": key_creation_id,
+                    "limit": limit,
+                    "page": page,
+                }
+            ),
         )
         return GetOrdersResponse._from_data(resp.json())
 
@@ -69,17 +71,19 @@ class Orders:
 
         resp = self._client.post(
             "orders",
-            json={
-                "isin": isin,
-                "expires_at": expires_at_str,
-                "side": side,
-                "quantity": quantity,
-                "venue": venue,
-                "stop_price": stop_price,
-                "limit_price": limit_price,
-                "notes": notes,
-                "idempotency": idempotency,
-            },
+            json=only_set(
+                {
+                    "expires_at": expires_at_str,
+                    "venue": venue,
+                    "stop_price": stop_price,
+                    "limit_price": limit_price,
+                    "notes": notes,
+                    "idempotency": idempotency,
+                },
+                isin=isin,
+                side=side,
+                quantity=quantity,
+            ),
         )
         return CreateOrderResponse._from_data(resp.json())
 

@@ -17,6 +17,11 @@ class JSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
+def only_set(data: Dict[str, Any], **kwargs: Any) -> Dict[str, Any]:
+    kwargs.update({k: v for k, v in data.items() if v is not None})
+    return kwargs
+
+
 BASIC_PARSERS = {
     datetime: datetime.fromisoformat,
     date: lambda value: datetime.fromisoformat(value).date(),

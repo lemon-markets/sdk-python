@@ -286,10 +286,6 @@ class TestEditAccountApi(CommonTradingApiTests):
             "method": "PUT",
             "json": {
                 "address_street": "new street",
-                "address_street_number": None,
-                "address_city": None,
-                "address_postal_code": None,
-                "address_country": None,
             },
         }
 
@@ -299,10 +295,6 @@ class TestEditAccountApi(CommonTradingApiTests):
             method="PUT",
             json={
                 "address_street": "new street",
-                "address_street_number": None,
-                "address_city": None,
-                "address_postal_code": None,
-                "address_country": None,
             },
         ).respond_with_json(DUMMY_ACCOUNT_PAYLOAD)
         assert (
@@ -349,14 +341,14 @@ class TestWithdrawApi(CommonTradingApiTests):
         return {
             "uri": "/account/withdrawals",
             "method": "POST",
-            "json": {"amount": 100, "pin": "1234", "idempotency": None},
+            "json": {"amount": 100, "pin": "1234"},
         }
 
     def test_get_withdrawals(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/account/withdrawals",
             method="POST",
-            json={"amount": 100, "pin": "1234", "idempotency": None},
+            json={"amount": 100, "pin": "1234"},
         ).respond_with_json(DUMMY_WITHDRAW_PAYLOAD)
         assert (
             client.trading.account.withdraw(amount=100, pin="1234")

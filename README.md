@@ -128,7 +128,6 @@ response = client.trading.orders.create(
     isin='US88160R1014',
     side='buy',
     quantity=1,
-    venue='xmun',
 )
 order_id = response.results.id
 
@@ -146,7 +145,6 @@ response = client.trading.orders.create(
     isin='US88160R1014', 
     side='buy', 
     quantity=1,
-    venue='xmun',
 )
 response = client.trading.orders.cancel(order_id=response.results.id)
 

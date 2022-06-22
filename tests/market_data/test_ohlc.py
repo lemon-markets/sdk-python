@@ -85,7 +85,7 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
         "function_kwargs,query_string",
         [
             ({"isin": ["XMUN"]}, "isin=XMUN"),
-            ({"isin": ["XMUN"], "mic": "XMUN"}, "mic=XMUN&isin=XMUN"),
+            ({"isin": ["XMUN"], "mic": "XMUN"}, "isin=XMUN&mic=XMUN"),
             (
                 {
                     "isin": ["XMUN"],
@@ -117,7 +117,7 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
                     "limit": 100,
                     "page": 3,
                 },
-                "mic=XMUN&isin=XMUN&from=2021-11-07+22%3A59%3A00%2B00%3A00&to=P7D&decimals=False&"
+                "isin=XMUN&mic=XMUN&from=2021-11-07+22%3A59%3A00%2B00%3A00&to=P7D&decimals=False&"
                 "epoch=False&sorting=asc&limit=100&page=3",
             ),
         ],

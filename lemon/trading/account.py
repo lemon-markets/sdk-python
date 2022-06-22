@@ -13,7 +13,7 @@ from lemon.trading.model import (
     GetWithdrawalsResponse,
     WithdrawResponse,
 )
-from lemon.types import Sorting
+from lemon.types import Sorting, only_set
 
 
 class Account:
@@ -34,13 +34,15 @@ class Account:
     ) -> GetAccountResponse:
         resp = self._client.put(
             "account",
-            json={
-                "address_street": address_street,
-                "address_street_number": address_street_number,
-                "address_city": address_city,
-                "address_postal_code": address_postal_code,
-                "address_country": address_country,
-            },
+            json=only_set(
+                {
+                    "address_street": address_street,
+                    "address_street_number": address_street_number,
+                    "address_city": address_city,
+                    "address_postal_code": address_postal_code,
+                    "address_country": address_country,
+                }
+            ),
         )
         return GetAccountResponse._from_data(resp.json())
 
@@ -49,10 +51,12 @@ class Account:
     ) -> GetWithdrawalsResponse:
         resp = self._client.get(
             "account/withdrawals",
-            params={
-                "limit": limit,
-                "page": page,
-            },
+            params=only_set(
+                {
+                    "limit": limit,
+                    "page": page,
+                }
+            ),
         )
         return GetWithdrawalsResponse._from_data(resp.json())
 
@@ -64,11 +68,13 @@ class Account:
     ) -> WithdrawResponse:
         resp = self._client.post(
             "account/withdrawals",
-            json={
-                "amount": amount,
-                "pin": pin,
-                "idempotency": idempotency,
-            },
+            json=only_set(
+                {
+                    "idempotency": idempotency,
+                },
+                amount=amount,
+                pin=pin,
+            ),
         )
         return WithdrawResponse._from_data(resp.json())
 
@@ -83,14 +89,16 @@ class Account:
     ) -> GetBankStatementsResponse:
         resp = self._client.get(
             "account/bankstatements",
-            params={
-                "type": type,
-                "from": from_,
-                "to": to,
-                "sorting": sorting,
-                "limit": limit,
-                "page": page,
-            },
+            params=only_set(
+                {
+                    "type": type,
+                    "from": from_,
+                    "to": to,
+                    "sorting": sorting,
+                    "limit": limit,
+                    "page": page,
+                }
+            ),
         )
         return GetBankStatementsResponse._from_data(resp.json())
 
@@ -102,11 +110,13 @@ class Account:
     ) -> GetDocumentsResponse:
         resp = self._client.get(
             "account/documents",
-            params={
-                "sorting": sorting,
-                "limit": limit,
-                "page": page,
-            },
+            params=only_set(
+                {
+                    "sorting": sorting,
+                    "limit": limit,
+                    "page": page,
+                }
+            ),
         )
         return GetDocumentsResponse._from_data(resp.json())
 
@@ -118,7 +128,6 @@ class Account:
             raise ValueError("document_id is empty string")
 
         resp = self._client.get(
-            f"account/documents/{document_id}",
-            params={"no_redirect": no_redirect},
+            f"account/documents/{document_id}", params={"no_redirect": no_redirect}
         )
         return GetDocumentResponse._from_data(resp.json())

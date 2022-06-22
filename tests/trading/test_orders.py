@@ -454,10 +454,6 @@ class TestCreateOrderApi(CommonTradingApiTests):
                 "side": "buy",
                 "quantity": 1000,
                 "venue": "xmun",
-                "stop_price": None,
-                "limit_price": None,
-                "notes": None,
-                "idempotency": None,
             },
         }
 
@@ -498,7 +494,6 @@ class TestCreateOrderApi(CommonTradingApiTests):
             method="POST",
             json={
                 "isin": "DE0008232125",
-                "expires_at": None,
                 "side": "buy",
                 "quantity": 1000,
                 "venue": "xmun",
@@ -511,7 +506,6 @@ class TestCreateOrderApi(CommonTradingApiTests):
         assert (
             client.trading.orders.create(
                 isin="DE0008232125",
-                expires_at=None,
                 side="buy",
                 quantity=1000,
                 venue="xmun",

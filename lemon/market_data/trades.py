@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from lemon.base import Client
 from lemon.market_data.model import GetTradesResponse
-from lemon.types import Sorting
+from lemon.types import Sorting, only_set
 
 
 class Trades:
@@ -22,15 +22,17 @@ class Trades:
     ) -> GetTradesResponse:
         resp = self._client.get(
             "trades/latest",
-            params={
-                "mic": mic,
-                "isin": isin,
-                "decimals": decimals,
-                "epoch": epoch,
-                "sorting": sorting,
-                "limit": limit,
-                "page": page,
-            },
+            params=only_set(
+                {
+                    "mic": mic,
+                    "decimals": decimals,
+                    "epoch": epoch,
+                    "sorting": sorting,
+                    "limit": limit,
+                    "page": page,
+                },
+                isin=isin,
+            ),
         )
         return GetTradesResponse._from_data(
             data=resp.json(),
