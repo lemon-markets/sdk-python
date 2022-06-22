@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from lemon.base import Client
 from lemon.market_data.model import GetInstrumentsResponse, InstrumentType
-from lemon.types import Sorting, filter_out_optionals
+from lemon.types import Sorting
 
 
 class Instruments:
@@ -23,18 +23,16 @@ class Instruments:
     ) -> GetInstrumentsResponse:
         resp = self._client.get(
             "instruments",
-            params=filter_out_optionals(
-                {
-                    "isin": isin,
-                    "search": search,
-                    "type": type,
-                    "mic": mic,
-                    "currency": currency,
-                    "tradable": tradable,
-                    "sorting": sorting,
-                    "limit": limit,
-                    "page": page,
-                }
-            ),
+            params={
+                "isin": isin,
+                "search": search,
+                "type": type,
+                "mic": mic,
+                "currency": currency,
+                "tradable": tradable,
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
         )
         return GetInstrumentsResponse._from_data(resp.json())

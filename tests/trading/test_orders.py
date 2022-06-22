@@ -527,7 +527,7 @@ class TestActivateOrderApi(CommonTradingApiTests):
         return {
             "uri": "/orders/DE0008232125/activate",
             "method": "POST",
-            "json": {"pin": None},
+            "json": {},
         }
 
     def test_activate_order(self, client: Api, httpserver: HTTPServer):

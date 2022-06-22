@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from lemon.base import Client
 from lemon.market_data.model import GetQuotesResponse
-from lemon.types import Sorting, filter_out_optionals
+from lemon.types import Sorting
 
 
 class Quotes:
@@ -22,17 +22,15 @@ class Quotes:
     ) -> GetQuotesResponse:
         resp = self._client.get(
             "quotes/latest",
-            params=filter_out_optionals(
-                {
-                    "mic": mic,
-                    "decimals": decimals,
-                    "epoch": epoch,
-                    "sorting": sorting,
-                    "limit": limit,
-                    "page": page,
-                },
-                isin=isin,
-            ),
+            params={
+                "isin": isin,
+                "mic": mic,
+                "decimals": decimals,
+                "epoch": epoch,
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
         )
         return GetQuotesResponse._from_data(
             data=resp.json(),

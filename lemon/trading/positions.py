@@ -8,7 +8,7 @@ from lemon.trading.model import (
     GetStatementsResponse,
     StatementType,
 )
-from lemon.types import Sorting, filter_out_optionals
+from lemon.types import Sorting
 
 
 class Positions:
@@ -23,13 +23,11 @@ class Positions:
     ) -> GetPositionsResponse:
         resp = self._client.get(
             "positions",
-            params=filter_out_optionals(
-                {
-                    "isin": isin,
-                    "limit": limit,
-                    "page": page,
-                }
-            ),
+            params={
+                "isin": isin,
+                "limit": limit,
+                "page": page,
+            },
         )
         return GetPositionsResponse._from_data(resp.json())
 
@@ -45,17 +43,15 @@ class Positions:
     ) -> GetStatementsResponse:
         resp = self._client.get(
             "positions/statements",
-            params=filter_out_optionals(
-                {
-                    "isin": isin,
-                    "from": from_,
-                    "to": to,
-                    "types": types,
-                    "sorting": sorting,
-                    "limit": limit,
-                    "page": page,
-                }
-            ),
+            params={
+                "isin": isin,
+                "from": from_,
+                "to": to,
+                "types": types,
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
         )
         return GetStatementsResponse._from_data(resp.json())
 
@@ -70,15 +66,13 @@ class Positions:
     ) -> GetPerformanceResponse:
         resp = self._client.get(
             "positions/performance",
-            params=filter_out_optionals(
-                {
-                    "isin": isin,
-                    "from": from_,
-                    "to": to,
-                    "sorting": sorting,
-                    "limit": limit,
-                    "page": page,
-                }
-            ),
+            params={
+                "isin": isin,
+                "from": from_,
+                "to": to,
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
         )
         return GetPerformanceResponse._from_data(resp.json())

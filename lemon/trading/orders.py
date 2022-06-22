@@ -13,7 +13,7 @@ from lemon.trading.model import (
     OrderType,
     Venue,
 )
-from lemon.types import Days, filter_out_optionals
+from lemon.types import Days
 
 
 class Orders:
@@ -34,19 +34,17 @@ class Orders:
     ) -> GetOrdersResponse:
         resp = self._client.get(
             "orders",
-            params=filter_out_optionals(
-                {
-                    "from": from_,
-                    "to": to,
-                    "isin": isin,
-                    "side": side,
-                    "status": status,
-                    "type": type,
-                    "key_creation_id": key_creation_id,
-                    "limit": limit,
-                    "page": page,
-                }
-            ),
+            params={
+                "from": from_,
+                "to": to,
+                "isin": isin,
+                "side": side,
+                "status": status,
+                "type": type,
+                "key_creation_id": key_creation_id,
+                "limit": limit,
+                "page": page,
+            },
         )
         return GetOrdersResponse._from_data(resp.json())
 
@@ -71,19 +69,17 @@ class Orders:
 
         resp = self._client.post(
             "orders",
-            json=filter_out_optionals(
-                {
-                    "expires_at": expires_at_str,
-                    "venue": venue,
-                    "stop_price": stop_price,
-                    "limit_price": limit_price,
-                    "notes": notes,
-                    "idempotency": idempotency,
-                },
-                isin=isin,
-                side=side,
-                quantity=quantity,
-            ),
+            json={
+                "isin": isin,
+                "side": side,
+                "quantity": quantity,
+                "expires_at": expires_at_str,
+                "venue": venue,
+                "stop_price": stop_price,
+                "limit_price": limit_price,
+                "notes": notes,
+                "idempotency": idempotency,
+            },
         )
         return CreateOrderResponse._from_data(resp.json())
 

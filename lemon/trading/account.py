@@ -13,7 +13,7 @@ from lemon.trading.model import (
     GetWithdrawalsResponse,
     WithdrawResponse,
 )
-from lemon.types import Sorting, filter_out_optionals
+from lemon.types import Sorting
 
 
 class Account:
@@ -34,15 +34,13 @@ class Account:
     ) -> GetAccountResponse:
         resp = self._client.put(
             "account",
-            json=filter_out_optionals(
-                {
-                    "address_street": address_street,
-                    "address_street_number": address_street_number,
-                    "address_city": address_city,
-                    "address_postal_code": address_postal_code,
-                    "address_country": address_country,
-                }
-            ),
+            json={
+                "address_street": address_street,
+                "address_street_number": address_street_number,
+                "address_city": address_city,
+                "address_postal_code": address_postal_code,
+                "address_country": address_country,
+            },
         )
         return GetAccountResponse._from_data(resp.json())
 
@@ -51,12 +49,10 @@ class Account:
     ) -> GetWithdrawalsResponse:
         resp = self._client.get(
             "account/withdrawals",
-            params=filter_out_optionals(
-                {
-                    "limit": limit,
-                    "page": page,
-                }
-            ),
+            params={
+                "limit": limit,
+                "page": page,
+            },
         )
         return GetWithdrawalsResponse._from_data(resp.json())
 
@@ -68,13 +64,11 @@ class Account:
     ) -> WithdrawResponse:
         resp = self._client.post(
             "account/withdrawals",
-            json=filter_out_optionals(
-                {
-                    "idempotency": idempotency,
-                },
-                amount=amount,
-                pin=pin,
-            ),
+            json={
+                "amount": amount,
+                "pin": pin,
+                "idempotency": idempotency,
+            },
         )
         return WithdrawResponse._from_data(resp.json())
 
@@ -89,16 +83,14 @@ class Account:
     ) -> GetBankStatementsResponse:
         resp = self._client.get(
             "account/bankstatements",
-            params=filter_out_optionals(
-                {
-                    "type": type,
-                    "from": from_,
-                    "to": to,
-                    "sorting": sorting,
-                    "limit": limit,
-                    "page": page,
-                }
-            ),
+            params={
+                "type": type,
+                "from": from_,
+                "to": to,
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
         )
         return GetBankStatementsResponse._from_data(resp.json())
 
@@ -110,13 +102,11 @@ class Account:
     ) -> GetDocumentsResponse:
         resp = self._client.get(
             "account/documents",
-            params=filter_out_optionals(
-                {
-                    "sorting": sorting,
-                    "limit": limit,
-                    "page": page,
-                }
-            ),
+            params={
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
         )
         return GetDocumentsResponse._from_data(resp.json())
 

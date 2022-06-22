@@ -17,9 +17,8 @@ class JSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
-def filter_out_optionals(optional: Dict[str, Any], **required: Any) -> Dict[str, Any]:
-    required.update({k: v for k, v in optional.items() if v is not None})
-    return required
+def filter_out_optionals(data: Dict[str, Any]) -> Dict[str, Any]:
+    return {k: v for k, v in data.items() if v is not None}
 
 
 BASIC_PARSERS = {
