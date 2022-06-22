@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from lemon.base import Client
 from lemon.market_data.model import GetVenuesResponse
-from lemon.types import Sorting, only_set
+from lemon.types import Sorting, filter_out_optionals
 
 
 class Venues:
@@ -18,7 +18,7 @@ class Venues:
     ) -> GetVenuesResponse:
         resp = self._client.get(
             "venues",
-            params=only_set(
+            params=filter_out_optionals(
                 {
                     "mic": mic,
                     "sorting": sorting,

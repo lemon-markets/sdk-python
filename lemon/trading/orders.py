@@ -13,7 +13,7 @@ from lemon.trading.model import (
     OrderType,
     Venue,
 )
-from lemon.types import Days, only_set
+from lemon.types import Days, filter_out_optionals
 
 
 class Orders:
@@ -34,7 +34,7 @@ class Orders:
     ) -> GetOrdersResponse:
         resp = self._client.get(
             "orders",
-            params=only_set(
+            params=filter_out_optionals(
                 {
                     "from": from_,
                     "to": to,
@@ -71,7 +71,7 @@ class Orders:
 
         resp = self._client.post(
             "orders",
-            json=only_set(
+            json=filter_out_optionals(
                 {
                     "expires_at": expires_at_str,
                     "venue": venue,

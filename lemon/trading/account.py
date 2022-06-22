@@ -13,7 +13,7 @@ from lemon.trading.model import (
     GetWithdrawalsResponse,
     WithdrawResponse,
 )
-from lemon.types import Sorting, only_set
+from lemon.types import Sorting, filter_out_optionals
 
 
 class Account:
@@ -34,7 +34,7 @@ class Account:
     ) -> GetAccountResponse:
         resp = self._client.put(
             "account",
-            json=only_set(
+            json=filter_out_optionals(
                 {
                     "address_street": address_street,
                     "address_street_number": address_street_number,
@@ -51,7 +51,7 @@ class Account:
     ) -> GetWithdrawalsResponse:
         resp = self._client.get(
             "account/withdrawals",
-            params=only_set(
+            params=filter_out_optionals(
                 {
                     "limit": limit,
                     "page": page,
@@ -68,7 +68,7 @@ class Account:
     ) -> WithdrawResponse:
         resp = self._client.post(
             "account/withdrawals",
-            json=only_set(
+            json=filter_out_optionals(
                 {
                     "idempotency": idempotency,
                 },
@@ -89,7 +89,7 @@ class Account:
     ) -> GetBankStatementsResponse:
         resp = self._client.get(
             "account/bankstatements",
-            params=only_set(
+            params=filter_out_optionals(
                 {
                     "type": type,
                     "from": from_,
@@ -110,7 +110,7 @@ class Account:
     ) -> GetDocumentsResponse:
         resp = self._client.get(
             "account/documents",
-            params=only_set(
+            params=filter_out_optionals(
                 {
                     "sorting": sorting,
                     "limit": limit,

@@ -8,7 +8,7 @@ from lemon.trading.model import (
     GetStatementsResponse,
     StatementType,
 )
-from lemon.types import Sorting, only_set
+from lemon.types import Sorting, filter_out_optionals
 
 
 class Positions:
@@ -23,7 +23,7 @@ class Positions:
     ) -> GetPositionsResponse:
         resp = self._client.get(
             "positions",
-            params=only_set(
+            params=filter_out_optionals(
                 {
                     "isin": isin,
                     "limit": limit,
@@ -45,7 +45,7 @@ class Positions:
     ) -> GetStatementsResponse:
         resp = self._client.get(
             "positions/statements",
-            params=only_set(
+            params=filter_out_optionals(
                 {
                     "isin": isin,
                     "from": from_,
@@ -70,7 +70,7 @@ class Positions:
     ) -> GetPerformanceResponse:
         resp = self._client.get(
             "positions/performance",
-            params=only_set(
+            params=filter_out_optionals(
                 {
                     "isin": isin,
                     "from": from_,

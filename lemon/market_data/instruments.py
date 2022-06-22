@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from lemon.base import Client
 from lemon.market_data.model import GetInstrumentsResponse, InstrumentType
-from lemon.types import Sorting, only_set
+from lemon.types import Sorting, filter_out_optionals
 
 
 class Instruments:
@@ -23,7 +23,7 @@ class Instruments:
     ) -> GetInstrumentsResponse:
         resp = self._client.get(
             "instruments",
-            params=only_set(
+            params=filter_out_optionals(
                 {
                     "isin": isin,
                     "search": search,
