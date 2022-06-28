@@ -13,7 +13,6 @@ from lemon.trading.model import (
     OrderType,
     Venue,
 )
-from lemon.types import Days
 
 
 class Orders:
@@ -53,7 +52,7 @@ class Orders:
         isin: str,
         side: OrderSide,
         quantity: int,
-        expires_at: Union[date, Days, None] = None,
+        expires_at: Union[date, str, None] = None,
         stop_price: Optional[int] = None,
         limit_price: Optional[int] = None,
         venue: Optional[Venue] = None,
