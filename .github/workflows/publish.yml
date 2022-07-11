@@ -9,25 +9,17 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      - name: Setup Python
+      - uses: actions/checkout@v3
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install twine wheel
-
-      - name: Build
-        run: |
-          python setup.py sdist bdist_wheel
-
-      - name: Publish to PyPI
-        run: |
-          twine upload dist/*
+      - name: Install Flit
+        run: pip install flit
+      - name: Install Dependencies
+        run: flit install --symlink
+      - name: Publish
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.pypi_password }}
+          FLIT_USERNAME: __token__
+          FLIT_PASSWORD: ${{ secrets.pypi_password }}
+        run: flit publish
