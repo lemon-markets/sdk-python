@@ -20,6 +20,6 @@ jobs:
         run: flit install --symlink
       - name: Publish
         env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.pypi_password }}
+          FLIT_USERNAME: __token__
+          FLIT_PASSWORD: ${{ secrets.pypi_password }}
         run: flit publish
