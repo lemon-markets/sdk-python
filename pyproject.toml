@@ -45,7 +45,6 @@ test = [
 dev = [
     'autoflake',
     'black',
-    'doit',
     'isort',
     'mypy',
     'mypy-extensions',
@@ -80,7 +79,6 @@ disable=[
     "C0114", # missing-module-docstring
     "C0115", # missing-class-docstring
     "C0116", # missing-function-docstring
-    #"R0201", # no-self-use
     "R0801", # duplicate-code
     "R0902", # too-many-instance-attributes
     "R0903", # too-few-public-methods
