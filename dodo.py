@@ -6,9 +6,9 @@ def task_format(check: bool):
     return {
         "actions": [
             f"autoflake --remove-all-unused-imports {'--check' if check else '--in-place'}"
-            " -r lemon tests setup.py dodo.py",
-            f"isort {'--check' if check else ''} --profile black lemon tests setup.py dodo.py",
-            f"black {'--check' if check else ''} lemon tests setup.py dodo.py",
+            " -r lemon tests dodo.py",
+            f"isort {'--check' if check else ''} --profile black lemon tests dodo.py",
+            f"black {'--check' if check else ''} lemon tests dodo.py",
         ],
     }
 
