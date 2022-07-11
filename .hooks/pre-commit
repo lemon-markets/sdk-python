@@ -1,6 +1,0 @@
-#!/bin/sh
-
-set -e
-
-doit format --check
-doit lint
