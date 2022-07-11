@@ -38,7 +38,7 @@ dependencies = [
 
 test = [
     "pytest",
-    "coverage[toml]",
+    "pytest-cov",
     "pytest_httpserver"
 ]
 
