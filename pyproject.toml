@@ -38,7 +38,7 @@ dependencies = [
 
 test = [
     "pytest",
-    "pytest-cov",
+    "coverage[toml]",
     "pytest_httpserver"
 ]
 
@@ -64,3 +64,40 @@ Tracker = "https://github.com/lemon-markets/sdk-python/issues/"
 
 [tool.flit.sdist]
 exclude = ["tests/*"]
+
+[tool.mypy]
+strict = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+allow_untyped_calls = true
+
+[tool.pylint.MASTER]
+disable=[
+    "C0103", # invalid-name
+    "C0114", # missing-module-docstring
+    "C0115", # missing-class-docstring
+    "C0116", # missing-function-docstring
+    #"R0201", # no-self-use
+    "R0801", # duplicate-code
+    "R0902", # too-many-instance-attributes
+    "R0903", # too-few-public-methods
+    "R0913", # too-many-arguments
+    "W0212", # protected-access
+    "W0621", # redefined-outer-name
+    "W0622", # redefined-builtin
+]
+
+[tool.coverage.report]
+show_missing=true
+
+
+[tool.pytest.ini_options]
+markers = [
+    "e2e: marks tests as e2e"
+]
+
+[tool.isort]
+profile = 'black'
