@@ -23,5 +23,4 @@ __all__ = [
     "Quote",
     "Trade",
     "Venue",
-    "Token",
 ]
