@@ -8,6 +8,7 @@ LIVE_TRADING_API_URL = "https://trading.lemon.markets/v1/"
 PAPER_TRADING_API_URL = "https://paper-trading.lemon.markets/v1/"
 LIVE_STREAMING_API_URL = "https://realtime.lemon.markets/v1/"
 
+
 class Api:
     def __init__(
         self,

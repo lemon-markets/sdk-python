@@ -4,11 +4,11 @@ from .instrument import (
     InstrumentType,
     InstrumentVenue,
 )
+from .live_streaming import Token
 from .ohlc import GetOhlcResponse, OhlcData
 from .quote import GetQuotesResponse, Quote
 from .trade import GetTradesResponse, Trade
 from .venue import GetVenuesResponse, OpeningHours, Venue
-from .live_streaming import Token
 
 __all__ = [
     "GetInstrumentsResponse",
@@ -24,5 +24,5 @@ __all__ = [
     "Quote",
     "Trade",
     "Venue",
-    "Token"
+    "Token",
 ]

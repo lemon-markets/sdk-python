@@ -10,13 +10,6 @@ class LiveStreaming:
     def __init__(self, client: Client):
         self._client = client
 
-    def get_token(
-        self
-    ) -> Token:
-        resp = self._client.post(
-            "auth",
-            json={}
-        )
-        return Token._from_data(
-            data=resp.json()
-        )
+    def get_token(self) -> Token:
+        resp = self._client.post("auth", json={})
+        return Token._from_data(data=resp.json())

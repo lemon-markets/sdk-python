@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, List, Union
 
 from lemon.types import BaseModel
 
+
 @dataclass
 class Token(BaseModel):
     token: str
@@ -15,7 +16,7 @@ class Token(BaseModel):
         data: Dict[str, Any]
     ) -> "Token":
         return Token(
-            token=data['token'],
-            user_id=data['user_id'],
-            expires_at=datetime.fromtimestamp(data['expires_at'] / 1000)
+            token=data["token"],
+            user_id=data["user_id"],
+            expires_at=datetime.fromtimestamp(data["expires_at"] / 1000),
         )
