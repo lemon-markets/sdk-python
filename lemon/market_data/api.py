@@ -28,7 +28,6 @@ class MarketDataAPI(Client):
         self._quotes = Quotes(self)
         self._ohlc = Ohlc(self)
 
-
     @property
     def venues(self) -> Venues:
         return self._venues

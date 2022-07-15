@@ -38,7 +38,6 @@ def market_data_httpserver() -> Generator[HTTPServer, None, None]:
     yield from make_http_server()
 
 
-
 @pytest.fixture(scope="session")
 def trading_httpserver() -> Generator[HTTPServer, None, None]:
     yield from make_http_server()

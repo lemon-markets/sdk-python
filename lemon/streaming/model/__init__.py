@@ -1,5 +1,3 @@
 from .authenticate import Token
 
-__all__ = [
-    "Token"
-]
+__all__ = ["Token"]

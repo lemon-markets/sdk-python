@@ -1,8 +1,8 @@
 from typing_extensions import Literal
 
 from lemon.market_data.api import MarketDataAPI
-from lemon.trading.api import TradingAPI
 from lemon.streaming.api import StreamingAPI
+from lemon.trading.api import TradingAPI
 
 MARKET_DATA_API_URL = "https://data.lemon.markets/v1/"
 LIVE_TRADING_API_URL = "https://trading.lemon.markets/v1/"
@@ -55,6 +55,7 @@ class Api:
     @property
     def streaming(self) -> StreamingAPI:
         return self._streaming
+
 
 def create(
     market_data_api_token: str,

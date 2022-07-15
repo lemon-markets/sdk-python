@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Union
+from typing import Any, Dict
 
 from lemon.types import BaseModel
 
@@ -12,11 +12,11 @@ class Token(BaseModel):
     expires_at: datetime
 
     @staticmethod
-    def _from_data(  # type: ignore # pylint: disable=W0221
-        data: Dict[str, Any]
-    ) -> "Token":
+    def _from_data(data: Dict[str, Any]) -> "Token":  # type: ignore # pylint: disable=W0221
         return Token(
             token=data["token"],
             user_id=data["user_id"],
-            expires_at=datetime.fromtimestamp(data["expires_at"] / 1000, tz=timezone.utc),
+            expires_at=datetime.fromtimestamp(
+                data["expires_at"] / 1000, tz=timezone.utc
+            ),
         )
