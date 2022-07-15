@@ -26,7 +26,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
 ]
 dynamic = ["version", "description"]
-requires-python = ">=3.8,<4"
+requires-python = ">=3.7,<4"
 
 dependencies = [
     "pytz>=2022.1",
