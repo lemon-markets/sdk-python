@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Callable, Dict, List, Union
 
 from lemon.types import BaseModel
@@ -18,5 +18,5 @@ class Token(BaseModel):
         return Token(
             token=data["token"],
             user_id=data["user_id"],
-            expires_at=datetime.fromtimestamp(data["expires_at"] / 1000),
+            expires_at=datetime.fromtimestamp(data["expires_at"] / 1000, tz=timezone.utc),
         )

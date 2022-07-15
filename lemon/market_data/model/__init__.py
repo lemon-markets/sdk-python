@@ -4,7 +4,6 @@ from .instrument import (
     InstrumentType,
     InstrumentVenue,
 )
-from .live_streaming import Token
 from .ohlc import GetOhlcResponse, OhlcData
 from .quote import GetQuotesResponse, Quote
 from .trade import GetTradesResponse, Trade

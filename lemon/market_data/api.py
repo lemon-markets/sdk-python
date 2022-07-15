@@ -1,6 +1,5 @@
 from lemon.base import Client
 from lemon.market_data.instruments import Instruments
-from lemon.market_data.live_streaming import LiveStreaming
 from lemon.market_data.ohlc import Ohlc
 from lemon.market_data.quotes import Quotes
 from lemon.market_data.trades import Trades
@@ -12,7 +11,6 @@ class MarketDataAPI(Client):
         self,
         api_token: str,
         market_data_api_url: str,
-        live_streaming_api_url: str,
         timeout: float,
         retry_count: int,
         retry_backoff_factor: float,
@@ -29,15 +27,7 @@ class MarketDataAPI(Client):
         self._trades = Trades(self)
         self._quotes = Quotes(self)
         self._ohlc = Ohlc(self)
-        self._live_streaming = LiveStreaming(
-            client=Client(
-                base_url=live_streaming_api_url,
-                api_token=api_token,
-                timeout=timeout,
-                retry_count=retry_count,
-                retry_backoff_factor=retry_backoff_factor,
-            )
-        )
+
 
     @property
     def venues(self) -> Venues:
@@ -58,7 +48,3 @@ class MarketDataAPI(Client):
     @property
     def ohlc(self) -> Ohlc:
         return self._ohlc
-
-    @property
-    def live_streaming(self) -> LiveStreaming:
-        return self._live_streaming

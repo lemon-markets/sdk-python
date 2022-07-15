@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from lemon.base import Client
-from lemon.market_data.model import Token
+from lemon.streaming.model import Token
 from lemon.types import Sorting
 
 
