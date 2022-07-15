@@ -109,6 +109,7 @@ class Client:
         headers: Optional[Dict[str, Any]] = None,
     ) -> requests.Response:
         url = urljoin(self._base_url, url)
+        print("URL: ", url)
         headers = headers or {}
         return self._session.post(
             url,
