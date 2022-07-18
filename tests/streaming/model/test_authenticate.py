@@ -15,6 +15,6 @@ DICT_RESPONSE = {
 }
 
 
-def test_get_token_response_is_serializable():
+def test_authenticate_response_is_serializable():
     assert RESPONSE.dict() == DICT_RESPONSE
     assert RESPONSE.json()
