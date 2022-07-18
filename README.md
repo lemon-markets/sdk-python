@@ -51,10 +51,11 @@ client = api.create(
 - `retry_count` - default number of retries for requests
 - `retry_backoff_factor` - default retry backoff factor for retries
 
-The SDK client consists of two parts:
+The SDK client consists of three parts:
 
 - `market_data` - let's you access the Market Data API endpoints
-- `trading` - let's you access the Trading API endpoints. Choose the desired target environment (paper or live) in the client configuration. 
+- `streaming` - let's you retrieve an authentication token that you can use to stream live data
+- `trading` - let's you access the Trading API endpoints. Choose the desired target environment (paper or live) in the client configuration.
 
 ### Market Data API usage
 
@@ -114,6 +115,37 @@ response = client.market_data.trades.get_latest(
     isin=['US88160R1014', 'US0231351067'],
     decimals=True
 )
+```
+
+### Streaming API Usage
+```python
+from lemon import api
+
+client = api.create(...)
+
+# get live streaming authentication token
+response = client.streaming.authenticate()
+```
+
+#### Streaming API example 
+```python
+from lemon import api
+import paho.mqtt.client as mqtt
+
+client = api.create(...)
+
+# get live streaming authentication token
+response = client.streaming.authenticate()
+
+# initiate mqtt- client for streaming
+mqtt_client = mqtt.Client("Ably_Client")
+mqtt_client.username_pw_set(username=response.token)
+mqtt_client.on_connect = on_connect # callbck to handle connect
+mqtt_client.on_message = on_message # callbck to handle message
+mqtt_client.on_subscribe = on_subscribe # callbck to handle subscribe
+
+mqtt_client.connect("mqtt.ably.io") # connect to ably broker
+mqtt_client.loop_forever() # start the mqtt client and loop forever
 ```
 
 ### Trading API usage
