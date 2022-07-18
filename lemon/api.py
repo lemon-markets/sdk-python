@@ -1,5 +1,6 @@
-from asyncio import Future
 import warnings
+from asyncio import Future
+
 from typing_extensions import Literal
 
 from lemon.market_data.api import MarketDataAPI
@@ -68,7 +69,10 @@ def create(
     retry_backoff_factor: float = 0.1,
 ) -> Api:
     if env == "money":
-        warnings.warn("Usage of 'money' as env is depricated, please use 'live' in the future", category=FutureWarning)
+        warnings.warn(
+            "Usage of 'money' as env is depricated, please use 'live' in the future",
+            category=FutureWarning,
+        )
     return Api(
         market_data_api_token=market_data_api_token,
         trading_api_token=trading_api_token,
