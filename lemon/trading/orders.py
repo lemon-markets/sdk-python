@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional, Union, List
+from typing import List, Optional, Union
 
 from lemon.base import Client
 from lemon.trading.model import (
