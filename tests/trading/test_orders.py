@@ -387,6 +387,7 @@ class TestGetOrdersApi(CommonTradingApiTests):
             ({"isin": "XMUN"}, "isin=XMUN"),
             ({"side": "sell"}, "side=sell"),
             ({"status": "inactive"}, "status=inactive"),
+            ({"status": ["inactive", "activated"]}, "status=inactive&status=activated"),
             ({"type": "market"}, "type=market"),
             ({"key_creation_id": "foo"}, "key_creation_id=foo"),
             ({"limit": 100}, "limit=100"),
