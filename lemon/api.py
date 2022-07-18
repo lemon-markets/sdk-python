@@ -1,5 +1,4 @@
 import warnings
-from asyncio import Future
 
 from typing_extensions import Literal
 
