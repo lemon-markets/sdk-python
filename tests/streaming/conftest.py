@@ -2,7 +2,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
-from lemon.errors import BusinessLogicError
+from lemon.errors import AuthenticationError
 from tests.conftest import CommonApiTests, build_error
 
 
@@ -15,7 +15,7 @@ class CommonStreamingAPITests(CommonApiTests):
         self, client: Api, httpserver: HTTPServer, api_call_kwargs
     ):
         httpserver.expect_oneshot_request(**api_call_kwargs).respond_with_json(
-            build_error("pin_invalid"), status=400
+            build_error("token_invalid"), status=400
         )
-        with pytest.raises(BusinessLogicError):
+        with pytest.raises(AuthenticationError):
             self.make_api_call(client)
