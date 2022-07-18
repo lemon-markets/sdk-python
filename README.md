@@ -32,7 +32,7 @@ Requirements:
 
 ### SDK client
 
-To create and configure our SDK client you will need to have separate API tokens for `Market Data API` and `Trading API`. You also need to choose which environment you want to use for trading: `paper` or `money`, defaults to `paper`.
+To create and configure our SDK client you will need to have separate API tokens for `Market Data API` and `Trading API`. You also need to choose which environment you want to use for trading: `paper` or `live`, defaults to `paper`.
 For how to obtain and use our api token, see [here](https://docs.lemon.markets/authentication).
 The snippet below shows how to properly create a SDK client:
 ```python
@@ -41,7 +41,7 @@ from lemon import api
 client = api.create(
     market_data_api_token='your-market-data-api-token',
     trading_api_token='your-trading-api-token',
-    env='paper'  # or env='money'
+    env='paper'  # or env='live'
 )
 ```
 
@@ -54,7 +54,7 @@ client = api.create(
 The SDK client consists of two parts:
 
 - `market_data` - let's you access the Market Data API endpoints
-- `trading` - let's you access the Trading API endpoints. Choose the desired target environment (paper or money) in the client configuration. 
+- `trading` - let's you access the Trading API endpoints. Choose the desired target environment (paper or live) in the client configuration. 
 
 ### Market Data API usage
 
