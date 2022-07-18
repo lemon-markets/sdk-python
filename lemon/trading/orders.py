@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from lemon.base import Client
 from lemon.trading.model import (
@@ -26,7 +26,7 @@ class Orders:
         to: Optional[date] = None,
         isin: Optional[str] = None,
         side: Optional[OrderSide] = None,
-        status: Optional[OrderStatus] = None,
+        status: Optional[Union[OrderStatus, List[OrderStatus]]] = None,
         type: Optional[OrderType] = None,
         key_creation_id: Optional[str] = None,
         limit: Optional[int] = None,
