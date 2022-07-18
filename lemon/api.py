@@ -70,7 +70,7 @@ def create(
 ) -> Api:
     if env == "money":
         warnings.warn(
-            "Usage of 'money' as env is depricated, please use 'live' in the future",
+            "Usage of 'money' as env is deprecated, please use 'live' in the future",
             category=FutureWarning,
         )
     return Api(
