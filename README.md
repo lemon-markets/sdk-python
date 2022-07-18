@@ -127,7 +127,15 @@ client = api.create(...)
 response = client.streaming.authenticate()
 ```
 
-#### Streaming API example 
+#### Streaming API example
+This example relies on that you have both this SDK installed as well as paho-mqtt package.
+
+Below is an example usage of live streaming quotes through alby mqtt broker using paho mqtt client.
+When connecting to the broker the on_connect callback will be triggered.
+This in return will trigger the on_subscribe callback where we can let the broker know what ISINS we are interested in
+
+After that we will simply get all the quote updates through the on_message callback.
+
 ```python
 from lemon import api
 import paho.mqtt.client as mqtt
@@ -137,14 +145,24 @@ client = api.create(...)
 # get live streaming authentication token
 response = client.streaming.authenticate()
 
+def on_connect(mqtt_client, userdata, flags, rc):
+    mqtt_client.subscribe(response.user_id)
+
+def on_subscribe(mqtt_client, userdata, level, buff):
+    mqtt_client.publish(f"{response.user_id}.subscriptions", "ISIN1,ISIN2,ISIN...")
+
+def on_message(mqtt_client, userdata, msg):
+    data = json.loads(msg.payload)
+    quote = Quote._from_data(data, int, int)
+
 # initiate mqtt- client for streaming
 mqtt_client = mqtt.Client("Ably_Client")
 mqtt_client.username_pw_set(username=response.token)
 mqtt_client.on_connect = on_connect # callbck to handle connect
-mqtt_client.on_message = on_message # callbck to handle message
 mqtt_client.on_subscribe = on_subscribe # callbck to handle subscribe
+mqtt_client.on_message = on_message # callbck to handle message
 
-mqtt_client.connect("mqtt.ably.io") # connect to ably broker
+mqtt_client.connect("mqtt.ably.io")
 mqtt_client.loop_forever() # start the mqtt client and loop forever
 ```
 
