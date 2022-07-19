@@ -10,16 +10,19 @@ from typing_extensions import Literal
 
 from lemon import api
 from lemon.api import Api
-from lemon.errors import AuthenticationError, BusinessLogicError, InvalidQueryError, APIError
+from lemon.errors import (
+    APIError,
+    AuthenticationError,
+    BusinessLogicError,
+    InvalidQueryError,
+)
 from lemon.trading.model import (
     Account,
     CreateOrderResponse,
     GetOrderResponse,
     GetPerformanceResponse,
 )
-from lemon.streaming.model import (
-    Token
-)
+
 MARKET_DATA_API_TOKEN = os.getenv("API_TOKEN", None)
 TRADING_API_TOKEN = os.getenv("API_TOKEN", None)
 
@@ -367,9 +370,10 @@ def test_streaming_authentication(uut: Api):
     assert token.user_id
     assert isinstance(token.expires_at, datetime)
 
+
 @pytest.mark.e2e
 def test_streaming_authentication_bad_token():
     uut = api.create("bad_token", "")
     with pytest.raises(APIError) as exc:
         uut.streaming.authenticate()
-        assert exc.data['message'] == "invalid token"
+        assert exc.data["message"] == "invalid token"
