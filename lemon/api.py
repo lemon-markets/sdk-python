@@ -78,7 +78,7 @@ def create(
         market_data_api_url=MARKET_DATA_API_URL,
         streaming_api_url=STREAMING_API_URL,
         trading_api_url=LIVE_TRADING_API_URL
-        if env == "money" or env == "live"
+        if env in ["money", "live"]
         else PAPER_TRADING_API_URL,
         timeout=timeout,
         retry_count=retry_count,

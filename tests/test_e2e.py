@@ -363,14 +363,13 @@ def test_raise_business_logic_error(uut):
 @pytest.mark.e2e
 def test_streaming_authentication(uut: Api):
     token = uut.streaming.authenticate()
-    assert type(token) is Token
-    assert len(token.token)
-    assert len(token.user_id)
-    assert token.expires_at > datetime.now()
+    assert token.token
+    assert token.user_id
+    assert isinstance(token.expires_at, datetime)
 
 @pytest.mark.e2e
 def test_streaming_authentication_bad_token():
-    uut = Api("bad_token", "")
+    uut = api.create("bad_token", "")
     with pytest.raises(APIError) as exc:
         uut.streaming.authenticate()
         assert exc.data['message'] == "invalid token"
