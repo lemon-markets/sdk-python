@@ -5,6 +5,8 @@ from typing import Any, Callable, Dict, Tuple, Type, TypeVar, Union
 
 from typing_extensions import Literal
 
+from lemon.errors import APIError
+
 Sorting = Literal["asc", "desc"]
 Environment = Literal["paper", "money"]
 Days = int
@@ -25,7 +27,12 @@ def convert_datetime(value: Union[str, int]) -> datetime:
     try:
         return datetime.fromisoformat(value)
     except TypeError:
+        pass
+
+    try:
         return datetime.fromtimestamp(value / 1000, tz=timezone.utc)
+    except TypeError as exc:
+        raise APIError(exc)
 
 
 BASIC_PARSERS = {
