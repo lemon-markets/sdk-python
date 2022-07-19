@@ -32,7 +32,7 @@ Requirements:
 
 ### SDK client
 
-To create and configure our SDK client you will need to have separate API tokens for `Market Data API` and `Trading API`. You also need to choose which environment you want to use for trading: `paper` or `money`, defaults to `paper`.
+To create and configure our SDK client you will need to have separate API tokens for `Market Data API` and `Trading API`. You also need to choose which environment you want to use for trading: `paper` or `live`, defaults to `paper`.
 For how to obtain and use our api token, see [here](https://docs.lemon.markets/authentication).
 The snippet below shows how to properly create a SDK client:
 ```python
@@ -41,7 +41,7 @@ from lemon import api
 client = api.create(
     market_data_api_token='your-market-data-api-token',
     trading_api_token='your-trading-api-token',
-    env='paper'  # or env='money'
+    env='paper'  # or env='live'
 )
 ```
 
@@ -51,10 +51,11 @@ client = api.create(
 - `retry_count` - default number of retries for requests
 - `retry_backoff_factor` - default retry backoff factor for retries
 
-The SDK client consists of two parts:
+The SDK client consists of three parts:
 
 - `market_data` - let's you access the Market Data API endpoints
-- `trading` - let's you access the Trading API endpoints. Choose the desired target environment (paper or money) in the client configuration. 
+- `streaming` - let's you retrieve an authentication token that you can use to stream live data
+- `trading` - let's you access the Trading API endpoints. Choose the desired target environment (paper or live) in the client configuration.
 
 ### Market Data API usage
 
@@ -114,6 +115,57 @@ response = client.market_data.trades.get_latest(
     isin=['US88160R1014', 'US0231351067'],
     decimals=True
 )
+```
+
+### Streaming API Usage
+```python
+from lemon import api
+
+client = api.create(...)
+
+# get live streaming authentication token
+response = client.streaming.authenticate()
+```
+
+#### Streaming API example
+This example relies on that you have both this SDK installed as well as paho-mqtt package.
+
+Below is an example usage of live streaming quotes through alby mqtt broker using paho mqtt client.
+When connecting to the broker the on_connect callback will be triggered.
+This in return will trigger the on_subscribe callback where we can let the broker know what ISINS we are interested in
+There is a limitation to only have 4 channels connected at once. 
+You may be able to create more than 4 channels - however we then may close any one of them at any time.
+
+After that we will simply get all the quote updates through the on_message callback.
+
+```python
+from lemon import api
+import paho.mqtt.client as mqtt
+
+client = api.create(...)
+
+# get live streaming authentication token
+response = client.streaming.authenticate()
+
+def on_connect(mqtt_client, userdata, flags, rc):
+    mqtt_client.subscribe(response.user_id)
+
+def on_subscribe(mqtt_client, userdata, level, buff):
+    mqtt_client.publish(f"{response.user_id}.subscriptions", "US88160R1014,US0231351067")
+
+def on_message(mqtt_client, userdata, msg):
+    data = json.loads(msg.payload)
+    quote = Quote._from_data(data, int, int)
+
+# initiate mqtt- client for streaming
+mqtt_client = mqtt.Client("Ably_Client")
+mqtt_client.username_pw_set(username=response.token)
+mqtt_client.on_connect = on_connect # callbck to handle connect
+mqtt_client.on_subscribe = on_subscribe # callbck to handle subscribe
+mqtt_client.on_message = on_message # callbck to handle message
+
+mqtt_client.connect("mqtt.ably.io")
+mqtt_client.loop_forever() # start the mqtt client and loop forever
 ```
 
 ### Trading API usage

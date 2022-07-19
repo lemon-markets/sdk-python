@@ -10,7 +10,12 @@ from typing_extensions import Literal
 
 from lemon import api
 from lemon.api import Api
-from lemon.errors import AuthenticationError, BusinessLogicError, InvalidQueryError
+from lemon.errors import (
+    APIError,
+    AuthenticationError,
+    BusinessLogicError,
+    InvalidQueryError,
+)
 from lemon.trading.model import (
     Account,
     CreateOrderResponse,
@@ -18,8 +23,8 @@ from lemon.trading.model import (
     GetPerformanceResponse,
 )
 
-MARKET_DATA_API_TOKEN = os.getenv("API_TOKEN", None)
-TRADING_API_TOKEN = os.getenv("API_TOKEN", None)
+MARKET_DATA_API_TOKEN = os.getenv("MARKET_DATA_API_TOKEN", None)
+TRADING_API_TOKEN = os.getenv("TRADING_API_TOKEN", None)
 
 
 @pytest.fixture
@@ -33,7 +38,7 @@ def uut() -> Api:
     )
 
 
-@pytest.mark.parametrize("type_", ["stock", "bond", "fund", "etf"])
+@pytest.mark.parametrize("type_", ["stock", "fund", "etf", "etn", "etc"])
 @pytest.mark.e2e
 def test_instruments_by_type(uut: Api, type_):
     result = uut.market_data.instruments.get(type=[type_])
@@ -43,7 +48,7 @@ def test_instruments_by_type(uut: Api, type_):
 @pytest.mark.e2e
 def test_instruments_by_search(uut: Api):
     result = uut.market_data.instruments.get(search="tesla*")
-    assert len(result.results) == 3
+    assert result.results
 
 
 @pytest.mark.e2e
@@ -54,7 +59,7 @@ def test_instruments_by_isin(uut: Api):
     assert response.results[-1].title == "TESLA INC."
 
 
-@pytest.mark.parametrize("currency", ["EUR", "PLN"])
+@pytest.mark.parametrize("currency", ["EUR"])
 @pytest.mark.e2e
 def test_instruments_by_currency(uut: Api, currency):
     response = uut.market_data.instruments.get(currency=[currency])
@@ -356,3 +361,19 @@ def test_raise_authentication_error():
 def test_raise_business_logic_error(uut):
     with pytest.raises(BusinessLogicError):
         uut.trading.orders.get_order("invalid")
+
+
+@pytest.mark.e2e
+def test_streaming_authentication(uut: Api):
+    token = uut.streaming.authenticate()
+    assert token.token
+    assert token.user_id
+    assert isinstance(token.expires_at, datetime)
+
+
+@pytest.mark.e2e
+def test_streaming_authentication_bad_token():
+    uut = api.create("bad_token", "")
+    with pytest.raises(APIError) as exc:
+        uut.streaming.authenticate()
+        assert exc.data["message"] == "invalid token"

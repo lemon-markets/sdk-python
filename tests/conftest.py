@@ -43,6 +43,11 @@ def trading_httpserver() -> Generator[HTTPServer, None, None]:
     yield from make_http_server()
 
 
+@pytest.fixture(scope="session")
+def streaming_httpserver() -> Generator[HTTPServer, None, None]:
+    yield from make_http_server()
+
+
 @pytest.fixture(autouse=True)
 def clear_stubs_queue(
     market_data_httpserver: HTTPServer, trading_httpserver: HTTPServer
@@ -59,11 +64,16 @@ def clear_stubs_queue(
 
 
 @pytest.fixture
-def client(market_data_httpserver: HTTPServer, trading_httpserver: HTTPServer) -> Api:
+def client(
+    market_data_httpserver: HTTPServer,
+    streaming_httpserver: HTTPServer,
+    trading_httpserver: HTTPServer,
+) -> Api:
     return Api(
         market_data_api_token="foobar",
         trading_api_token="barbaz",
         market_data_api_url=market_data_httpserver.url_for(""),
+        streaming_api_url=streaming_httpserver.url_for(""),
         trading_api_url=trading_httpserver.url_for(""),
         timeout=1,
         retry_count=1,

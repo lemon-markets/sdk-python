@@ -1,9 +1,11 @@
 import json
 from dataclasses import asdict
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timezone
 from typing import Any, Callable, Dict, Tuple, Type, TypeVar, Union
 
 from typing_extensions import Literal
+
+from lemon.errors import APIError
 
 Sorting = Literal["asc", "desc"]
 Environment = Literal["paper", "money"]
@@ -21,8 +23,18 @@ def filter_out_optionals(data: Dict[str, Any]) -> Dict[str, Any]:
     return {k: v for k, v in data.items() if v is not None}
 
 
+def convert_datetime(value: Union[str, int]) -> datetime:
+    try:
+        return datetime.fromisoformat(value)
+    except:
+        try:
+            return datetime.fromtimestamp(value / 1000, tz=timezone.utc)
+        except Exception as exc:
+            raise APIError(exc) from exc
+
+
 BASIC_PARSERS = {
-    datetime: datetime.fromisoformat,
+    datetime: convert_datetime,
     date: lambda value: datetime.fromisoformat(value).date(),
 }
 
