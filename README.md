@@ -133,6 +133,8 @@ This example relies on that you have both this SDK installed as well as paho-mqt
 Below is an example usage of live streaming quotes through alby mqtt broker using paho mqtt client.
 When connecting to the broker the on_connect callback will be triggered.
 This in return will trigger the on_subscribe callback where we can let the broker know what ISINS we are interested in
+There is a limitation to only have 4 channels connected at once. 
+You may be able to create more than 4 channels - however we then may close any one of them at any time.
 
 After that we will simply get all the quote updates through the on_message callback.
 
@@ -149,7 +151,7 @@ def on_connect(mqtt_client, userdata, flags, rc):
     mqtt_client.subscribe(response.user_id)
 
 def on_subscribe(mqtt_client, userdata, level, buff):
-    mqtt_client.publish(f"{response.user_id}.subscriptions", "ISIN1,ISIN2,ISIN...")
+    mqtt_client.publish(f"{response.user_id}.subscriptions", "US88160R1014,US0231351067")
 
 def on_message(mqtt_client, userdata, msg):
     data = json.loads(msg.payload)

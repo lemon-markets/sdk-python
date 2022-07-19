@@ -10,14 +10,16 @@ from typing_extensions import Literal
 
 from lemon import api
 from lemon.api import Api
-from lemon.errors import AuthenticationError, BusinessLogicError, InvalidQueryError
+from lemon.errors import AuthenticationError, BusinessLogicError, InvalidQueryError, APIError
 from lemon.trading.model import (
     Account,
     CreateOrderResponse,
     GetOrderResponse,
     GetPerformanceResponse,
 )
-
+from lemon.streaming.model import (
+    Token
+)
 MARKET_DATA_API_TOKEN = os.getenv("API_TOKEN", None)
 TRADING_API_TOKEN = os.getenv("API_TOKEN", None)
 
@@ -356,3 +358,19 @@ def test_raise_authentication_error():
 def test_raise_business_logic_error(uut):
     with pytest.raises(BusinessLogicError):
         uut.trading.orders.get_order("invalid")
+
+
+@pytest.mark.e2e
+def test_streaming_authentication(uut: Api):
+    token = uut.streaming.authenticate()
+    assert type(token) is Token
+    assert len(token.token)
+    assert len(token.user_id)
+    assert token.expires_at > datetime.now()
+
+@pytest.mark.e2e
+def test_streaming_authentication_bad_token():
+    uut = Api("bad_token", "")
+    with pytest.raises(APIError) as exc:
+        uut.streaming.authenticate()
+        assert exc.data['message'] == "invalid token"
