@@ -22,12 +22,10 @@ def filter_out_optionals(data: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def convert_datetime(value: Union[str, int]) -> datetime:
-    if type(value) is str:
+    try:
         return datetime.fromisoformat(value)
-    elif type(value) is int:
+    except TypeError:
         return datetime.fromtimestamp(value / 1000, tz=timezone.utc)
-    else:
-        raise TypeError(f"Unsupported type for datetime conversion {type(value)}")
 
 
 BASIC_PARSERS = {
