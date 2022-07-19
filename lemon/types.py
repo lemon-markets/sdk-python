@@ -1,6 +1,6 @@
 import json
 from dataclasses import asdict
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timezone
 from typing import Any, Callable, Dict, Tuple, Type, TypeVar, Union
 
 from typing_extensions import Literal
@@ -21,8 +21,17 @@ def filter_out_optionals(data: Dict[str, Any]) -> Dict[str, Any]:
     return {k: v for k, v in data.items() if v is not None}
 
 
+def convert_datetime(value: Union[str, int]) -> datetime:
+    if type(value) is str:
+        return datetime.fromisoformat(value)
+    elif type(value) is int:
+        return datetime.fromtimestamp(value / 1000, tz=timezone.utc)
+    else:
+        raise TypeError(f"Unsupported type for datetime conversion {type(value)}")
+
+
 BASIC_PARSERS = {
-    datetime: datetime.fromisoformat,
+    datetime: lambda value: convert_datetime(value),
     date: lambda value: datetime.fromisoformat(value).date(),
 }
 
