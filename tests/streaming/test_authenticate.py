@@ -4,6 +4,7 @@ import pytest
 from pytest_httpserver import HTTPServer
 
 from lemon.api import Api
+from lemon.errors import APIError
 from lemon.streaming.model import Token
 from tests.streaming.conftest import CommonStreamingAPITests
 
@@ -12,7 +13,6 @@ DUMMY_PAYLOAD = {
     "user_id": "user_123",
     "expires_at": 1657929600046,
 }
-
 
 DUMMY_RESPONSE = Token(
     token="token123",
@@ -38,3 +38,15 @@ class TestStreamingApi(CommonStreamingAPITests):
             DUMMY_PAYLOAD
         )
         assert client.streaming.authenticate() == DUMMY_RESPONSE
+
+    def test_fail_auth_on_invalid_datetime_format(
+        self, client: Api, httpserver: HTTPServer
+    ):
+        payload = dict(**DUMMY_PAYLOAD)
+        payload["expires_at"] = "unsupported-datetime-format"
+
+        httpserver.expect_oneshot_request("/auth", method="post").respond_with_json(
+            payload
+        )
+        with pytest.raises(APIError):
+            client.streaming.authenticate()

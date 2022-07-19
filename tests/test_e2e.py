@@ -23,8 +23,8 @@ from lemon.trading.model import (
     GetPerformanceResponse,
 )
 
-MARKET_DATA_API_TOKEN = os.getenv("API_TOKEN", None)
-TRADING_API_TOKEN = os.getenv("API_TOKEN", None)
+MARKET_DATA_API_TOKEN = os.getenv("MARKET_DATA_API_TOKEN", None)
+TRADING_API_TOKEN = os.getenv("TRADING_API_TOKEN", None)
 
 
 @pytest.fixture
@@ -38,7 +38,7 @@ def uut() -> Api:
     )
 
 
-@pytest.mark.parametrize("type_", ["stock", "bond", "fund", "etf"])
+@pytest.mark.parametrize("type_", ["stock", "fund", "etf", "etn", "etc"])
 @pytest.mark.e2e
 def test_instruments_by_type(uut: Api, type_):
     result = uut.market_data.instruments.get(type=[type_])
@@ -48,7 +48,7 @@ def test_instruments_by_type(uut: Api, type_):
 @pytest.mark.e2e
 def test_instruments_by_search(uut: Api):
     result = uut.market_data.instruments.get(search="tesla*")
-    assert len(result.results) == 3
+    assert result.results
 
 
 @pytest.mark.e2e
@@ -59,7 +59,7 @@ def test_instruments_by_isin(uut: Api):
     assert response.results[-1].title == "TESLA INC."
 
 
-@pytest.mark.parametrize("currency", ["EUR", "PLN"])
+@pytest.mark.parametrize("currency", ["EUR"])
 @pytest.mark.e2e
 def test_instruments_by_currency(uut: Api, currency):
     response = uut.market_data.instruments.get(currency=[currency])
