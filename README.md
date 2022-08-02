@@ -193,11 +193,13 @@ response = client.trading.orders.get_order(order_id=order_id)
 response = client.trading.orders.get()
 
 # cancel order
+# create an order first
 response = client.trading.orders.create(
     isin='US88160R1014', 
     side='buy', 
     quantity=1,
 )
+# cancel the order via order_id
 response = client.trading.orders.cancel(order_id=response.results.id)
 
 # update account
