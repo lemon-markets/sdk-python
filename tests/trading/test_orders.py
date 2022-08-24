@@ -458,13 +458,19 @@ class TestCreateOrderApi(CommonTradingApiTests):
             },
         }
 
-    def test_create_order(self, client: Api, httpserver: HTTPServer):
+    @pytest.mark.parametrize(
+        "expires_at,exp_expires_at",
+        [("p7d", "P7D"), ("7d", "7D"), (7, "P7D"), (date(2021, 11, 7), "2021-11-07")],
+    )
+    def test_create_order(
+        self, client: Api, httpserver: HTTPServer, expires_at, exp_expires_at
+    ):
         httpserver.expect_oneshot_request(
             "/orders",
             method="POST",
             json={
                 "isin": "DE0008232125",
-                "expires_at": "2021-11-07",
+                "expires_at": exp_expires_at,
                 "side": "buy",
                 "quantity": 1000,
                 "venue": "xmun",
@@ -477,7 +483,7 @@ class TestCreateOrderApi(CommonTradingApiTests):
         assert (
             client.trading.orders.create(
                 isin="DE0008232125",
-                expires_at=date(year=2021, month=11, day=7),
+                expires_at=expires_at,
                 side="buy",
                 quantity=1000,
                 venue="xmun",
@@ -487,6 +493,25 @@ class TestCreateOrderApi(CommonTradingApiTests):
                 idempotency="bar",
             )
             == DUMMY_CREATE_ORDER_RESPONSE
+        )
+
+    def test_fail_to_create_order_for_invalid_expires_at(self, client: Api):
+        with pytest.raises(ValueError) as err:
+            client.trading.orders.create(
+                isin="DE0008232125",
+                expires_at="invalid-expires-at-format",
+                side="buy",
+                quantity=1000,
+                venue="xmun",
+                stop_price=1000,
+                limit_price=500,
+                notes="foo",
+                idempotency="bar",
+            )
+
+        assert (
+            err.value.args[0]
+            == "Invalid 'expires_at' format ('pXd' or 'Xd' are allowed where X is a non-negative integer)"
         )
 
     def test_create_order__no_expiration(self, client: Api, httpserver: HTTPServer):
