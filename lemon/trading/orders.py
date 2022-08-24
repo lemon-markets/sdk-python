@@ -1,3 +1,4 @@
+import re
 from datetime import date
 from typing import List, Optional, Union
 
@@ -53,7 +54,7 @@ class Orders:
         isin: str,
         side: OrderSide,
         quantity: int,
-        expires_at: Union[date, Days, None] = None,
+        expires_at: Union[date, Days, str, None] = None,
         stop_price: Optional[int] = None,
         limit_price: Optional[int] = None,
         venue: Optional[Venue] = None,
@@ -64,6 +65,12 @@ class Orders:
             expires_at_str = expires_at.isoformat()
         elif isinstance(expires_at, int):
             expires_at_str = f"P{expires_at}D"
+        elif isinstance(expires_at, str):
+            expires_at_str = expires_at.strip().upper()
+            if re.match(r"^P?\d+D$", expires_at_str) is None:
+                raise ValueError(
+                    "Invalid 'expires_at' format ('pXd' or 'Xd' are allowed where X is a non-negative integer)"
+                )
         else:
             expires_at_str = None
 
