@@ -377,3 +377,9 @@ def test_streaming_authentication_bad_token():
     with pytest.raises(APIError) as exc:
         uut.streaming.authenticate()
         assert exc.data["message"] == "invalid token"
+
+@pytest.mark.e2e
+def test_iter_instruments(uut: Api):
+    # Do not merge, as SE00 currently gives 281 items
+    instruments = uut.market_data.instruments.iter(search="SE00")
+    assert len([i for i in instruments]) == 281
