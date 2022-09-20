@@ -1,7 +1,7 @@
 from typing import Iterator, List, Optional
 
 from lemon.base import Client
-from lemon.market_data.model import GetInstrumentsResponse, InstrumentType, Instrument
+from lemon.market_data.model import GetInstrumentsResponse, Instrument, InstrumentType
 from lemon.types import Sorting
 
 

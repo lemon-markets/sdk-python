@@ -5,16 +5,16 @@ from typing_extensions import Literal
 
 from lemon.base import Client
 from lemon.trading.model import (
+    BankStatement,
     BankStatementType,
+    Document,
     GetAccountResponse,
     GetBankStatementsResponse,
     GetDocumentResponse,
     GetDocumentsResponse,
     GetWithdrawalsResponse,
-    WithdrawResponse,
     Withdrawal,
-    Document,
-    BankStatement,
+    WithdrawResponse,
 )
 from lemon.types import Sorting
 
@@ -77,7 +77,7 @@ class Account:
                 resp = self._client.get(resp["next"])
             else:
                 break
-    
+
     def withdraw(
         self,
         amount: int,
@@ -189,4 +189,3 @@ class Account:
                 resp = self._client.get(resp["next"])
             else:
                 break
-

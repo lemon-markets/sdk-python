@@ -6,7 +6,9 @@ from lemon.trading.model import (
     GetPerformanceResponse,
     GetPositionsResponse,
     GetStatementsResponse,
-    Performance, Position, Statement,
+    Performance,
+    Position,
+    Statement,
     StatementType,
 )
 from lemon.types import Sorting
@@ -52,7 +54,7 @@ class Positions:
                 resp = self._client.get(resp["next"])
             else:
                 break
-    
+
     def get_statements(
         self,
         isin: Optional[str] = None,
@@ -105,7 +107,6 @@ class Positions:
                 resp = self._client.get(resp["next"])
             else:
                 break
-
 
     def get_performance(
         self,

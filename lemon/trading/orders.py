@@ -82,7 +82,7 @@ class Orders:
                 resp = self._client.get(resp["next"])
             else:
                 break
-    
+
     def create(
         self,
         isin: str,

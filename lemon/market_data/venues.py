@@ -27,7 +27,6 @@ class Venues:
         )
         return GetVenuesResponse._from_data(resp.json())
 
-
     def iter(
         self,
         mic: Optional[List[str]] = None,
@@ -50,4 +49,3 @@ class Venues:
                 resp = self._client.get(resp["next"])
             else:
                 break
-
