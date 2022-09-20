@@ -12,6 +12,9 @@ from lemon.trading.model import (
     GetDocumentsResponse,
     GetWithdrawalsResponse,
     WithdrawResponse,
+    Withdrawal,
+    Document,
+    BankStatement,
 )
 from lemon.types import Sorting
 
@@ -56,6 +59,25 @@ class Account:
         )
         return GetWithdrawalsResponse._from_data(resp.json())
 
+    def iter_withdrawals(
+        self, limit: Optional[int] = None, page: Optional[int] = None
+    ) -> GetWithdrawalsResponse:
+        resp = self._client.get(
+            "account/withdrawals",
+            params={
+                "limit": limit,
+                "page": page,
+            },
+        )
+        while True:
+            resp = resp.json()
+            for result in resp["results"]:
+                yield Withdrawal._from_data(result)
+            if resp["next"]:
+                resp = self._client.get(resp["next"])
+            else:
+                break
+    
     def withdraw(
         self,
         amount: int,
@@ -94,6 +116,33 @@ class Account:
         )
         return GetBankStatementsResponse._from_data(resp.json())
 
+    def iter_bank_statements(
+        self,
+        type: Optional[BankStatementType] = None,
+        from_: Union[date, Literal["beginning"], None] = None,
+        to: Optional[date] = None,
+        sorting: Optional[Sorting] = None,
+        limit: Optional[int] = None,
+    ) -> GetBankStatementsResponse:
+        resp = self._client.get(
+            "account/bankstatements",
+            params={
+                "type": type,
+                "from": from_,
+                "to": to,
+                "sorting": sorting,
+                "limit": limit,
+            },
+        )
+        while True:
+            resp = resp.json()
+            for result in resp["results"]:
+                yield BankStatement._from_data(result)
+            if resp["next"]:
+                resp = self._client.get(resp["next"])
+            else:
+                break
+
     def get_documents(
         self,
         sorting: Optional[Sorting] = None,
@@ -121,3 +170,23 @@ class Account:
             f"account/documents/{document_id}", params={"no_redirect": no_redirect}
         )
         return GetDocumentResponse._from_data(resp.json())
+
+    def iter_document(
+        self, document_id: str, no_redirect: Optional[bool] = None
+    ) -> GetDocumentResponse:
+        document_id = document_id.strip()
+        if not document_id:
+            raise ValueError("document_id is empty string")
+
+        resp = self._client.get(
+            f"account/documents/{document_id}", params={"no_redirect": no_redirect}
+        )
+        while True:
+            resp = resp.json()
+            for result in resp["results"]:
+                yield Document._from_data(result)
+            if resp["next"]:
+                resp = self._client.get(resp["next"])
+            else:
+                break
+

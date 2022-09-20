@@ -9,6 +9,7 @@ from lemon.trading.model import (
     DeleteOrderResponse,
     GetOrderResponse,
     GetOrdersResponse,
+    Order,
     OrderSide,
     OrderStatus,
     OrderType,
@@ -49,6 +50,39 @@ class Orders:
         )
         return GetOrdersResponse._from_data(resp.json())
 
+    def iter(
+        self,
+        from_: Optional[date] = None,
+        to: Optional[date] = None,
+        isin: Optional[str] = None,
+        side: Optional[OrderSide] = None,
+        status: Optional[Union[OrderStatus, List[OrderStatus]]] = None,
+        type: Optional[OrderType] = None,
+        key_creation_id: Optional[str] = None,
+        limit: Optional[int] = None,
+    ) -> GetOrdersResponse:
+        resp = self._client.get(
+            "orders",
+            params={
+                "from": from_,
+                "to": to,
+                "isin": isin,
+                "side": side,
+                "status": status,
+                "type": type,
+                "key_creation_id": key_creation_id,
+                "limit": limit,
+            },
+        )
+        while True:
+            resp = resp.json()
+            for result in resp["results"]:
+                yield Order._from_data(result)
+            if resp["next"]:
+                resp = self._client.get(resp["next"])
+            else:
+                break
+    
     def create(
         self,
         isin: str,

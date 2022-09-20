@@ -49,23 +49,25 @@ class Instruments:
         limit: Optional[int] = None,
         page: Optional[int] = None,
     ) -> Iterator[Instrument]:
+        resp = self._client.get(
+            "instruments",
+            params={
+                "isin": isin,
+                "search": search,
+                "type": type,
+                "mic": mic,
+                "currency": currency,
+                "tradable": tradable,
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
+        )
         while True:
-            resp = self._client.get(
-                "instruments",
-                params={
-                    "isin": isin,
-                    "search": search,
-                    "type": type,
-                    "mic": mic,
-                    "currency": currency,
-                    "tradable": tradable,
-                    "sorting": sorting,
-                    "limit": limit,
-                    "page": page,
-                },
-            )
-            for result in resp.json()["results"]:
+            resp = resp.json()
+            for result in resp["results"]:
                 yield Instrument._from_data(result)
-            if resp.json()["page"] == resp.json()["pages"]:
+            if resp["next"]:
+                resp = self._client.get(resp["next"])
+            else:
                 break
-            page = int(resp.json()["page"]) + 1
