@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import Iterator, List, Optional
 
 from lemon.base import Client
 from lemon.trading.model import (
@@ -38,7 +38,7 @@ class Positions:
         self,
         isin: Optional[str] = None,
         limit: Optional[int] = None,
-    ) -> GetPositionsResponse:
+    ) -> Iterator[Position]:
         resp = self._client.get(
             "positions",
             params={
@@ -47,11 +47,11 @@ class Positions:
             },
         )
         while True:
-            resp = resp.json()
-            for result in resp["results"]:
+            resp_data = resp.json()
+            for result in resp_data["results"]:
                 yield Position._from_data(result)
-            if resp["next"]:
-                resp = self._client.get(resp["next"])
+            if resp_data["next"]:
+                resp = self._client.get(resp_data["next"])
             else:
                 break
 
@@ -87,7 +87,7 @@ class Positions:
         types: Optional[List[StatementType]] = None,
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
-    ) -> GetStatementsResponse:
+    ) -> Iterator[Statement]:
         resp = self._client.get(
             "positions/statements",
             params={
@@ -100,11 +100,11 @@ class Positions:
             },
         )
         while True:
-            resp = resp.json()
-            for result in resp["results"]:
+            resp_data = resp.json()
+            for result in resp_data["results"]:
                 yield Statement._from_data(result)
-            if resp["next"]:
-                resp = self._client.get(resp["next"])
+            if resp_data["next"]:
+                resp = self._client.get(resp_data["next"])
             else:
                 break
 
@@ -137,7 +137,7 @@ class Positions:
         to: Optional[datetime] = None,
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
-    ) -> GetPerformanceResponse:
+    ) -> Iterator[Performance]:
         resp = self._client.get(
             "positions/performance",
             params={
@@ -149,10 +149,10 @@ class Positions:
             },
         )
         while True:
-            resp = resp.json()
-            for result in resp["results"]:
+            resp_data = resp.json()
+            for result in resp_data["results"]:
                 yield Performance._from_data(result)
-            if resp["next"]:
-                resp = self._client.get(resp["next"])
+            if resp_data["next"]:
+                resp = self._client.get(resp_data["next"])
             else:
                 break

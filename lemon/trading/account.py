@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Optional, Union
+from typing import Iterator, Optional, Union
 
 from typing_extensions import Literal
 
@@ -60,21 +60,20 @@ class Account:
         return GetWithdrawalsResponse._from_data(resp.json())
 
     def iter_withdrawals(
-        self, limit: Optional[int] = None, page: Optional[int] = None
-    ) -> GetWithdrawalsResponse:
+        self, limit: Optional[int] = None
+    ) -> Iterator[Withdrawal]:
         resp = self._client.get(
             "account/withdrawals",
             params={
                 "limit": limit,
-                "page": page,
             },
         )
         while True:
-            resp = resp.json()
-            for result in resp["results"]:
+            resp_data = resp.json()
+            for result in resp_data["results"]:
                 yield Withdrawal._from_data(result)
-            if resp["next"]:
-                resp = self._client.get(resp["next"])
+            if resp_data["next"]:
+                resp = self._client.get(resp_data["next"])
             else:
                 break
 
@@ -123,7 +122,7 @@ class Account:
         to: Optional[date] = None,
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
-    ) -> GetBankStatementsResponse:
+    ) -> Iterator[BankStatement]:
         resp = self._client.get(
             "account/bankstatements",
             params={
@@ -135,11 +134,11 @@ class Account:
             },
         )
         while True:
-            resp = resp.json()
-            for result in resp["results"]:
+            resp_data = resp.json()
+            for result in resp_data["results"]:
                 yield BankStatement._from_data(result)
-            if resp["next"]:
-                resp = self._client.get(resp["next"])
+            if resp_data["next"]:
+                resp = self._client.get(resp_data["next"])
             else:
                 break
 
@@ -173,7 +172,7 @@ class Account:
 
     def iter_document(
         self, document_id: str, no_redirect: Optional[bool] = None
-    ) -> GetDocumentResponse:
+    ) -> Iterator[Document]:
         document_id = document_id.strip()
         if not document_id:
             raise ValueError("document_id is empty string")
@@ -182,10 +181,10 @@ class Account:
             f"account/documents/{document_id}", params={"no_redirect": no_redirect}
         )
         while True:
-            resp = resp.json()
-            for result in resp["results"]:
+            resp_data = resp.json()
+            for result in resp_data["results"]:
                 yield Document._from_data(result)
-            if resp["next"]:
-                resp = self._client.get(resp["next"])
+            if resp_data["next"]:
+                resp = self._client.get(resp_data["next"])
             else:
                 break

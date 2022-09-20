@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional, Union
+from typing import Iterator, List, Optional, Union
 
 from typing_extensions import Literal
 
@@ -61,7 +61,7 @@ class Ohlc:
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
         page: Optional[int] = None,
-    ) -> GetOhlcResponse:
+    ) -> Iterator[OhlcData]:
         period = period.strip().lower()  # type: ignore
         if not period:
             raise ValueError("Invalid period value")
@@ -81,10 +81,10 @@ class Ohlc:
             },
         )
         while True:
-            resp = resp.json()
-            for result in resp["results"]:
+            resp_data = resp.json()
+            for result in resp_data["results"]:
                 yield OhlcData._from_data(result)
-            if resp["next"]:
-                resp = self._client.get(resp["next"])
+            if resp_data["next"]:
+                resp = self._client.get(resp_data["next"])
             else:
                 break

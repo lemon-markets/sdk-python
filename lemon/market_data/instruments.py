@@ -64,10 +64,10 @@ class Instruments:
             },
         )
         while True:
-            resp = resp.json()
-            for result in resp["results"]:
+            resp_data = resp.json()
+            for result in resp_data["results"]:
                 yield Instrument._from_data(result)
-            if resp["next"]:
-                resp = self._client.get(resp["next"])
+            if resp_data["next"]:
+                resp = self._client.get(resp_data["next"])
             else:
                 break

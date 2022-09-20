@@ -1,6 +1,6 @@
 import re
 from datetime import date
-from typing import List, Optional, Union
+from typing import Iterable, List, Optional, Union
 
 from lemon.base import Client
 from lemon.trading.model import (
@@ -60,7 +60,7 @@ class Orders:
         type: Optional[OrderType] = None,
         key_creation_id: Optional[str] = None,
         limit: Optional[int] = None,
-    ) -> GetOrdersResponse:
+    ) -> Iterable[Order]:
         resp = self._client.get(
             "orders",
             params={
@@ -75,11 +75,11 @@ class Orders:
             },
         )
         while True:
-            resp = resp.json()
-            for result in resp["results"]:
+            resp_data = resp.json()
+            for result in resp_data["results"]:
                 yield Order._from_data(result)
-            if resp["next"]:
-                resp = self._client.get(resp["next"])
+            if resp_data["next"]:
+                resp = self._client.get(resp_data["next"])
             else:
                 break
 
