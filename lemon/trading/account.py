@@ -59,9 +59,7 @@ class Account:
         )
         return GetWithdrawalsResponse._from_data(resp.json())
 
-    def iter_withdrawals(
-        self, limit: Optional[int] = None
-    ) -> Iterator[Withdrawal]:
+    def iter_withdrawals(self, limit: Optional[int] = None) -> Iterator[Withdrawal]:
         resp = self._client.get(
             "account/withdrawals",
             params={

@@ -47,7 +47,6 @@ class Instruments:
         tradable: Optional[bool] = None,
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
-        page: Optional[int] = None,
     ) -> Iterator[Instrument]:
         resp = self._client.get(
             "instruments",
@@ -60,7 +59,6 @@ class Instruments:
                 "tradable": tradable,
                 "sorting": sorting,
                 "limit": limit,
-                "page": page,
             },
         )
         while True:

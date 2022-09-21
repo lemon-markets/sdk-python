@@ -60,7 +60,6 @@ class Ohlc:
         epoch: Optional[bool] = None,
         sorting: Optional[Sorting] = None,
         limit: Optional[int] = None,
-        page: Optional[int] = None,
     ) -> Iterator[OhlcData]:
         period = period.strip().lower()  # type: ignore
         if not period:
@@ -77,7 +76,6 @@ class Ohlc:
                 "epoch": epoch,
                 "sorting": sorting,
                 "limit": limit,
-                "page": page,
             },
         )
         while True:

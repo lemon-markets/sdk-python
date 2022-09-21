@@ -1,6 +1,5 @@
 from typing import Iterator, List, Optional
 
-
 from lemon.base import Client
 from lemon.market_data.model import GetVenuesResponse, Venue
 from lemon.types import Sorting
