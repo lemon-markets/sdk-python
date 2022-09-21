@@ -30,11 +30,12 @@ DUMMY_PAYLOAD = {
         }
     ],
     "previous": "https://data.lemon.markets/v1/instruments/?limit=100&page=1",
-    "next": "https://data.lemon.markets/v1/instruments/?limit=100&page=3",
+    "next": None,
     "total": 26283,
     "page": 2,
     "pages": 263,
 }
+
 
 DUMMY_RESPONSE = GetInstrumentsResponse(
     time=datetime.fromisoformat("2022-02-14T20:44:03.759+00:00"),
@@ -111,6 +112,47 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
         assert client.market_data.instruments.get(**function_kwargs) == DUMMY_RESPONSE
+
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            ({"isin": ["XMUN"]}, "isin=XMUN"),
+            ({"search": "foo"}, "search=foo"),
+            ({"type": ["stock", "etf"]}, "type=stock&type=etf"),
+            ({"mic": ["XMUN"]}, "mic=XMUN"),
+            ({"currency": ["USD"]}, "currency=USD"),
+            ({"tradable": False}, "tradable=False"),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            (
+                {
+                    "isin": ["XMUN"],
+                    "search": "foo",
+                    "type": ["stock", "etf"],
+                    "mic": ["XMUN"],
+                    "currency": ["USD"],
+                    "tradable": False,
+                    "sorting": "asc",
+                    "limit": 100,
+                },
+                "isin=XMUN&search=foo&type=stock&type=etf&mic=XMUN&"
+                "currency=USD&tradable=False&sorting=asc&limit=100",
+            ),
+        ],
+    )
+    def test_iter_instruments(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_oneshot_request(
+            "/instruments",
+            query_string=query_string,
+            method="GET",
+        ).respond_with_json(DUMMY_PAYLOAD)
+        assert (
+            list(client.market_data.instruments.iter(**function_kwargs))
+            == DUMMY_RESPONSE.results
+        )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

@@ -25,7 +25,7 @@ DUMMY_PAYLOAD = {
         }
     ],
     "previous": "https://data.lemon.markets/v1/venues/?limit=1&&page=1",
-    "next": "https://data.lemon.markets/v1/venues/?limit=1&&page=3",
+    "next": None,
     "total": 3,
     "page": 2,
     "pages": 3,
@@ -92,6 +92,29 @@ class TestVenuesApi(CommonMarketDataApiTests):
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
         assert client.market_data.venues.get(**function_kwargs) == DUMMY_RESPONSE
+
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            ({"mic": "XMUN"}, "mic=XMUN"),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            ({"mic": "XMUN", "limit": 100}, "mic=XMUN&limit=100"),
+        ],
+    )
+    def test_iter_venues(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_oneshot_request(
+            "/venues",
+            query_string=query_string,
+            method="GET",
+        ).respond_with_json(DUMMY_PAYLOAD)
+        assert (
+            list(client.market_data.venues.iter(**function_kwargs))
+            == DUMMY_RESPONSE.results
+        )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

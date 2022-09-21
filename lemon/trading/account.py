@@ -156,6 +156,29 @@ class Account:
         )
         return GetDocumentsResponse._from_data(resp.json())
 
+    def iter_document(
+        self,
+        sorting: Optional[Sorting] = None,
+        limit: Optional[int] = None,
+        page: Optional[int] = None,
+    ) -> GetDocumentsResponse:
+        resp = self._client.get(
+            "account/documents",
+            params={
+                "sorting": sorting,
+                "limit": limit,
+                "page": page,
+            },
+        )
+        while True:
+            resp_data = resp.json()
+            for result in resp_data["results"]:
+                yield Document._from_data(result)
+            if resp_data["next"]:
+                resp = self._client.get(resp_data["next"])
+            else:
+                break
+
     def get_document(
         self, document_id: str, no_redirect: Optional[bool] = None
     ) -> GetDocumentResponse:
@@ -167,22 +190,3 @@ class Account:
             f"account/documents/{document_id}", params={"no_redirect": no_redirect}
         )
         return GetDocumentResponse._from_data(resp.json())
-
-    def iter_document(
-        self, document_id: str, no_redirect: Optional[bool] = None
-    ) -> Iterator[Document]:
-        document_id = document_id.strip()
-        if not document_id:
-            raise ValueError("document_id is empty string")
-
-        resp = self._client.get(
-            f"account/documents/{document_id}", params={"no_redirect": no_redirect}
-        )
-        while True:
-            resp_data = resp.json()
-            for result in resp_data["results"]:
-                yield Document._from_data(result)
-            if resp_data["next"]:
-                resp = self._client.get(resp_data["next"])
-            else:
-                break

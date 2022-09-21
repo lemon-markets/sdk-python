@@ -73,7 +73,7 @@ DUMMY_ORDERS_PAYLOAD = {
         }
     ],
     "previous": "https://paper-trading.lemon.markets/v1/orders/?limit=10&page=1",
-    "next": "https://paper-trading.lemon.markets/v1/orders/?limit=10&page=3",
+    "next": None,
     "total": 33,
     "page": 2,
     "pages": 4,
@@ -419,6 +419,54 @@ class TestGetOrdersApi(CommonTradingApiTests):
             method="GET",
         ).respond_with_json(DUMMY_ORDERS_PAYLOAD)
         assert client.trading.orders.get(**function_kwargs) == DUMMY_ORDERS_RESPONSE
+
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            (
+                {"from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
+                "from=2021-11-07+22%3A59%3A00%2B00%3A00",
+            ),
+            (
+                {"to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
+                "to=2021-11-07+22%3A59%3A00%2B00%3A00",
+            ),
+            ({"isin": "XMUN"}, "isin=XMUN"),
+            ({"side": "sell"}, "side=sell"),
+            ({"status": "inactive"}, "status=inactive"),
+            ({"status": ["inactive", "activated"]}, "status=inactive&status=activated"),
+            ({"type": "market"}, "type=market"),
+            ({"key_creation_id": "foo"}, "key_creation_id=foo"),
+            ({"limit": 100}, "limit=100"),
+            (
+                {
+                    "from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
+                    "to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
+                    "isin": "XMUN",
+                    "side": "sell",
+                    "status": "inactive",
+                    "type": "market",
+                    "key_creation_id": "foo",
+                    "limit": 100,
+                },
+                "from=2021-11-07+22%3A59%3A00%2B00%3A00&to=2021-11-07+22%3A59%3A00%2B00%3A00&"
+                "isin=XMUN&side=sell&status=inactive&type=market&key_creation_id=foo&limit=100",
+            ),
+        ],
+    )
+    def test_iter_orders(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_oneshot_request(
+            "/orders",
+            query_string=query_string,
+            method="GET",
+        ).respond_with_json(DUMMY_ORDERS_PAYLOAD)
+        assert (
+            list(client.trading.orders.iter(**function_kwargs))
+            == DUMMY_ORDERS_RESPONSE.results
+        )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

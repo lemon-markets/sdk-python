@@ -29,7 +29,7 @@ DUMMY_POSITIONS_PAYLOAD = {
         },
     ],
     "previous": "https://paper-trading.lemon.markets/v1/positions/?limit=10&page=1",
-    "next": "https://paper-trading.lemon.markets/v1/positions/?limit=10&page=3",
+    "next": None,
     "total": 33,
     "page": 2,
     "pages": 4,
@@ -53,7 +53,7 @@ DUMMY_STATEMENTS_PAYLOAD = {
         },
     ],
     "previous": "https://paper-trading.lemon.markets/v1/positions/statements?limit=10&page=1",
-    "next": "https://paper-trading.lemon.markets/v1/positions/statements?limit=10&page=3",
+    "next": None,
     "total": 33,
     "page": 2,
     "pages": 4,
@@ -78,7 +78,7 @@ DUMMY_PERFORMANCE_PAYLOAD = {
         },
     ],
     "previous": "https://trading.lemon.markets/v1/positions/performance?limit=10&page=1",
-    "next": "https://trading.lemon.markets/v1/positions/performance?limit=10&page=3",
+    "next": None,
     "total": 37,
     "page": 2,
     "pages": 4,
@@ -251,6 +251,49 @@ class TestGetStatementsApi(CommonTradingApiTests):
             == DUMMY_STATEMENTS_RESPONSE
         )
 
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            ({"isin": "XMUN"}, "isin=XMUN"),
+            (
+                {"from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
+                "from=2021-11-07+22%3A59%3A00%2B00%3A00",
+            ),
+            (
+                {"to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
+                "to=2021-11-07+22%3A59%3A00%2B00%3A00",
+            ),
+            ({"types": ["order_buy"]}, "types=order_buy"),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            (
+                {
+                    "isin": "XMUN",
+                    "from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
+                    "to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
+                    "types": ["order_buy"],
+                    "sorting": "asc",
+                    "limit": 100,
+                },
+                "isin=XMUN&from=2021-11-07+22%3A59%3A00%2B00%3A00&"
+                "to=2021-11-07+22%3A59%3A00%2B00%3A00&types=order_buy&sorting=asc&limit=100",
+            ),
+        ],
+    )
+    def test_iter_statements(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_oneshot_request(
+            "/positions/statements",
+            query_string=query_string,
+            method="GET",
+        ).respond_with_json(DUMMY_STATEMENTS_PAYLOAD)
+        assert (
+            list(client.trading.positions.iter_statements(**function_kwargs))
+            == DUMMY_STATEMENTS_RESPONSE.results
+        )
+
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/positions/statements",
@@ -314,6 +357,47 @@ class TestGetPerformanceApi(CommonTradingApiTests):
         assert (
             client.trading.positions.get_performance(**function_kwargs)
             == DUMMY_PERFORMANCE_RESPONSE
+        )
+
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            ({"isin": "XMUN"}, "isin=XMUN"),
+            (
+                {"from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
+                "from=2021-11-07+22%3A59%3A00%2B00%3A00",
+            ),
+            (
+                {"to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
+                "to=2021-11-07+22%3A59%3A00%2B00%3A00",
+            ),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            (
+                {
+                    "isin": "XMUN",
+                    "from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
+                    "to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
+                    "sorting": "asc",
+                    "limit": 100,
+                },
+                "isin=XMUN&from=2021-11-07+22%3A59%3A00%2B00%3A00&"
+                "to=2021-11-07+22%3A59%3A00%2B00%3A00&sorting=asc&limit=100",
+            ),
+        ],
+    )
+    def test_iter_performance(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_oneshot_request(
+            "/positions/performance",
+            query_string=query_string,
+            method="GET",
+        ).respond_with_json(DUMMY_PERFORMANCE_PAYLOAD)
+        assert (
+            list(client.trading.positions.iter_performance(**function_kwargs))
+            == DUMMY_PERFORMANCE_RESPONSE.results
         )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):

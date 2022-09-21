@@ -73,7 +73,7 @@ DUMMY_WITHDRAWLS_PAYLOAD = {
         },
     ],
     "previous": "https://paper-trading.lemon.markets/v1/account/withdrawals/?limit=20&page=1",
-    "next": "https://paper-trading.lemon.markets/v1/account/withdrawals/?limit=2&page=3",
+    "next": None,
     "total": 80,
     "page": 2,
     "pages": 4,
@@ -103,7 +103,7 @@ DUMMY_BANK_STATEMENTS_PAYLOAD = {
         },
     ],
     "previous": "https://paper-trading.lemon.markets/v1/account/bankstatements/?limit=20&page=1",
-    "next": "https://paper-trading.lemon.markets/v1/account/bankstatements/?limit=2&page=3",
+    "next": None,
     "total": 80,
     "page": 2,
     "pages": 4,
@@ -125,7 +125,7 @@ DUMMY_GET_DOCUMENTS_PAYLOAD = {
         },
     ],
     "previous": "https://paper-trading.lemon.markets/v1/account/documents/?limit=20&page=1",
-    "next": "https://paper-trading.lemon.markets/v1/account/documents/?limit=2&page=3",
+    "next": None,
     "total": 80,
     "page": 2,
     "pages": 4,
@@ -318,6 +318,16 @@ class TestGetWithdrawalsApi(CommonTradingApiTests):
         ).respond_with_json(DUMMY_WITHDRAWLS_PAYLOAD)
         assert client.trading.account.get_withdrawals() == DUMMY_WITHDRAWLS_RESPONSE
 
+    def test_iter_withdrawals(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/account/withdrawals",
+            method="GET",
+        ).respond_with_json(DUMMY_WITHDRAWLS_PAYLOAD)
+        assert (
+            list(client.trading.account.iter_withdrawals())
+            == DUMMY_WITHDRAWLS_RESPONSE.results
+        )
+
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/account/withdrawals",
@@ -344,7 +354,7 @@ class TestWithdrawApi(CommonTradingApiTests):
             "json": {"amount": 100, "pin": "1234"},
         }
 
-    def test_get_withdrawals(self, client: Api, httpserver: HTTPServer):
+    def test_withdrawal(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/account/withdrawals",
             method="POST",
@@ -398,6 +408,38 @@ class TestGetBankStatementsApi(CommonTradingApiTests):
             == DUMMY_BANKSTATEMENTS_RESPONSE
         )
 
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            ({"type": "pay_in"}, "type=pay_in"),
+            ({"from_": "beginning"}, "from=beginning"),
+            ({"to": date(year=2000, month=3, day=3)}, "to=2000-03-03"),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            (
+                {
+                    "type": "pay_in",
+                    "from_": "beginning",
+                    "to": date(year=2000, month=3, day=3),
+                    "sorting": "asc",
+                    "limit": 100,
+                },
+                "type=pay_in&from=beginning&to=2000-03-03&sorting=asc&limit=100",
+            ),
+        ],
+    )
+    def test_iter_bank_statements(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_oneshot_request(
+            "/account/bankstatements", query_string=query_string, method="GET"
+        ).respond_with_json(DUMMY_BANK_STATEMENTS_PAYLOAD)
+        assert (
+            list(client.trading.account.iter_bank_statements(**function_kwargs))
+            == DUMMY_BANKSTATEMENTS_RESPONSE.results
+        )
+
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/account/bankstatements",
@@ -449,6 +491,32 @@ class TestGetDocumentsApi(CommonTradingApiTests):
         assert (
             client.trading.account.get_documents(**function_kwargs)
             == DUMMY_GET_DOCUMENTS_RESPONSE
+        )
+
+    @pytest.mark.parametrize(
+        "function_kwargs,query_string",
+        [
+            ({}, ""),
+            ({"sorting": "asc"}, "sorting=asc"),
+            ({"limit": 100}, "limit=100"),
+            (
+                {
+                    "sorting": "asc",
+                    "limit": 100,
+                },
+                "sorting=asc&limit=100",
+            ),
+        ],
+    )
+    def test_iter_documents(
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+    ):
+        httpserver.expect_oneshot_request(
+            "/account/documents", query_string=query_string, method="GET"
+        ).respond_with_json(DUMMY_GET_DOCUMENTS_PAYLOAD)
+        assert (
+            list(client.trading.account.iter_document(**function_kwargs))
+            == DUMMY_GET_DOCUMENTS_RESPONSE.results
         )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
