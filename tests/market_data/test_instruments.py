@@ -35,7 +35,34 @@ DUMMY_PAYLOAD = {
     "page": 2,
     "pages": 263,
 }
-
+ITER_PAYLOAD = {
+    "time": "2022-02-14T20:44:03.759+00:00",
+    "results": [
+        {
+            "isin": "US19260Q1076",
+            "wkn": "A2QP7J",
+            "name": "COINBASE GLB.CL.A -,00001",
+            "title": "COINBASE GLOBAL INC",
+            "symbol": "1QZ",
+            "type": "stock",
+            "venues": [
+                {
+                    "name": "Börse München - Gettex",
+                    "title": "Gettex",
+                    "mic": "XMUN",
+                    "is_open": True,
+                    "tradable": True,
+                    "currency": "EUR",
+                }
+            ],
+        }
+    ],
+    "previous": "https://data.lemon.markets/v1/instruments/?limit=100&page=1",
+    "next": "",
+    "total": 26283,
+    "page": 2,
+    "pages": 263,
+}
 
 DUMMY_RESPONSE = GetInstrumentsResponse(
     time=datetime.fromisoformat("2022-02-14T20:44:03.759+00:00"),
@@ -113,45 +140,24 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
         ).respond_with_json(DUMMY_PAYLOAD)
         assert client.market_data.instruments.get(**function_kwargs) == DUMMY_RESPONSE
 
-    @pytest.mark.parametrize(
-        "function_kwargs,query_string",
-        [
-            ({}, ""),
-            ({"isin": ["XMUN"]}, "isin=XMUN"),
-            ({"search": "foo"}, "search=foo"),
-            ({"type": ["stock", "etf"]}, "type=stock&type=etf"),
-            ({"mic": ["XMUN"]}, "mic=XMUN"),
-            ({"currency": ["USD"]}, "currency=USD"),
-            ({"tradable": False}, "tradable=False"),
-            ({"sorting": "asc"}, "sorting=asc"),
-            ({"limit": 100}, "limit=100"),
-            (
-                {
-                    "isin": ["XMUN"],
-                    "search": "foo",
-                    "type": ["stock", "etf"],
-                    "mic": ["XMUN"],
-                    "currency": ["USD"],
-                    "tradable": False,
-                    "sorting": "asc",
-                    "limit": 100,
-                },
-                "isin=XMUN&search=foo&type=stock&type=etf&mic=XMUN&"
-                "currency=USD&tradable=False&sorting=asc&limit=100",
-            ),
-        ],
-    )
     def test_iter_instruments(
-        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+        self, client: Api, httpserver: HTTPServer
     ):
         httpserver.expect_oneshot_request(
             "/instruments",
-            query_string=query_string,
+            query_string="page=2",
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
+
+        ITER_PAYLOAD["next"] = httpserver.url_for("/instruments?page=2")
+        httpserver.expect_oneshot_request(
+            "/instruments",
+            method="GET",
+        ).respond_with_json(ITER_PAYLOAD)
+
         assert (
-            list(client.market_data.instruments.iter(**function_kwargs))
-            == DUMMY_RESPONSE.results
+            len(list(client.market_data.instruments.iter()))
+            == 2
         )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
