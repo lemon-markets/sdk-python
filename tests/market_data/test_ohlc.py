@@ -136,9 +136,7 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
         )
 
     @pytest.mark.parametrize("period", ["h1", "d1", "m1"])
-    def test_iter_ohlc(
-        self, client: Api, httpserver: HTTPServer, period
-    ):
+    def test_iter_ohlc(self, client: Api, httpserver: HTTPServer, period):
         httpserver.expect_oneshot_request(
             f"/ohlc/{period}",
             query_string="page=2",
@@ -152,10 +150,7 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
             method="GET",
         ).respond_with_json(iter_payload)
 
-        assert (
-            len(list(client.market_data.ohlc.iter(period=period, isin="ISIN")))
-            == 2
-        )
+        assert len(list(client.market_data.ohlc.iter(period=period, isin="ISIN"))) == 2
 
     def test_get_ohlc_decimal_form(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

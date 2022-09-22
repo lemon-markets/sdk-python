@@ -113,9 +113,7 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
         ).respond_with_json(DUMMY_PAYLOAD)
         assert client.market_data.instruments.get(**function_kwargs) == DUMMY_RESPONSE
 
-    def test_iter_instruments(
-        self, client: Api, httpserver: HTTPServer
-    ):
+    def test_iter_instruments(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/instruments",
             query_string="page=2",
@@ -129,10 +127,7 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
             method="GET",
         ).respond_with_json(iter_payload)
 
-        assert (
-            len(list(client.market_data.instruments.iter()))
-            == 2
-        )
+        assert len(list(client.market_data.instruments.iter())) == 2
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

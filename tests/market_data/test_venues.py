@@ -94,9 +94,7 @@ class TestVenuesApi(CommonMarketDataApiTests):
         ).respond_with_json(DUMMY_PAYLOAD)
         assert client.market_data.venues.get(**function_kwargs) == DUMMY_RESPONSE
 
-    def test_iter_venues(
-        self, client: Api, httpserver: HTTPServer
-    ):
+    def test_iter_venues(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/venues",
             query_string="page=2",
@@ -109,11 +107,8 @@ class TestVenuesApi(CommonMarketDataApiTests):
             "/venues",
             method="GET",
         ).respond_with_json(iter_payload)
-        
-        assert (
-            len(list(client.market_data.venues.iter()))
-            == 2
-        )
+
+        assert len(list(client.market_data.venues.iter())) == 2
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

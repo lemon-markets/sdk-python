@@ -252,9 +252,7 @@ class TestGetStatementsApi(CommonTradingApiTests):
             == DUMMY_STATEMENTS_RESPONSE
         )
 
-    def test_iter_statements(
-        self, client: Api, httpserver: HTTPServer
-    ):
+    def test_iter_statements(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/positions/statements",
             query_string="page=2",
@@ -268,10 +266,7 @@ class TestGetStatementsApi(CommonTradingApiTests):
             method="GET",
         ).respond_with_json(iter_payload)
 
-        assert (
-            len(list(client.trading.positions.iter_statements()))
-            == 2
-        )
+        assert len(list(client.trading.positions.iter_statements())) == 2
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -338,9 +333,7 @@ class TestGetPerformanceApi(CommonTradingApiTests):
             == DUMMY_PERFORMANCE_RESPONSE
         )
 
-    def test_iter_performance(
-        self, client: Api, httpserver: HTTPServer
-    ):
+    def test_iter_performance(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/positions/performance",
             query_string="page=2",
@@ -353,11 +346,8 @@ class TestGetPerformanceApi(CommonTradingApiTests):
             "/positions/performance",
             method="GET",
         ).respond_with_json(iter_payload)
-    
-        assert (
-            len(list(client.trading.positions.iter_performance()))
-            == 2
-        )
+
+        assert len(list(client.trading.positions.iter_performance())) == 2
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

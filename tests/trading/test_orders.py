@@ -421,10 +421,7 @@ class TestGetOrdersApi(CommonTradingApiTests):
         ).respond_with_json(DUMMY_ORDERS_PAYLOAD)
         assert client.trading.orders.get(**function_kwargs) == DUMMY_ORDERS_RESPONSE
 
-
-    def test_iter_orders(
-        self, client: Api, httpserver: HTTPServer
-    ):
+    def test_iter_orders(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/orders",
             query_string="page=2",
@@ -437,11 +434,8 @@ class TestGetOrdersApi(CommonTradingApiTests):
             "/orders",
             method="GET",
         ).respond_with_json(iter_payload)
-        
-        assert (
-            len(list(client.trading.orders.iter()))
-            == 2
-        )
+
+        assert len(list(client.trading.orders.iter())) == 2
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(

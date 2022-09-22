@@ -332,11 +332,8 @@ class TestGetWithdrawalsApi(CommonTradingApiTests):
             "/account/withdrawals",
             method="GET",
         ).respond_with_json(iter_payload)
-        
-        assert (
-            len(list(client.trading.account.iter_withdrawals()))
-            == 2
-        )
+
+        assert len(list(client.trading.account.iter_withdrawals())) == 2
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -418,10 +415,7 @@ class TestGetBankStatementsApi(CommonTradingApiTests):
             == DUMMY_BANKSTATEMENTS_RESPONSE
         )
 
-
-    def test_iter_bank_statements(
-        self, client: Api, httpserver: HTTPServer
-    ):
+    def test_iter_bank_statements(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/account/bankstatements", query_string="page=2", method="GET"
         ).respond_with_json(DUMMY_BANK_STATEMENTS_PAYLOAD)
@@ -433,10 +427,7 @@ class TestGetBankStatementsApi(CommonTradingApiTests):
             method="GET",
         ).respond_with_json(iter_payload)
 
-        assert (
-            len(list(client.trading.account.iter_bank_statements()))
-            == 2
-        )
+        assert len(list(client.trading.account.iter_bank_statements())) == 2
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
@@ -491,9 +482,7 @@ class TestGetDocumentsApi(CommonTradingApiTests):
             == DUMMY_GET_DOCUMENTS_RESPONSE
         )
 
-    def test_iter_documents(
-        self, client: Api, httpserver: HTTPServer
-    ):
+    def test_iter_documents(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/account/documents", query_string="page=2", method="GET"
         ).respond_with_json(DUMMY_GET_DOCUMENTS_PAYLOAD)
@@ -505,10 +494,7 @@ class TestGetDocumentsApi(CommonTradingApiTests):
             method="GET",
         ).respond_with_json(iter_payload)
 
-        assert (
-            len(list(client.trading.account.iter_document()))
-            == 2
-        )
+        assert len(list(client.trading.account.iter_document())) == 2
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
