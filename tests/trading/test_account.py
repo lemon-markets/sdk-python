@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import date, datetime
 
 import pytest
@@ -321,11 +322,20 @@ class TestGetWithdrawalsApi(CommonTradingApiTests):
     def test_iter_withdrawals(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
             "/account/withdrawals",
+            query_string="page=2",
             method="GET",
         ).respond_with_json(DUMMY_WITHDRAWLS_PAYLOAD)
+
+        iter_payload = deepcopy(DUMMY_WITHDRAWLS_PAYLOAD)
+        iter_payload["next"] = httpserver.url_for("/account/withdrawals?page=2")
+        httpserver.expect_oneshot_request(
+            "/account/withdrawals",
+            method="GET",
+        ).respond_with_json(iter_payload)
+        
         assert (
-            list(client.trading.account.iter_withdrawals())
-            == DUMMY_WITHDRAWLS_RESPONSE.results
+            len(list(client.trading.account.iter_withdrawals()))
+            == 2
         )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
@@ -408,36 +418,24 @@ class TestGetBankStatementsApi(CommonTradingApiTests):
             == DUMMY_BANKSTATEMENTS_RESPONSE
         )
 
-    @pytest.mark.parametrize(
-        "function_kwargs,query_string",
-        [
-            ({}, ""),
-            ({"type": "pay_in"}, "type=pay_in"),
-            ({"from_": "beginning"}, "from=beginning"),
-            ({"to": date(year=2000, month=3, day=3)}, "to=2000-03-03"),
-            ({"sorting": "asc"}, "sorting=asc"),
-            ({"limit": 100}, "limit=100"),
-            (
-                {
-                    "type": "pay_in",
-                    "from_": "beginning",
-                    "to": date(year=2000, month=3, day=3),
-                    "sorting": "asc",
-                    "limit": 100,
-                },
-                "type=pay_in&from=beginning&to=2000-03-03&sorting=asc&limit=100",
-            ),
-        ],
-    )
+
     def test_iter_bank_statements(
-        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+        self, client: Api, httpserver: HTTPServer
     ):
         httpserver.expect_oneshot_request(
-            "/account/bankstatements", query_string=query_string, method="GET"
+            "/account/bankstatements", query_string="page=2", method="GET"
         ).respond_with_json(DUMMY_BANK_STATEMENTS_PAYLOAD)
+
+        iter_payload = deepcopy(DUMMY_BANK_STATEMENTS_PAYLOAD)
+        iter_payload["next"] = httpserver.url_for("/account/bankstatements?page=2")
+        httpserver.expect_oneshot_request(
+            "/account/bankstatements",
+            method="GET",
+        ).respond_with_json(iter_payload)
+
         assert (
-            list(client.trading.account.iter_bank_statements(**function_kwargs))
-            == DUMMY_BANKSTATEMENTS_RESPONSE.results
+            len(list(client.trading.account.iter_bank_statements()))
+            == 2
         )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
@@ -493,30 +491,23 @@ class TestGetDocumentsApi(CommonTradingApiTests):
             == DUMMY_GET_DOCUMENTS_RESPONSE
         )
 
-    @pytest.mark.parametrize(
-        "function_kwargs,query_string",
-        [
-            ({}, ""),
-            ({"sorting": "asc"}, "sorting=asc"),
-            ({"limit": 100}, "limit=100"),
-            (
-                {
-                    "sorting": "asc",
-                    "limit": 100,
-                },
-                "sorting=asc&limit=100",
-            ),
-        ],
-    )
     def test_iter_documents(
-        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+        self, client: Api, httpserver: HTTPServer
     ):
         httpserver.expect_oneshot_request(
-            "/account/documents", query_string=query_string, method="GET"
+            "/account/documents", query_string="page=2", method="GET"
         ).respond_with_json(DUMMY_GET_DOCUMENTS_PAYLOAD)
+
+        iter_payload = deepcopy(DUMMY_GET_DOCUMENTS_PAYLOAD)
+        iter_payload["next"] = httpserver.url_for("/account/documents?page=2")
+        httpserver.expect_oneshot_request(
+            "/account/documents",
+            method="GET",
+        ).respond_with_json(iter_payload)
+
         assert (
-            list(client.trading.account.iter_document(**function_kwargs))
-            == DUMMY_GET_DOCUMENTS_RESPONSE.results
+            len(list(client.trading.account.iter_document()))
+            == 2
         )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):

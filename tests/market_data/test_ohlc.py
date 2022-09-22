@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime
 
 import pytest
@@ -28,7 +29,6 @@ DUMMY_PAYLOAD = {
     "page": 1,
     "pages": 1,
 }
-
 DUMMY_PAYLOAD_WITH_EPOCH = {
     "time": "2022-02-14T20:44:03.759+00:00",
     "results": [
@@ -136,56 +136,25 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
         )
 
     @pytest.mark.parametrize("period", ["h1", "d1", "m1"])
-    @pytest.mark.parametrize(
-        "function_kwargs,query_string",
-        [
-            ({"isin": ["XMUN"]}, "isin=XMUN"),
-            ({"isin": ["XMUN"], "mic": "XMUN"}, "isin=XMUN&mic=XMUN"),
-            (
-                {
-                    "isin": ["XMUN"],
-                    "from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
-                },
-                "isin=XMUN&from=2021-11-07+22%3A59%3A00%2B00%3A00",
-            ),
-            (
-                {
-                    "isin": ["XMUN"],
-                    "to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
-                },
-                "isin=XMUN&to=2021-11-07+22%3A59%3A00%2B00%3A00",
-            ),
-            ({"isin": ["XMUN"], "decimals": False}, "isin=XMUN&decimals=False"),
-            ({"isin": ["XMUN"], "epoch": False}, "isin=XMUN&epoch=False"),
-            ({"isin": ["XMUN"], "sorting": "asc"}, "isin=XMUN&sorting=asc"),
-            ({"isin": ["XMUN"], "limit": 100}, "isin=XMUN&limit=100"),
-            (
-                {
-                    "isin": ["XMUN"],
-                    "mic": "XMUN",
-                    "from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
-                    "to": 7,
-                    "decimals": False,
-                    "epoch": False,
-                    "sorting": "asc",
-                    "limit": 100,
-                },
-                "isin=XMUN&mic=XMUN&from=2021-11-07+22%3A59%3A00%2B00%3A00&to=P7D&decimals=False&"
-                "epoch=False&sorting=asc&limit=100",
-            ),
-        ],
-    )
     def test_iter_ohlc(
-        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string, period
+        self, client: Api, httpserver: HTTPServer, period
     ):
         httpserver.expect_oneshot_request(
             f"/ohlc/{period}",
-            query_string=query_string,
+            query_string="page=2",
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
+
+        iter_payload = deepcopy(DUMMY_PAYLOAD)
+        iter_payload["next"] = httpserver.url_for(f"/ohlc/{period}?page=2")
+        httpserver.expect_oneshot_request(
+            f"/ohlc/{period}",
+            method="GET",
+        ).respond_with_json(iter_payload)
+
         assert (
-            list(client.market_data.ohlc.iter(period=period, **function_kwargs))
-            == DUMMY_RESPONSE.results
+            len(list(client.market_data.ohlc.iter(period=period, isin="ISIN")))
+            == 2
         )
 
     def test_get_ohlc_decimal_form(self, client: Api, httpserver: HTTPServer):

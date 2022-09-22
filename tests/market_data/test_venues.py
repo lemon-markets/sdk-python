@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import date, datetime, time
 
 import pytest
@@ -93,27 +94,25 @@ class TestVenuesApi(CommonMarketDataApiTests):
         ).respond_with_json(DUMMY_PAYLOAD)
         assert client.market_data.venues.get(**function_kwargs) == DUMMY_RESPONSE
 
-    @pytest.mark.parametrize(
-        "function_kwargs,query_string",
-        [
-            ({}, ""),
-            ({"mic": "XMUN"}, "mic=XMUN"),
-            ({"sorting": "asc"}, "sorting=asc"),
-            ({"limit": 100}, "limit=100"),
-            ({"mic": "XMUN", "limit": 100}, "mic=XMUN&limit=100"),
-        ],
-    )
     def test_iter_venues(
-        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+        self, client: Api, httpserver: HTTPServer
     ):
         httpserver.expect_oneshot_request(
             "/venues",
-            query_string=query_string,
+            query_string="page=2",
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
+
+        iter_payload = deepcopy(DUMMY_PAYLOAD)
+        iter_payload["next"] = httpserver.url_for("/venues?page=2")
+        httpserver.expect_oneshot_request(
+            "/venues",
+            method="GET",
+        ).respond_with_json(iter_payload)
+        
         assert (
-            list(client.market_data.venues.iter(**function_kwargs))
-            == DUMMY_RESPONSE.results
+            len(list(client.market_data.venues.iter()))
+            == 2
         )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):

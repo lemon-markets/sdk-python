@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import date, datetime
 
 import pytest
@@ -420,52 +421,26 @@ class TestGetOrdersApi(CommonTradingApiTests):
         ).respond_with_json(DUMMY_ORDERS_PAYLOAD)
         assert client.trading.orders.get(**function_kwargs) == DUMMY_ORDERS_RESPONSE
 
-    @pytest.mark.parametrize(
-        "function_kwargs,query_string",
-        [
-            ({}, ""),
-            (
-                {"from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
-                "from=2021-11-07+22%3A59%3A00%2B00%3A00",
-            ),
-            (
-                {"to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00")},
-                "to=2021-11-07+22%3A59%3A00%2B00%3A00",
-            ),
-            ({"isin": "XMUN"}, "isin=XMUN"),
-            ({"side": "sell"}, "side=sell"),
-            ({"status": "inactive"}, "status=inactive"),
-            ({"status": ["inactive", "activated"]}, "status=inactive&status=activated"),
-            ({"type": "market"}, "type=market"),
-            ({"key_creation_id": "foo"}, "key_creation_id=foo"),
-            ({"limit": 100}, "limit=100"),
-            (
-                {
-                    "from_": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
-                    "to": datetime.fromisoformat("2021-11-07T22:59:00.000+00:00"),
-                    "isin": "XMUN",
-                    "side": "sell",
-                    "status": "inactive",
-                    "type": "market",
-                    "key_creation_id": "foo",
-                    "limit": 100,
-                },
-                "from=2021-11-07+22%3A59%3A00%2B00%3A00&to=2021-11-07+22%3A59%3A00%2B00%3A00&"
-                "isin=XMUN&side=sell&status=inactive&type=market&key_creation_id=foo&limit=100",
-            ),
-        ],
-    )
+
     def test_iter_orders(
-        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+        self, client: Api, httpserver: HTTPServer
     ):
         httpserver.expect_oneshot_request(
             "/orders",
-            query_string=query_string,
+            query_string="page=2",
             method="GET",
         ).respond_with_json(DUMMY_ORDERS_PAYLOAD)
+
+        iter_payload = deepcopy(DUMMY_ORDERS_PAYLOAD)
+        iter_payload["next"] = httpserver.url_for("/orders?page=2")
+        httpserver.expect_oneshot_request(
+            "/orders",
+            method="GET",
+        ).respond_with_json(iter_payload)
+        
         assert (
-            list(client.trading.orders.iter(**function_kwargs))
-            == DUMMY_ORDERS_RESPONSE.results
+            len(list(client.trading.orders.iter()))
+            == 2
         )
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):

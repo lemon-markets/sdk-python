@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import datetime
 
 import pytest
@@ -31,34 +32,6 @@ DUMMY_PAYLOAD = {
     ],
     "previous": "https://data.lemon.markets/v1/instruments/?limit=100&page=1",
     "next": None,
-    "total": 26283,
-    "page": 2,
-    "pages": 263,
-}
-ITER_PAYLOAD = {
-    "time": "2022-02-14T20:44:03.759+00:00",
-    "results": [
-        {
-            "isin": "US19260Q1076",
-            "wkn": "A2QP7J",
-            "name": "COINBASE GLB.CL.A -,00001",
-            "title": "COINBASE GLOBAL INC",
-            "symbol": "1QZ",
-            "type": "stock",
-            "venues": [
-                {
-                    "name": "Börse München - Gettex",
-                    "title": "Gettex",
-                    "mic": "XMUN",
-                    "is_open": True,
-                    "tradable": True,
-                    "currency": "EUR",
-                }
-            ],
-        }
-    ],
-    "previous": "https://data.lemon.markets/v1/instruments/?limit=100&page=1",
-    "next": "",
     "total": 26283,
     "page": 2,
     "pages": 263,
@@ -149,11 +122,12 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
 
-        ITER_PAYLOAD["next"] = httpserver.url_for("/instruments?page=2")
+        iter_payload = deepcopy(DUMMY_PAYLOAD)
+        iter_payload["next"] = httpserver.url_for("/instruments?page=2")
         httpserver.expect_oneshot_request(
             "/instruments",
             method="GET",
-        ).respond_with_json(ITER_PAYLOAD)
+        ).respond_with_json(iter_payload)
 
         assert (
             len(list(client.market_data.instruments.iter()))
