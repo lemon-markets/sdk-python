@@ -85,7 +85,7 @@ class Ohlc:
                     result,
                     t_type=float if decimals else int,
                     k_type=int if epoch else datetime.fromisoformat,
-                )  # type: ignore)
+                )
             if resp_data["next"]:
                 resp = self._client.get(resp_data["next"])
             else:
