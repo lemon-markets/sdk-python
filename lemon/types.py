@@ -75,7 +75,7 @@ def _make_parser(type_: Type[Any]) -> Callable[[Any], Any]:
 
 class BaseModelMeta(type):
     def __new__(
-        cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]
+            cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]
     ) -> "BaseModelMeta":
         if "__annotations__" not in dct:
             return super().__new__(cls, name, bases, dct)
@@ -102,7 +102,7 @@ class BaseModel(metaclass=BaseModelMeta):
         return json.dumps(asdict(self), cls=JSONEncoder)
 
     @classmethod
-    def _from_data(cls: Type[TBaseModel], data: Dict[str, Any]) -> TBaseModel:
+    def _from_data(cls: Type[TBaseModel], data: Dict[str, Any], **kwargs) -> TBaseModel:
         kwargs = {}
 
         for key, parser in cls._parsers.items():  # type: ignore # pylint: disable=E1101
@@ -110,3 +110,19 @@ class BaseModel(metaclass=BaseModelMeta):
             kwargs[key] = parser(val) if val is not None else None
 
         return cls(**kwargs)
+
+
+class IterableResponseBase(BaseModel):
+    next: str
+
+    __client: "Client"
+
+    @classmethod
+    def _from_data(cls: Type[TBaseModel], data: Dict[str, Any], client: "Client") -> TBaseModel:
+        kwargs = {}
+
+        for key, parser in cls._parsers.items():  # type: ignore # pylint: disable=E1101
+            val = data.get(key)
+            kwargs[key] = parser(val) if val is not None else None
+
+        return cls(**kwargs, __client=client)
