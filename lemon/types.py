@@ -1,7 +1,7 @@
 import json
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from datetime import date, datetime, time, timezone
-from typing import Any, Callable, Dict, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, Dict, Tuple, Type, TypeVar, Union, Iterator, List, Generic
 
 from typing_extensions import Literal
 
@@ -82,7 +82,7 @@ class BaseModelMeta(type):
 
         annotations = dct["__annotations__"]
         dct["_parsers"] = {
-            key: _make_parser(type_) for key, type_ in annotations.items()
+            key: _make_parser(type_) for key, type_ in annotations.items() if not key.startswith('_')
         }
         dct["__slots__"] = tuple(annotations.keys())
 
@@ -102,7 +102,7 @@ class BaseModel(metaclass=BaseModelMeta):
         return json.dumps(asdict(self), cls=JSONEncoder)
 
     @classmethod
-    def _from_data(cls: Type[TBaseModel], data: Dict[str, Any], **kwargs) -> TBaseModel:
+    def _from_data(cls: Type[TBaseModel], data: Dict[str, Any]) -> TBaseModel:
         kwargs = {}
 
         for key, parser in cls._parsers.items():  # type: ignore # pylint: disable=E1101
@@ -112,10 +112,14 @@ class BaseModel(metaclass=BaseModelMeta):
         return cls(**kwargs)
 
 
-class IterableResponseBase(BaseModel):
-    next: str
+T = TypeVar("T", bound="List")
 
-    __client: "Client"
+
+@dataclass
+class IterableResponseBase(BaseModel, Generic[T]):
+    next: str
+    results: T
+    _client: "Client"
 
     @classmethod
     def _from_data(cls: Type[TBaseModel], data: Dict[str, Any], client: "Client") -> TBaseModel:
@@ -125,4 +129,11 @@ class IterableResponseBase(BaseModel):
             val = data.get(key)
             kwargs[key] = parser(val) if val is not None else None
 
-        return cls(**kwargs, __client=client)
+        return cls(**kwargs, next=data.get('next'), _client=client)
+
+    def auto_iter(self) -> Iterator:
+        data = self
+        while data.next is not None:
+            for el in data.results:
+                yield el
+            data = self._from_data(self._client.get(data.next).json(), client=self._client)
