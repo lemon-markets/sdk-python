@@ -1,5 +1,5 @@
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, time, timezone
 from typing import (
     Any,
@@ -11,7 +11,7 @@ from typing import (
     Tuple,
     Type,
     TypeVar,
-    Union,
+    Union, Optional,
 )
 
 from typing_extensions import Literal
@@ -127,8 +127,8 @@ class BaseModel(metaclass=BaseModelMeta):
 
 @dataclass
 class IterableResponseBase(BaseModel):
-    next: str
-    _client: "Client"
+    next: Optional[str]
+    _client: Optional["Client"]
 
     @classmethod
     def _from_data(
