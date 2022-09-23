@@ -62,7 +62,7 @@ DUMMY_RESPONSE = GetInstrumentsResponse(
     page=2,
     pages=263,
     next="https://data.lemon.markets/v1/instruments/?limit=100&page=3",
-    _client=None
+    _client=None,
 )
 
 
@@ -88,24 +88,24 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
             ({"limit": 100}, "limit=100"),
             ({"page": 7}, "page=7"),
             (
-                    {
-                        "isin": ["XMUN"],
-                        "search": "foo",
-                        "type": ["stock", "etf"],
-                        "mic": ["XMUN"],
-                        "currency": ["USD"],
-                        "tradable": False,
-                        "sorting": "asc",
-                        "limit": 100,
-                        "page": 7,
-                    },
-                    "isin=XMUN&search=foo&type=stock&type=etf&mic=XMUN&"
-                    "currency=USD&tradable=False&sorting=asc&limit=100&page=7",
+                {
+                    "isin": ["XMUN"],
+                    "search": "foo",
+                    "type": ["stock", "etf"],
+                    "mic": ["XMUN"],
+                    "currency": ["USD"],
+                    "tradable": False,
+                    "sorting": "asc",
+                    "limit": 100,
+                    "page": 7,
+                },
+                "isin=XMUN&search=foo&type=stock&type=etf&mic=XMUN&"
+                "currency=USD&tradable=False&sorting=asc&limit=100&page=7",
             ),
         ],
     )
     def test_get_instruments(
-            self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
         httpserver.expect_oneshot_request(
             "/instruments",

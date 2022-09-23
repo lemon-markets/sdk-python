@@ -1,18 +1,7 @@
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from datetime import date, datetime, time, timezone
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generic,
-    Iterator,
-    List,
-    Tuple,
-    Type,
-    TypeVar,
-    Union, Optional,
-)
+from typing import Any, Callable, Dict, Iterator, Optional, Tuple, Type, TypeVar, Union
 
 from typing_extensions import Literal
 
@@ -86,7 +75,7 @@ def _make_parser(type_: Type[Any]) -> Callable[[Any], Any]:
 
 class BaseModelMeta(type):
     def __new__(
-            cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]
+        cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]
     ) -> "BaseModelMeta":
         if "__annotations__" not in dct:
             return super().__new__(cls, name, bases, dct)
@@ -132,7 +121,7 @@ class IterableResponseBase(BaseModel):
 
     @classmethod
     def _from_data(
-            cls: Type[TBaseModel], data: Dict[str, Any], client: "Client"
+        cls: Type[TBaseModel], data: Dict[str, Any], client: "Client"
     ) -> TBaseModel:
         kwargs = {}
 
