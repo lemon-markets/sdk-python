@@ -125,13 +125,9 @@ class BaseModel(metaclass=BaseModelMeta):
         return cls(**kwargs)
 
 
-T = TypeVar("T", bound="List")
-
-
 @dataclass
-class IterableResponseBase(BaseModel, Generic[T]):
+class IterableResponseBase(BaseModel):
     next: str
-    results: T
     _client: "Client"
 
     @classmethod
