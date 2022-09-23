@@ -1,7 +1,18 @@
 import json
 from dataclasses import asdict, dataclass
 from datetime import date, datetime, time, timezone
-from typing import Any, Callable, Dict, Tuple, Type, TypeVar, Union, Iterator, List, Generic
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    Iterator,
+    List,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from typing_extensions import Literal
 
@@ -75,14 +86,16 @@ def _make_parser(type_: Type[Any]) -> Callable[[Any], Any]:
 
 class BaseModelMeta(type):
     def __new__(
-            cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]
+        cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]
     ) -> "BaseModelMeta":
         if "__annotations__" not in dct:
             return super().__new__(cls, name, bases, dct)
 
         annotations = dct["__annotations__"]
         dct["_parsers"] = {
-            key: _make_parser(type_) for key, type_ in annotations.items() if not key.startswith('_')
+            key: _make_parser(type_)
+            for key, type_ in annotations.items()
+            if not key.startswith("_")
         }
         dct["__slots__"] = tuple(annotations.keys())
 
@@ -122,18 +135,22 @@ class IterableResponseBase(BaseModel, Generic[T]):
     _client: "Client"
 
     @classmethod
-    def _from_data(cls: Type[TBaseModel], data: Dict[str, Any], client: "Client") -> TBaseModel:
+    def _from_data(
+        cls: Type[TBaseModel], data: Dict[str, Any], client: "Client"
+    ) -> TBaseModel:
         kwargs = {}
 
         for key, parser in cls._parsers.items():  # type: ignore # pylint: disable=E1101
             val = data.get(key)
             kwargs[key] = parser(val) if val is not None else None
 
-        return cls(**kwargs, next=data.get('next'), _client=client)
+        return cls(**kwargs, next=data.get("next"), _client=client)
 
     def auto_iter(self) -> Iterator:
         data = self
         while data.next is not None:
             for el in data.results:
                 yield el
-            data = self._from_data(self._client.get(data.next).json(), client=self._client)
+            data = self._from_data(
+                self._client.get(data.next).json(), client=self._client
+            )
