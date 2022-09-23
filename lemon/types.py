@@ -86,7 +86,7 @@ def _make_parser(type_: Type[Any]) -> Callable[[Any], Any]:
 
 class BaseModelMeta(type):
     def __new__(
-        cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]
+            cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]
     ) -> "BaseModelMeta":
         if "__annotations__" not in dct:
             return super().__new__(cls, name, bases, dct)
@@ -132,7 +132,7 @@ class IterableResponseBase(BaseModel):
 
     @classmethod
     def _from_data(
-        cls: Type[TBaseModel], data: Dict[str, Any], client: "Client"
+            cls: Type[TBaseModel], data: Dict[str, Any], client: "Client"
     ) -> TBaseModel:
         kwargs = {}
 
@@ -144,9 +144,13 @@ class IterableResponseBase(BaseModel):
 
     def auto_iter(self) -> Iterator:
         data = self
-        while data.next is not None:
+        while True:
             for el in data.results:
                 yield el
+
+            if not data.next:
+                break
+
             data = self._from_data(
                 self._client.get(data.next).json(), client=self._client
             )
