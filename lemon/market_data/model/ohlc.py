@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Union
 
-from lemon.types import BaseModel
+from lemon.types import BaseModel, IterableResponseBase
 
 
 @dataclass
@@ -37,7 +37,7 @@ class OhlcData(BaseModel):
 
 
 @dataclass
-class GetOhlcResponse(BaseModel):
+class GetOhlcResponse(IterableResponseBase):
     time: datetime
     results: List[OhlcData]
     total: int
@@ -49,6 +49,7 @@ class GetOhlcResponse(BaseModel):
         data: Dict[str, Any],
         t_type: Callable[[Any], Union[int, float]],
         k_type: Callable[[Any], Union[datetime, int]],
+        client: "Client",
     ) -> "GetOhlcResponse":
         return GetOhlcResponse(
             time=datetime.fromisoformat(data["time"]),
@@ -58,4 +59,6 @@ class GetOhlcResponse(BaseModel):
             total=int(data["total"]),
             page=int(data["page"]),
             pages=int(data["pages"]),
+            _client=client,
+            next=data["next"],
         )

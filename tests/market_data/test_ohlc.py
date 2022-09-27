@@ -69,6 +69,8 @@ DUMMY_RESPONSE = GetOhlcResponse(
     total=1,
     page=1,
     pages=1,
+    next=None,
+    _client=None,
 )
 
 
@@ -130,6 +132,7 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
+        DUMMY_RESPONSE._client = client.market_data
         assert (
             client.market_data.ohlc.get(period=period, **function_kwargs)
             == DUMMY_RESPONSE
@@ -203,6 +206,8 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
             query_string="isin=XMUN",
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
+
+        DUMMY_RESPONSE._client = client.market_data
 
         assert client.market_data.ohlc.get(period="h1", isin=["XMUN"]) == DUMMY_RESPONSE
 
