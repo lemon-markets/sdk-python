@@ -214,3 +214,15 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
     def test_raise_on_invalid_input(self, client: Api):
         with pytest.raises(ValueError):
             client.market_data.ohlc.get(period="", isin=["XMUN"])  # type: ignore
+
+    def test_iterator(self, client: Api, httpserver):
+        httpserver.expect_oneshot_request(
+            "/ohlc/m1",
+            query_string="isin=XMUN",
+            method="GET",
+        ).respond_with_json(DUMMY_PAYLOAD)
+
+        results = list(
+            client.market_data.ohlc.get(period="m1", isin=["XMUN"]).auto_iter()
+        )
+        assert len(results) == 1
