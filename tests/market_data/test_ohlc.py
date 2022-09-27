@@ -222,7 +222,6 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
 
-        results = list(
-            client.market_data.ohlc.get(period="m1", isin=["XMUN"]).auto_iter()
-        )
-        assert len(results) == 1
+        results = client.market_data.ohlc.get(period="m1", isin=["XMUN"]).auto_iter()
+
+        assert list(results) == DUMMY_RESPONSE.results
