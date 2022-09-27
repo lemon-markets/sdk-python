@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Union
 
-from lemon.types import BaseModel
+from lemon.types import BaseModel, IterableResponseBase
 
 
 @dataclass
@@ -31,7 +31,7 @@ class Trade(BaseModel):
 
 
 @dataclass
-class GetTradesResponse(BaseModel):
+class GetTradesResponse(IterableResponseBase):
     time: datetime
     results: List[Trade]
     total: int
@@ -43,6 +43,7 @@ class GetTradesResponse(BaseModel):
         data: Dict[str, Any],
         t_type: Callable[[Any], Union[int, float]],
         k_type: Callable[[Any], Union[datetime, int]],
+        client: "Client",
     ) -> "GetTradesResponse":
         return GetTradesResponse(
             time=datetime.fromisoformat(data["time"]),
@@ -52,4 +53,6 @@ class GetTradesResponse(BaseModel):
             total=int(data["total"]),
             page=int(data["page"]),
             pages=int(data["pages"]),
+            _client=client,
+            next=data["next"],
         )

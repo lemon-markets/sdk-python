@@ -60,6 +60,8 @@ DUMMY_RESPONSE = GetTradesResponse(
     total=1,
     page=1,
     pages=1,
+    next=None,
+    _client=None,
 )
 
 
@@ -104,6 +106,9 @@ class TestTradesApi(CommonMarketDataApiTests):
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
+
+        DUMMY_RESPONSE._client = client.market_data
+
         assert client.market_data.trades.get_latest(**function_kwargs) == DUMMY_RESPONSE
 
     def test_get_trades_decimal_form(self, client: Api, httpserver: HTTPServer):
@@ -172,5 +177,7 @@ class TestTradesApi(CommonMarketDataApiTests):
             query_string="isin=XMUN",
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
+
+        DUMMY_RESPONSE._client = client.market_data
 
         assert client.market_data.trades.get_latest(isin=["XMUN"]) == DUMMY_RESPONSE
