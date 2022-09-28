@@ -145,6 +145,5 @@ class BaseIterableModel(BaseModel):
             if not data.next:
                 break
 
-            data = self._from_data(
-                self._client.get(data.next).json() | {"_client": self._client}
-            )
+            response = self._client.get(data.next).json()
+            data = self._from_data(dict(response, _client=self._client))
