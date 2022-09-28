@@ -47,7 +47,7 @@ class Orders:
                 "page": page,
             },
         )
-        return GetOrdersResponse._from_data(resp.json(), client=self._client)
+        return GetOrdersResponse._from_data(resp.json() | {"_client": self._client})
 
     def create(
         self,

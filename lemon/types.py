@@ -74,19 +74,30 @@ def _make_parser(type_: Type[Any]) -> Callable[[Any], Any]:
 
 
 class BaseModelMeta(type):
+    @staticmethod
+    def make_parsers(annotations: Dict[str, Any]) -> Dict[str, Any]:
+        return {
+            k: _make_parser(v) for k, v in annotations.items() if not k.startswith("_")
+        }
+
     def __new__(
         cls, name: str, bases: Tuple[Any], dct: Dict[str, Any]
     ) -> "BaseModelMeta":
-        if "__annotations__" not in dct:
-            return super().__new__(cls, name, bases, dct)
+        slots, parsers = set(), {}
 
-        annotations = dct["__annotations__"]
-        dct["_parsers"] = {
-            key: _make_parser(type_)
-            for key, type_ in annotations.items()
-            if not key.startswith("_")
-        }
-        dct["__slots__"] = tuple(annotations.keys())
+        for base in bases:
+            base_cls_annotations = getattr(base, "__annotations__", {})
+            slots.update(base_cls_annotations)
+
+            if isinstance(base, BaseModelMeta):
+                parsers.update(cls.make_parsers(base_cls_annotations))
+
+        cls_annotations = dct.get("__annotations__", {})
+        slots.update(cls_annotations)
+        parsers.update(cls.make_parsers(cls_annotations))
+
+        dct["_parsers"] = parsers
+        dct["__slots__"] = tuple(sorted(slots))
 
         return super().__new__(cls, name, bases, dct)
 
@@ -107,9 +118,12 @@ class BaseModel(metaclass=BaseModelMeta):
     def _from_data(cls: Type[TBaseModel], data: Dict[str, Any]) -> TBaseModel:
         kwargs = {}
 
-        for key, parser in cls._parsers.items():  # type: ignore # pylint: disable=E1101
+        for key in getattr(cls, "__slots__"):
             val = data.get(key)
-            kwargs[key] = parser(val) if val is not None else None
+            try:
+                kwargs[key] = cls._parsers[key](val) if val is not None else None
+            except KeyError:
+                kwargs[key] = val
 
         return cls(**kwargs)
 
@@ -118,18 +132,6 @@ class BaseModel(metaclass=BaseModelMeta):
 class IterableResponseBase(BaseModel):
     next: Optional[str]
     _client: Optional["Client"]
-
-    @classmethod
-    def _from_data(
-        cls: Type[TBaseModel], data: Dict[str, Any], client: "Client"
-    ) -> TBaseModel:
-        kwargs = {}
-
-        for key, parser in cls._parsers.items():  # type: ignore # pylint: disable=E1101
-            val = data.get(key)
-            kwargs[key] = parser(val) if val is not None else None
-
-        return cls(**kwargs, next=data.get("next"), _client=client)
 
     def auto_iter(self) -> Iterator:
         data = self
