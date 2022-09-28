@@ -155,6 +155,8 @@ GET_BANK_STATEMENTS_RESPONSE = GetBankStatementsResponse(
     total=80,
     page=2,
     pages=4,
+    _client=None,
+    next=None
 )
 
 DICT_GET_BANK_STATEMENTS_RESPONSE = {
@@ -176,6 +178,8 @@ DICT_GET_BANK_STATEMENTS_RESPONSE = {
     "total": 80,
     "page": 2,
     "pages": 4,
+    "_client": None,
+    "next": None
 }
 
 GET_DOCUMENTS_RESPONSE = GetDocumentsResponse(

@@ -92,7 +92,7 @@ class Account:
                 "page": page,
             },
         )
-        return GetBankStatementsResponse._from_data(resp.json())
+        return GetBankStatementsResponse._from_data(resp.json(), client=self._client)
 
     def get_documents(
         self,

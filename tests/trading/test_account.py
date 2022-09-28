@@ -103,7 +103,7 @@ DUMMY_BANK_STATEMENTS_PAYLOAD = {
         },
     ],
     "previous": "https://paper-trading.lemon.markets/v1/account/bankstatements/?limit=20&page=1",
-    "next": "https://paper-trading.lemon.markets/v1/account/bankstatements/?limit=2&page=3",
+    "next": None,
     "total": 80,
     "page": 2,
     "pages": 4,
@@ -218,6 +218,8 @@ DUMMY_BANKSTATEMENTS_RESPONSE = GetBankStatementsResponse(
     total=80,
     page=2,
     pages=4,
+    _client=None,
+    next=None
 )
 
 DUMMY_GET_DOCUMENTS_RESPONSE = GetDocumentsResponse(
@@ -393,6 +395,7 @@ class TestGetBankStatementsApi(CommonTradingApiTests):
         httpserver.expect_oneshot_request(
             "/account/bankstatements", query_string=query_string, method="GET"
         ).respond_with_json(DUMMY_BANK_STATEMENTS_PAYLOAD)
+        DUMMY_BANKSTATEMENTS_RESPONSE._client = client.trading
         assert (
             client.trading.account.get_bank_statements(**function_kwargs)
             == DUMMY_BANKSTATEMENTS_RESPONSE
@@ -408,6 +411,8 @@ class TestGetBankStatementsApi(CommonTradingApiTests):
             "/account/bankstatements",
             method="GET",
         ).respond_with_json(DUMMY_BANK_STATEMENTS_PAYLOAD)
+
+        DUMMY_BANKSTATEMENTS_RESPONSE._client = client.trading
 
         assert (
             client.trading.account.get_bank_statements()
