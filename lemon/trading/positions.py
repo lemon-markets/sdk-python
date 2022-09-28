@@ -29,7 +29,7 @@ class Positions:
                 "page": page,
             },
         )
-        return GetPositionsResponse._from_data(resp.json())
+        return GetPositionsResponse._from_data(resp.json(), client=self._client)
 
     def get_statements(
         self,
@@ -53,7 +53,7 @@ class Positions:
                 "page": page,
             },
         )
-        return GetStatementsResponse._from_data(resp.json())
+        return GetStatementsResponse._from_data(resp.json(), client=self._client)
 
     def get_performance(
         self,
@@ -75,4 +75,4 @@ class Positions:
                 "page": page,
             },
         )
-        return GetPerformanceResponse._from_data(resp.json())
+        return GetPerformanceResponse._from_data(resp.json(), client=self._client)
