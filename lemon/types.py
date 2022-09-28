@@ -146,4 +146,4 @@ class BaseIterableModel(BaseModel):
                 break
 
             response = self._client.get(data.next).json()
-            data = self._from_data(dict(response, _client=self._client))
+            data = self._from_data(response)
