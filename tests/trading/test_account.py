@@ -192,6 +192,8 @@ DUMMY_WITHDRAWLS_RESPONSE = GetWithdrawalsResponse(
     total=80,
     page=2,
     pages=4,
+    _client=None,
+    next="https://paper-trading.lemon.markets/v1/account/withdrawals/?limit=2&page=3",
 )
 
 DUMMY_WITHDRAW_RESPONSE = WithdrawResponse(
@@ -219,7 +221,7 @@ DUMMY_BANKSTATEMENTS_RESPONSE = GetBankStatementsResponse(
     page=2,
     pages=4,
     _client=None,
-    next=None
+    next=None,
 )
 
 DUMMY_GET_DOCUMENTS_RESPONSE = GetDocumentsResponse(
@@ -239,6 +241,8 @@ DUMMY_GET_DOCUMENTS_RESPONSE = GetDocumentsResponse(
     total=80,
     page=2,
     pages=4,
+    _client=None,
+    next="https://paper-trading.lemon.markets/v1/account/documents/?limit=2&page=3",
 )
 
 DUMMY_GET_DOCUMENT_RESPONSE = GetDocumentResponse(
@@ -318,6 +322,7 @@ class TestGetWithdrawalsApi(CommonTradingApiTests):
             "/account/withdrawals",
             method="GET",
         ).respond_with_json(DUMMY_WITHDRAWLS_PAYLOAD)
+        DUMMY_WITHDRAWLS_RESPONSE._client = client.trading
         assert client.trading.account.get_withdrawals() == DUMMY_WITHDRAWLS_RESPONSE
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
@@ -331,6 +336,7 @@ class TestGetWithdrawalsApi(CommonTradingApiTests):
             method="GET",
         ).respond_with_json(DUMMY_WITHDRAWLS_PAYLOAD)
 
+        DUMMY_WITHDRAWLS_RESPONSE._client = client.trading
         assert client.trading.account.get_withdrawals() == DUMMY_WITHDRAWLS_RESPONSE
 
 
@@ -451,6 +457,7 @@ class TestGetDocumentsApi(CommonTradingApiTests):
         httpserver.expect_oneshot_request(
             "/account/documents", query_string=query_string, method="GET"
         ).respond_with_json(DUMMY_GET_DOCUMENTS_PAYLOAD)
+        DUMMY_GET_DOCUMENTS_RESPONSE._client = client.trading
         assert (
             client.trading.account.get_documents(**function_kwargs)
             == DUMMY_GET_DOCUMENTS_RESPONSE
@@ -466,6 +473,8 @@ class TestGetDocumentsApi(CommonTradingApiTests):
             "/account/documents",
             method="GET",
         ).respond_with_json(DUMMY_GET_DOCUMENTS_PAYLOAD)
+
+        DUMMY_GET_DOCUMENTS_RESPONSE._client = client.trading
 
         assert client.trading.account.get_documents() == DUMMY_GET_DOCUMENTS_RESPONSE
 

@@ -54,7 +54,7 @@ class Account:
                 "page": page,
             },
         )
-        return GetWithdrawalsResponse._from_data(resp.json())
+        return GetWithdrawalsResponse._from_data(resp.json(), client=self._client)
 
     def withdraw(
         self,
@@ -108,7 +108,7 @@ class Account:
                 "page": page,
             },
         )
-        return GetDocumentsResponse._from_data(resp.json())
+        return GetDocumentsResponse._from_data(resp.json(), client=self._client)
 
     def get_document(
         self, document_id: str, no_redirect: Optional[bool] = None

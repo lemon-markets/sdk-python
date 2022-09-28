@@ -62,7 +62,7 @@ class Withdrawal(BaseModel):
 
 
 @dataclass
-class GetWithdrawalsResponse(BaseModel):
+class GetWithdrawalsResponse(IterableResponseBase):
     time: datetime
     mode: Environment
     results: List[Withdrawal]
@@ -125,7 +125,7 @@ class Document(BaseModel):
 
 
 @dataclass
-class GetDocumentsResponse(BaseModel):
+class GetDocumentsResponse(IterableResponseBase):
     time: datetime
     mode: Environment
     results: List[Document]
