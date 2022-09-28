@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Union
 
-from lemon.types import BaseModel, IterableResponseBase
+from lemon.types import BaseIterableModel, BaseModel
 
 
 @dataclass
@@ -31,7 +31,7 @@ class Trade(BaseModel):
 
 
 @dataclass
-class GetTradesResponse(IterableResponseBase):
+class GetTradesResponse(BaseIterableModel):
     time: datetime
     results: List[Trade]
     total: int

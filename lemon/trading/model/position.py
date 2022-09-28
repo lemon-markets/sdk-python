@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from typing_extensions import Literal
 
-from lemon.types import BaseModel, Environment, IterableResponseBase
+from lemon.types import BaseIterableModel, BaseModel, Environment
 
 StatementType = Literal["order_buy", "order_sell", "split", "import", "snx"]
 
@@ -20,7 +20,7 @@ class Position(BaseModel):
 
 
 @dataclass
-class GetPositionsResponse(IterableResponseBase):
+class GetPositionsResponse(BaseIterableModel):
     time: datetime
     mode: Environment
     results: List[Position]
@@ -43,7 +43,7 @@ class Statement(BaseModel):
 
 
 @dataclass
-class GetStatementsResponse(IterableResponseBase):
+class GetStatementsResponse(BaseIterableModel):
     time: datetime
     mode: Environment
     results: List[Statement]
@@ -67,7 +67,7 @@ class Performance(BaseModel):
 
 
 @dataclass
-class GetPerformanceResponse(IterableResponseBase):
+class GetPerformanceResponse(BaseIterableModel):
     time: datetime
     mode: Environment
     results: List[Performance]

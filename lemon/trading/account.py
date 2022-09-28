@@ -55,7 +55,7 @@ class Account:
             },
         )
         return GetWithdrawalsResponse._from_data(
-            resp.json() | {"_client": self._client}
+            dict(resp.json(), _client=self._client)
         )
 
     def withdraw(
@@ -95,7 +95,7 @@ class Account:
             },
         )
         return GetBankStatementsResponse._from_data(
-            resp.json() | {"_client": self._client}
+            dict(resp.json(), _client=self._client)
         )
 
     def get_documents(
@@ -112,7 +112,7 @@ class Account:
                 "page": page,
             },
         )
-        return GetDocumentsResponse._from_data(resp.json() | {"_client": self._client})
+        return GetDocumentsResponse._from_data(dict(resp.json(), _client=self._client))
 
     def get_document(
         self, document_id: str, no_redirect: Optional[bool] = None
