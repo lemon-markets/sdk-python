@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from typing_extensions import Literal
 
-from lemon.types import BaseModel, Environment
+from lemon.types import BaseModel, Environment, IterableResponseBase
 
 OrderSide = Literal["sell", "buy"]
 OrderStatus = Literal[
@@ -78,7 +78,7 @@ class Order(BaseModel):
 
 
 @dataclass
-class GetOrdersResponse(BaseModel):
+class GetOrdersResponse(IterableResponseBase):
     time: datetime
     mode: Environment
     results: List[Order]

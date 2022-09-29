@@ -84,7 +84,6 @@ DUMMY_PERFORMANCE_PAYLOAD = {
     "pages": 4,
 }
 
-
 DUMMY_POSITIONS_RESPONSE = GetPositionsResponse(
     time=datetime.fromisoformat("2021-11-21T19:34:45.071+00:00"),
     mode="paper",
@@ -101,6 +100,8 @@ DUMMY_POSITIONS_RESPONSE = GetPositionsResponse(
     total=33,
     page=2,
     pages=4,
+    _client=None,
+    next="https://paper-trading.lemon.markets/v1/positions/?limit=10&page=3",
 )
 
 DUMMY_STATEMENTS_RESPONSE = GetStatementsResponse(
@@ -122,6 +123,8 @@ DUMMY_STATEMENTS_RESPONSE = GetStatementsResponse(
     total=33,
     page=2,
     pages=4,
+    _client=None,
+    next="https://paper-trading.lemon.markets/v1/positions/statements?limit=10&page=3",
 )
 
 DUMMY_PERFORMANCE_RESPONSE = GetPerformanceResponse(
@@ -144,6 +147,8 @@ DUMMY_PERFORMANCE_RESPONSE = GetPerformanceResponse(
     total=37,
     page=2,
     pages=4,
+    _client=None,
+    next="https://trading.lemon.markets/v1/positions/performance?limit=10&page=3",
 )
 
 
@@ -180,6 +185,7 @@ class TestGetPositionsApi(CommonTradingApiTests):
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_POSITIONS_PAYLOAD)
+        DUMMY_POSITIONS_RESPONSE._client = client.trading
         assert (
             client.trading.positions.get(**function_kwargs) == DUMMY_POSITIONS_RESPONSE
         )
@@ -194,7 +200,7 @@ class TestGetPositionsApi(CommonTradingApiTests):
             "/positions",
             method="GET",
         ).respond_with_json(DUMMY_POSITIONS_PAYLOAD)
-
+        DUMMY_POSITIONS_RESPONSE._client = client.trading
         assert client.trading.positions.get() == DUMMY_POSITIONS_RESPONSE
 
 
@@ -246,6 +252,7 @@ class TestGetStatementsApi(CommonTradingApiTests):
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_STATEMENTS_PAYLOAD)
+        DUMMY_STATEMENTS_RESPONSE._client = client.trading
         assert (
             client.trading.positions.get_statements(**function_kwargs)
             == DUMMY_STATEMENTS_RESPONSE
@@ -261,7 +268,7 @@ class TestGetStatementsApi(CommonTradingApiTests):
             "/positions/statements",
             method="GET",
         ).respond_with_json(DUMMY_STATEMENTS_PAYLOAD)
-
+        DUMMY_STATEMENTS_RESPONSE._client = client.trading
         assert client.trading.positions.get_statements() == DUMMY_STATEMENTS_RESPONSE
 
 
@@ -311,6 +318,7 @@ class TestGetPerformanceApi(CommonTradingApiTests):
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PERFORMANCE_PAYLOAD)
+        DUMMY_PERFORMANCE_RESPONSE._client = client.trading
         assert (
             client.trading.positions.get_performance(**function_kwargs)
             == DUMMY_PERFORMANCE_RESPONSE
@@ -326,5 +334,5 @@ class TestGetPerformanceApi(CommonTradingApiTests):
             "/positions/performance",
             method="GET",
         ).respond_with_json(DUMMY_PERFORMANCE_PAYLOAD)
-
+        DUMMY_PERFORMANCE_RESPONSE._client = client.trading
         assert client.trading.positions.get_performance() == DUMMY_PERFORMANCE_RESPONSE

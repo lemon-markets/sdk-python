@@ -251,6 +251,8 @@ DUMMY_ORDERS_RESPONSE = GetOrdersResponse(
     total=33,
     page=2,
     pages=4,
+    _client=None,
+    next="https://paper-trading.lemon.markets/v1/orders/?limit=10&page=3",
 )
 
 DUMMY_CREATE_ORDER_RESPONSE = CreateOrderResponse(
@@ -418,6 +420,7 @@ class TestGetOrdersApi(CommonTradingApiTests):
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_ORDERS_PAYLOAD)
+        DUMMY_ORDERS_RESPONSE._client = client.trading
         assert client.trading.orders.get(**function_kwargs) == DUMMY_ORDERS_RESPONSE
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
@@ -430,7 +433,7 @@ class TestGetOrdersApi(CommonTradingApiTests):
             "/orders",
             method="GET",
         ).respond_with_json(DUMMY_ORDERS_PAYLOAD)
-
+        DUMMY_ORDERS_RESPONSE._client = client.trading
         assert client.trading.orders.get() == DUMMY_ORDERS_RESPONSE
 
 

@@ -69,6 +69,8 @@ GET_ORDERS_RESPONSE = GetOrdersResponse(
     total=33,
     page=2,
     pages=4,
+    _client=None,
+    next=None,
 )
 
 DICT_GET_ORDERS_RESPONSE = {
@@ -129,6 +131,8 @@ DICT_GET_ORDERS_RESPONSE = {
     "total": 33,
     "page": 2,
     "pages": 4,
+    "_client": None,
+    "next": None,
 }
 
 CREATE_ORDER_RESPONSE = CreateOrderResponse(
