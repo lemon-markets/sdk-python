@@ -79,7 +79,7 @@ response = client.market_data.instruments.get(
 response = client.market_data.instruments.get(
     tradable=True,
 )
-# automatically iterate over all pages:
+# automatically iterate over all pages. auto_iter() is available on all list responses
 for instrument in response.auto_iter():
     print(instrument)
 
