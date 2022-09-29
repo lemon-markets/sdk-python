@@ -77,9 +77,12 @@ response = client.market_data.instruments.get(
     isin=["US88160R1014", "US0231351067"]
 )
 response = client.market_data.instruments.get(
-    search='t*a',
     tradable=True,
 )
+# automatically iterate over all pages. auto_iter() is available on all list responses
+for instrument in response.auto_iter():
+    print(instrument)
+
 response = client.market_data.instruments.get(
     type=['stock', 'etf'],
     currency=['EUR'],
@@ -191,6 +194,10 @@ response = client.trading.orders.get_order(order_id=order_id)
 
 # get orders
 response = client.trading.orders.get()
+
+# iterate over all orders of all pages
+for order in response.auto_iter():
+    print(order)
 
 # cancel order
 # create an order first
