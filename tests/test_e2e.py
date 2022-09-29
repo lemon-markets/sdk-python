@@ -377,3 +377,10 @@ def test_streaming_authentication_bad_token():
     with pytest.raises(APIError) as exc:
         uut.streaming.authenticate()
         assert exc.data["message"] == "invalid token"
+
+
+@pytest.mark.e2e
+def test_instrument_iteration(uut: Api):
+    response = uut.market_data.instruments.get(search="tesla", limit=1)
+    result = list(response.auto_iter())
+    assert len(result)

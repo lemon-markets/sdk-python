@@ -35,4 +35,6 @@ class Instruments:
                 "page": page,
             },
         )
-        return GetInstrumentsResponse._from_data(resp.json(), self._client)
+        return GetInstrumentsResponse._from_data(
+            dict(resp.json(), _client=self._client)
+        )

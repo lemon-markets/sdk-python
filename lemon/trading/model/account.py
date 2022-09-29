@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from typing_extensions import Literal
 
-from lemon.types import BaseModel, Environment, IterableResponseBase
+from lemon.types import BaseIterableModel, BaseModel, Environment
 
 Plan = Literal["go", "investor", "trader"]
 
@@ -62,7 +62,7 @@ class Withdrawal(BaseModel):
 
 
 @dataclass
-class GetWithdrawalsResponse(IterableResponseBase):
+class GetWithdrawalsResponse(BaseIterableModel):
     time: datetime
     mode: Environment
     results: List[Withdrawal]
@@ -104,7 +104,7 @@ class BankStatement(BaseModel):
 
 
 @dataclass
-class GetBankStatementsResponse(IterableResponseBase):
+class GetBankStatementsResponse(BaseIterableModel):
     time: datetime
     mode: Environment
     results: List[BankStatement]
@@ -125,7 +125,7 @@ class Document(BaseModel):
 
 
 @dataclass
-class GetDocumentsResponse(IterableResponseBase):
+class GetDocumentsResponse(BaseIterableModel):
     time: datetime
     mode: Environment
     results: List[Document]

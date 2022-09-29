@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Union
 
-from lemon.types import BaseModel, IterableResponseBase
+from lemon.types import BaseIterableModel, BaseModel
 
 
 @dataclass
@@ -33,7 +33,7 @@ class Quote(BaseModel):
 
 
 @dataclass
-class GetQuotesResponse(IterableResponseBase):
+class GetQuotesResponse(BaseIterableModel):
     time: datetime
     results: List[Quote]
     total: int
