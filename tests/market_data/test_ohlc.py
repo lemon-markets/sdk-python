@@ -69,6 +69,8 @@ DUMMY_RESPONSE = GetOhlcResponse(
     total=1,
     page=1,
     pages=1,
+    next=None,
+    _client=None,
 )
 
 
@@ -130,6 +132,7 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
+        DUMMY_RESPONSE._client = client.market_data
         assert (
             client.market_data.ohlc.get(period=period, **function_kwargs)
             == DUMMY_RESPONSE
@@ -204,8 +207,21 @@ class TestGetOhlcApi(CommonMarketDataApiTests):
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
 
+        DUMMY_RESPONSE._client = client.market_data
+
         assert client.market_data.ohlc.get(period="h1", isin=["XMUN"]) == DUMMY_RESPONSE
 
     def test_raise_on_invalid_input(self, client: Api):
         with pytest.raises(ValueError):
             client.market_data.ohlc.get(period="", isin=["XMUN"])  # type: ignore
+
+    def test_iterator(self, client: Api, httpserver):
+        httpserver.expect_oneshot_request(
+            "/ohlc/m1",
+            query_string="isin=XMUN",
+            method="GET",
+        ).respond_with_json(DUMMY_PAYLOAD)
+
+        results = client.market_data.ohlc.get(period="m1", isin=["XMUN"]).auto_iter()
+
+        assert list(results) == DUMMY_RESPONSE.results

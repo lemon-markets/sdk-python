@@ -61,6 +61,8 @@ DUMMY_RESPONSE = GetInstrumentsResponse(
     total=26283,
     page=2,
     pages=263,
+    next="https://data.lemon.markets/v1/instruments/?limit=100&page=3",
+    _client=None,
 )
 
 
@@ -110,6 +112,8 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
+
+        DUMMY_RESPONSE._client = client.market_data  # Note: dynamically bound a client
         assert client.market_data.instruments.get(**function_kwargs) == DUMMY_RESPONSE
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
@@ -123,4 +127,5 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
 
+        DUMMY_RESPONSE._client = client.market_data  # Note: dynamically bound a client
         assert client.market_data.instruments.get() == DUMMY_RESPONSE

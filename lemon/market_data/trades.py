@@ -36,4 +36,5 @@ class Trades:
             data=resp.json(),
             t_type=float if decimals else int,
             k_type=int if epoch else datetime.fromisoformat,  # type: ignore
+            client=self._client,
         )

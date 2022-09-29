@@ -1,7 +1,7 @@
 import json
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from datetime import date, datetime, time, timezone
-from typing import Any, Callable, Dict, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, Dict, Iterator, Optional, Tuple, Type, TypeVar, Union
 
 from typing_extensions import Literal
 
@@ -82,7 +82,9 @@ class BaseModelMeta(type):
 
         annotations = dct["__annotations__"]
         dct["_parsers"] = {
-            key: _make_parser(type_) for key, type_ in annotations.items()
+            key: _make_parser(type_)
+            for key, type_ in annotations.items()
+            if not key.startswith("_")
         }
         dct["__slots__"] = tuple(annotations.keys())
 
@@ -110,3 +112,34 @@ class BaseModel(metaclass=BaseModelMeta):
             kwargs[key] = parser(val) if val is not None else None
 
         return cls(**kwargs)
+
+
+@dataclass
+class IterableResponseBase(BaseModel):
+    next: Optional[str]
+    _client: Optional["Client"]
+
+    @classmethod
+    def _from_data(
+        cls: Type[TBaseModel], data: Dict[str, Any], client: "Client"
+    ) -> TBaseModel:
+        kwargs = {}
+
+        for key, parser in cls._parsers.items():  # type: ignore # pylint: disable=E1101
+            val = data.get(key)
+            kwargs[key] = parser(val) if val is not None else None
+
+        return cls(**kwargs, next=data.get("next"), _client=client)
+
+    def auto_iter(self) -> Iterator:
+        data = self
+        while True:
+            for el in data.results:
+                yield el
+
+            if not data.next:
+                break
+
+            data = self._from_data(
+                self._client.get(data.next).json(), client=self._client
+            )

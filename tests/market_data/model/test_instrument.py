@@ -27,6 +27,8 @@ RESPONSE = GetInstrumentsResponse(
     total=26283,
     page=2,
     pages=263,
+    next=None,
+    _client=None,
 )
 
 DICT_RESPONSE = {
@@ -54,6 +56,8 @@ DICT_RESPONSE = {
     "total": 26283,
     "page": 2,
     "pages": 263,
+    "_client": None,
+    "next": None,
 }
 
 

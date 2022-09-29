@@ -4,7 +4,7 @@ from typing import List, Optional
 
 from typing_extensions import Literal
 
-from lemon.types import BaseModel
+from lemon.types import BaseModel, IterableResponseBase
 
 
 @dataclass
@@ -32,7 +32,7 @@ class Instrument(BaseModel):
 
 
 @dataclass
-class GetInstrumentsResponse(BaseModel):
+class GetInstrumentsResponse(IterableResponseBase):
     time: datetime
     results: List[Instrument]
     total: int

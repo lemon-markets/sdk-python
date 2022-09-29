@@ -20,6 +20,8 @@ RESPONSE = GetOhlcResponse(
     total=1,
     page=1,
     pages=1,
+    _client=None,
+    next=None,
 )
 
 DICT_RESPONSE = {
@@ -40,6 +42,8 @@ DICT_RESPONSE = {
     "total": 1,
     "page": 1,
     "pages": 1,
+    "_client": None,
+    "next": None,
 }
 
 

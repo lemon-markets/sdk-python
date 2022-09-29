@@ -63,6 +63,8 @@ DUMMY_RESPONSE = GetQuotesResponse(
     total=1,
     page=1,
     pages=1,
+    _client=None,
+    next=None,
 )
 
 
@@ -107,6 +109,7 @@ class TestQuotesApi(CommonMarketDataApiTests):
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
+        DUMMY_RESPONSE._client = client.market_data
         assert client.market_data.quotes.get_latest(**function_kwargs) == DUMMY_RESPONSE
 
     def test_get_quotes_decimal_form(self, client: Api, httpserver: HTTPServer):
@@ -176,4 +179,5 @@ class TestQuotesApi(CommonMarketDataApiTests):
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
 
+        DUMMY_RESPONSE._client = client.market_data
         assert client.market_data.quotes.get_latest(isin=["XMUN"]) == DUMMY_RESPONSE

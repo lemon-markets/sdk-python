@@ -35,4 +35,4 @@ class Instruments:
                 "page": page,
             },
         )
-        return GetInstrumentsResponse._from_data(resp.json())
+        return GetInstrumentsResponse._from_data(resp.json(), self._client)
