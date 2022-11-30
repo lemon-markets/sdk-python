@@ -143,7 +143,9 @@ After that we will simply get all the quote updates through the on_message callb
 
 ```python
 from lemon import api
+from lemon.market_data.model import Quote
 import paho.mqtt.client as mqtt
+import json
 
 client = api.create(...)
 
