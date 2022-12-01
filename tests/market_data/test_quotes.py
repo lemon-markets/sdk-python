@@ -79,16 +79,16 @@ class TestQuotesApi(CommonMarketDataApiTests):
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
         [
-            ({"isin": ["XMUN"]}, "isin=XMUN"),
-            ({"isin": ["XMUN"], "mic": "XMUN"}, "isin=XMUN&mic=XMUN"),
-            ({"isin": ["XMUN"], "decimals": False}, "isin=XMUN&decimals=False"),
-            ({"isin": ["XMUN"], "epoch": False}, "isin=XMUN&epoch=False"),
-            ({"isin": ["XMUN"], "sorting": "asc"}, "isin=XMUN&sorting=asc"),
-            ({"isin": ["XMUN"], "limit": 100}, "isin=XMUN&limit=100"),
-            ({"isin": ["XMUN"], "page": 3}, "isin=XMUN&page=3"),
+            ({"isin": ["A"]}, "isin=A"),
+            ({"isin": ["A"], "mic": "XMUN"}, "isin=A&mic=XMUN"),
+            ({"isin": ["A"], "decimals": False}, "isin=A&decimals=False"),
+            ({"isin": ["A"], "epoch": False}, "isin=A&epoch=False"),
+            ({"isin": ["A"], "sorting": "asc"}, "isin=A&sorting=asc"),
+            ({"isin": ["A"], "limit": 100}, "isin=A&limit=100"),
+            ({"isin": ["A"], "page": 3}, "isin=A&page=3"),
             (
                 {
-                    "isin": ["XMUN"],
+                    "isin": ["A"],
                     "mic": "XMUN",
                     "decimals": False,
                     "epoch": False,
@@ -96,7 +96,7 @@ class TestQuotesApi(CommonMarketDataApiTests):
                     "limit": 100,
                     "page": 3,
                 },
-                "isin=XMUN&mic=XMUN&decimals=False&"
+                "isin=A&mic=XMUN&decimals=False&"
                 "epoch=False&sorting=asc&limit=100&page=3",
             ),
         ],
