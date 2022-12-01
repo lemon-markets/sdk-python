@@ -71,6 +71,7 @@ DUMMY_RESPONSE = GetOhlcResponse(
     pages=1,
     next=None,
     _client=None,
+    _headers=None,
 )
 
 

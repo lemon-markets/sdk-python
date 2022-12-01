@@ -66,6 +66,7 @@ DUMMY_RESPONSE = GetQuotesResponse(
     page=1,
     pages=1,
     _client=None,
+    _headers=None,
     next=None,
 )
 

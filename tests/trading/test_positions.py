@@ -101,6 +101,7 @@ DUMMY_POSITIONS_RESPONSE = GetPositionsResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next="https://paper-trading.lemon.markets/v1/positions/?limit=10&page=3",
 )
 
@@ -124,6 +125,7 @@ DUMMY_STATEMENTS_RESPONSE = GetStatementsResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next="https://paper-trading.lemon.markets/v1/positions/statements?limit=10&page=3",
 )
 
@@ -148,6 +150,7 @@ DUMMY_PERFORMANCE_RESPONSE = GetPerformanceResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next="https://trading.lemon.markets/v1/positions/performance?limit=10&page=3",
 )
 

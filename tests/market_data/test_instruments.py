@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest import mock
 
 import pytest
 from pytest_httpserver import HTTPServer
@@ -63,6 +64,18 @@ DUMMY_RESPONSE = GetInstrumentsResponse(
     pages=263,
     next="https://data.lemon.markets/v1/instruments/?limit=100&page=3",
     _client=None,
+    _headers=None,
+)
+
+EMPTY_RESPONSE = GetInstrumentsResponse(
+    time=mock.ANY,
+    results=[],
+    total=0,
+    page=0,
+    pages=0,
+    next=None,
+    _client=mock.ANY,
+    _headers=None,
 )
 
 
@@ -129,3 +142,10 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
 
         DUMMY_RESPONSE._client = client.market_data  # Note: dynamically bound a client
         assert client.market_data.instruments.get() == DUMMY_RESPONSE
+
+    def test_return_empty_list_on_304(self, client: Api, httpserver: HTTPServer):
+        httpserver.expect_oneshot_request(
+            "/instruments",
+            method="GET",
+        ).respond_with_data(status=304)
+        assert client.market_data.instruments.get() == EMPTY_RESPONSE

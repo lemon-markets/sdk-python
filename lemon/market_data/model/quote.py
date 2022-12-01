@@ -56,5 +56,6 @@ class GetQuotesResponse(BaseIterableModel):
             page=int(data["page"]),
             pages=int(data["pages"]),
             _client=client,
+            _headers=None,
             next=data["next"],
         )

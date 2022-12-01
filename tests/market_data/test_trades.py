@@ -64,6 +64,7 @@ DUMMY_RESPONSE = GetTradesResponse(
     pages=1,
     next=None,
     _client=None,
+    _headers=None,
 )
 
 
