@@ -91,22 +91,22 @@ class BaseTradeTests(CommonMarketDataApiTests):
             ({"isin": ["A"], "limit": 100}, "isin=A&limit=100"),
             ({"isin": ["A"], "page": 3}, "isin=A&page=3"),
             (
-                    {
-                        "isin": ["A"],
-                        "mic": "XMUN",
-                        "decimals": False,
-                        "epoch": False,
-                        "sorting": "asc",
-                        "limit": 100,
-                        "page": 3,
-                    },
-                    "isin=A&mic=XMUN&decimals=False&"
-                    "epoch=False&sorting=asc&limit=100&page=3",
+                {
+                    "isin": ["A"],
+                    "mic": "XMUN",
+                    "decimals": False,
+                    "epoch": False,
+                    "sorting": "asc",
+                    "limit": 100,
+                    "page": 3,
+                },
+                "isin=A&mic=XMUN&decimals=False&"
+                "epoch=False&sorting=asc&limit=100&page=3",
             ),
         ],
     )
     def test_get_trades(
-            self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
         httpserver.expect_oneshot_request(
             self.uri,
@@ -203,13 +203,13 @@ class TestGetTrades(BaseTradeTests):
     @pytest.mark.parametrize(
         "function_kwargs,query_params",
         [
-            ({'isin': ['A'], 'from_': DT}, {'isin': 'A', 'from': DT}),
-            ({"isin": ['A'], 'to': DT}, {'isin': 'A', 'to': DT}),
-            ({"isin": ['A'], 'to': 2}, {'isin': 'A', 'to': 'P2D'}),
+            ({"isin": ["A"], "from_": DT}, {"isin": "A", "from": DT}),
+            ({"isin": ["A"], "to": DT}, {"isin": "A", "to": DT}),
+            ({"isin": ["A"], "to": 2}, {"isin": "A", "to": "P2D"}),
         ],
     )
     def test_getting_trades_range(
-            self, client: Api, httpserver: HTTPServer, function_kwargs, query_params
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_params
     ):
         httpserver.expect_oneshot_request(
             self.uri,

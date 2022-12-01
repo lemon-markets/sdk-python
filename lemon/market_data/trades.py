@@ -1,8 +1,6 @@
 from datetime import datetime
 from typing import List, Optional, Union
 
-from typing_extensions import Literal
-
 from lemon.base import Client
 from lemon.market_data.model import GetTradesResponse
 from lemon.types import Days, Sorting
