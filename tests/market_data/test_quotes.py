@@ -83,16 +83,16 @@ class BaseQuotesAPITests(CommonMarketDataApiTests):
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
         [
-            ({"isin": "A"}, "isin=A"),
-            ({"isin": "A", "mic": "XMUN"}, "isin=A&mic=XMUN"),
-            ({"isin": "A", "decimals": False}, "isin=A&decimals=False"),
-            ({"isin": "A", "epoch": False}, "isin=A&epoch=False"),
-            ({"isin": "A", "sorting": "asc"}, "isin=A&sorting=asc"),
-            ({"isin": "A", "limit": 100}, "isin=A&limit=100"),
-            ({"isin": "A", "page": 3}, "isin=A&page=3"),
+            ({"isin": ["A"]}, "isin=A"),
+            ({"isin": ["A"], "mic": "XMUN"}, "isin=A&mic=XMUN"),
+            ({"isin": ["A"], "decimals": False}, "isin=A&decimals=False"),
+            ({"isin": ["A"], "epoch": False}, "isin=A&epoch=False"),
+            ({"isin": ["A"], "sorting": "asc"}, "isin=A&sorting=asc"),
+            ({"isin": ["A"], "limit": 100}, "isin=A&limit=100"),
+            ({"isin": ["A"], "page": 3}, "isin=A&page=3"),
             (
                 {
-                    "isin": "A",
+                    "isin": ["A"],
                     "mic": "XMUN",
                     "decimals": False,
                     "epoch": False,
@@ -196,7 +196,7 @@ class TestGetQuotes(BaseQuotesAPITests):
         return "/quotes"
 
     def make_api_call(self, client: Api, **kwargs):
-        data = {"isin": ["A"]}
+        data = {"isin": "A"}
         data.update(kwargs)
         return client.market_data.quotes.get(**data)
 
