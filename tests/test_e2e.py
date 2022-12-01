@@ -432,3 +432,13 @@ def test_instrument_iteration(uut: Api):
     response = uut.market_data.instruments.get(search="tesla", limit=1)
     result = list(response.auto_iter())
     assert len(result)
+
+
+@pytest.mark.e2e
+def test_instrument_if_modified_since(uut: Api):
+    response = uut.market_data.instruments.get(
+        modified_since=datetime.now(tz=timezone.utc)
+    )
+    assert response._headers
+    assert not response.results
+    assert not list(response.auto_iter())

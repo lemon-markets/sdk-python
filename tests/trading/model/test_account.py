@@ -108,6 +108,7 @@ GET_WITHDRAWLS_RESPONSE = GetWithdrawalsResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next=None,
 )
 
@@ -127,6 +128,7 @@ DICT_GET_WITHDRAWLS_RESPONSE = {
     "page": 2,
     "pages": 4,
     "_client": None,
+    "_headers": None,
     "next": None,
 }
 
@@ -160,6 +162,7 @@ GET_BANK_STATEMENTS_RESPONSE = GetBankStatementsResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next=None,
 )
 
@@ -183,6 +186,7 @@ DICT_GET_BANK_STATEMENTS_RESPONSE = {
     "page": 2,
     "pages": 4,
     "_client": None,
+    "_headers": None,
     "next": None,
 }
 
@@ -204,6 +208,7 @@ GET_DOCUMENTS_RESPONSE = GetDocumentsResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next=None,
 )
 
@@ -225,6 +230,7 @@ DICT_GET_DOCUMENTS_RESPONSE = {
     "page": 2,
     "pages": 4,
     "_client": None,
+    "_headers": None,
     "next": None,
 }
 

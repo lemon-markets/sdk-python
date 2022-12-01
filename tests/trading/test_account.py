@@ -193,6 +193,7 @@ DUMMY_WITHDRAWLS_RESPONSE = GetWithdrawalsResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next="https://paper-trading.lemon.markets/v1/account/withdrawals/?limit=2&page=3",
 )
 
@@ -221,6 +222,7 @@ DUMMY_BANKSTATEMENTS_RESPONSE = GetBankStatementsResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next=None,
 )
 
@@ -242,6 +244,7 @@ DUMMY_GET_DOCUMENTS_RESPONSE = GetDocumentsResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next="https://paper-trading.lemon.markets/v1/account/documents/?limit=2&page=3",
 )
 

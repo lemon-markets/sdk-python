@@ -70,6 +70,7 @@ GET_ORDERS_RESPONSE = GetOrdersResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next=None,
 )
 
@@ -132,6 +133,7 @@ DICT_GET_ORDERS_RESPONSE = {
     "page": 2,
     "pages": 4,
     "_client": None,
+    "_headers": None,
     "next": None,
 }
 

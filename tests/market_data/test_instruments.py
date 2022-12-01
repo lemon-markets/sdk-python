@@ -63,6 +63,7 @@ DUMMY_RESPONSE = GetInstrumentsResponse(
     pages=263,
     next="https://data.lemon.markets/v1/instruments/?limit=100&page=3",
     _client=None,
+    _headers=None,
 )
 
 
