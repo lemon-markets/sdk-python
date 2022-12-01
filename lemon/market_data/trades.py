@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List, Optional, Union
+
 from typing_extensions import Literal
 
 from lemon.base import Client
@@ -53,7 +54,7 @@ class Trades:
         page: Optional[int] = None,
     ):
         resp = self._client.get(
-            "quotes",
+            "trades",
             params={
                 "isin": isin,
                 "mic": mic,

@@ -1,3 +1,4 @@
+import abc
 from typing import Dict, Generator
 
 import pytest
@@ -82,8 +83,9 @@ def client(
 
 
 class CommonApiTests:
-    def make_api_call(self, client: Api) -> None:
-        pass
+    @abc.abstractmethod
+    def make_api_call(self, client: Api, **params) -> None:
+        ...
 
     def test_handle_unauthorized_error(
         self, client: Api, httpserver: HTTPServer, api_call_kwargs

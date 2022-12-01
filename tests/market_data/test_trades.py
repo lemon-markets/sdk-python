@@ -1,3 +1,4 @@
+import abc
 from datetime import datetime
 
 import pytest
@@ -65,27 +66,32 @@ DUMMY_RESPONSE = GetTradesResponse(
 )
 
 
-class TestTradesApi(CommonMarketDataApiTests):
-    def make_api_call(self, client: Api):
-        return client.market_data.trades.get_latest(isin=["XMUN"])
+class BaseTradeTests(CommonMarketDataApiTests):
+    @property
+    @abc.abstractmethod
+    def uri(self):
+        """
+        Base endpoint URI
+        """
+        ...
 
     @pytest.fixture
     def api_call_kwargs(self):
-        return {"uri": "/trades/latest", "method": "GET", "query_string": "isin=XMUN"}
+        return {"uri": self.uri, "method": "GET", "query_string": "isin=A"}
 
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
         [
-            ({"isin": ["XMUN"]}, "isin=XMUN"),
-            ({"isin": ["XMUN"], "mic": "XMUN"}, "isin=XMUN&mic=XMUN"),
-            ({"isin": ["XMUN"], "decimals": False}, "isin=XMUN&decimals=False"),
-            ({"isin": ["XMUN"], "epoch": False}, "isin=XMUN&epoch=False"),
-            ({"isin": ["XMUN"], "sorting": "asc"}, "isin=XMUN&sorting=asc"),
-            ({"isin": ["XMUN"], "limit": 100}, "isin=XMUN&limit=100"),
-            ({"isin": ["XMUN"], "page": 3}, "isin=XMUN&page=3"),
+            ({"isin": ["A"]}, "isin=A"),
+            ({"isin": ["A"], "mic": "XMUN"}, "isin=A&mic=XMUN"),
+            ({"isin": ["A"], "decimals": False}, "isin=A&decimals=False"),
+            ({"isin": ["A"], "epoch": False}, "isin=A&epoch=False"),
+            ({"isin": ["A"], "sorting": "asc"}, "isin=A&sorting=asc"),
+            ({"isin": ["A"], "limit": 100}, "isin=A&limit=100"),
+            ({"isin": ["A"], "page": 3}, "isin=A&page=3"),
             (
                 {
-                    "isin": ["XMUN"],
+                    "isin": ["A"],
                     "mic": "XMUN",
                     "decimals": False,
                     "epoch": False,
@@ -93,7 +99,7 @@ class TestTradesApi(CommonMarketDataApiTests):
                     "limit": 100,
                     "page": 3,
                 },
-                "isin=XMUN&mic=XMUN&decimals=False&"
+                "isin=A&mic=XMUN&decimals=False&"
                 "epoch=False&sorting=asc&limit=100&page=3",
             ),
         ],
@@ -102,82 +108,93 @@ class TestTradesApi(CommonMarketDataApiTests):
         self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
         httpserver.expect_oneshot_request(
-            "/trades/latest",
+            self.uri,
             query_string=query_string,
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
 
         DUMMY_RESPONSE._client = client.market_data
-
-        assert client.market_data.trades.get_latest(**function_kwargs) == DUMMY_RESPONSE
+        assert self.make_api_call(client, **function_kwargs) == DUMMY_RESPONSE
 
     def test_get_trades_decimal_form(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
-            "/trades/latest",
-            query_string="isin=XMUN&decimals=True",
+            self.uri,
+            query_string="isin=A&decimals=True",
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
 
-        trade = client.market_data.trades.get_latest(
-            isin=["XMUN"], decimals=True
-        ).results[0]
-
+        trade = self.make_api_call(client, decimals=True).results[0]
         assert isinstance(trade.p, float)
         assert isinstance(trade.pbv, float)
 
     def test_get_trades_non_decimal_form(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
-            "/trades/latest",
-            query_string="isin=XMUN&decimals=False",
+            self.uri,
+            query_string="isin=A&decimals=False",
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
 
-        trade = client.market_data.trades.get_latest(
-            isin=["XMUN"], decimals=False
-        ).results[0]
-
+        trade = self.make_api_call(client, decimals=False).results[0]
         assert isinstance(trade.p, int)
         assert isinstance(trade.pbv, int)
 
     def test_get_trades_epoch_form(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
-            "/trades/latest",
-            query_string="isin=XMUN&epoch=True",
+            self.uri,
+            query_string="isin=A&epoch=True",
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD_WITH_EPOCH)
 
-        trade = client.market_data.trades.get_latest(isin=["XMUN"], epoch=True).results[
-            0
-        ]
-
+        trade = self.make_api_call(client, epoch=True).results[0]
         assert isinstance(trade.t, int)
 
     def test_get_trades_non_epoch_form(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
-            "/trades/latest",
-            query_string="isin=XMUN&epoch=False",
+            self.uri,
+            query_string="isin=A&epoch=False",
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
 
-        trade = client.market_data.trades.get_latest(
-            isin=["XMUN"], epoch=False
-        ).results[0]
-
+        trade = self.make_api_call(client, epoch=False).results[0]
         assert isinstance(trade.t, datetime)
 
     def test_retry_on_error(self, client: Api, httpserver: HTTPServer):
         httpserver.expect_oneshot_request(
-            "/trades/latest",
-            query_string="isin=XMUN",
+            self.uri,
+            query_string="isin=A",
             method="GET",
         ).respond_with_data(status=500)
 
         httpserver.expect_oneshot_request(
-            "/trades/latest",
-            query_string="isin=XMUN",
+            self.uri,
+            query_string="isin=A",
             method="GET",
         ).respond_with_json(DUMMY_PAYLOAD)
 
         DUMMY_RESPONSE._client = client.market_data
+        assert self.make_api_call(client) == DUMMY_RESPONSE
 
-        assert client.market_data.trades.get_latest(isin=["XMUN"]) == DUMMY_RESPONSE
+
+class TestGetLatestTrades(BaseTradeTests):
+    @property
+    def uri(self):
+        return "/trades/latest"
+
+    def make_api_call(self, client: Api, **params):
+        data = {"isin": ["A"]}
+        data.update(params)
+        return client.market_data.trades.get_latest(**data)
+
+
+class TestGetTrades(BaseTradeTests):
+    @property
+    def uri(self):
+        return "/trades"
+
+    def make_api_call(self, client: Api, **params):
+        data = {"isin": ["A"]}
+        data.update(params)
+        return client.market_data.trades.get(**data)
+
+    def test_getting_trade_ranges(self, client: Api):
+        pass
