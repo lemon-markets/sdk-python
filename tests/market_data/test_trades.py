@@ -1,5 +1,6 @@
 import abc
-from datetime import datetime
+from datetime import datetime, timezone
+from urllib.parse import urlencode
 
 import pytest
 from pytest_httpserver import HTTPServer
@@ -90,22 +91,22 @@ class BaseTradeTests(CommonMarketDataApiTests):
             ({"isin": ["A"], "limit": 100}, "isin=A&limit=100"),
             ({"isin": ["A"], "page": 3}, "isin=A&page=3"),
             (
-                {
-                    "isin": ["A"],
-                    "mic": "XMUN",
-                    "decimals": False,
-                    "epoch": False,
-                    "sorting": "asc",
-                    "limit": 100,
-                    "page": 3,
-                },
-                "isin=A&mic=XMUN&decimals=False&"
-                "epoch=False&sorting=asc&limit=100&page=3",
+                    {
+                        "isin": ["A"],
+                        "mic": "XMUN",
+                        "decimals": False,
+                        "epoch": False,
+                        "sorting": "asc",
+                        "limit": 100,
+                        "page": 3,
+                    },
+                    "isin=A&mic=XMUN&decimals=False&"
+                    "epoch=False&sorting=asc&limit=100&page=3",
             ),
         ],
     )
     def test_get_trades(
-        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+            self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
         httpserver.expect_oneshot_request(
             self.uri,
@@ -186,6 +187,9 @@ class TestGetLatestTrades(BaseTradeTests):
         return client.market_data.trades.get_latest(**data)
 
 
+DT = datetime(2001, 2, 3, 4, 5, 6, tzinfo=timezone.utc)
+
+
 class TestGetTrades(BaseTradeTests):
     @property
     def uri(self):
@@ -196,5 +200,22 @@ class TestGetTrades(BaseTradeTests):
         data.update(params)
         return client.market_data.trades.get(**data)
 
-    def test_getting_trade_ranges(self, client: Api):
-        pass
+    @pytest.mark.parametrize(
+        "function_kwargs,query_params",
+        [
+            ({'isin': ['A'], 'from_': DT}, {'isin': 'A', 'from': DT}),
+            ({"isin": ['A'], 'to': DT}, {'isin': 'A', 'to': DT}),
+            ({"isin": ['A'], 'to': 2}, {'isin': 'A', 'to': 'P2D'}),
+        ],
+    )
+    def test_getting_trades_range(
+            self, client: Api, httpserver: HTTPServer, function_kwargs, query_params
+    ):
+        httpserver.expect_oneshot_request(
+            self.uri,
+            query_string=urlencode(query_params),
+            method="GET",
+        ).respond_with_json(DUMMY_PAYLOAD)
+
+        DUMMY_RESPONSE._client = client.market_data
+        assert self.make_api_call(client, **function_kwargs) == DUMMY_RESPONSE

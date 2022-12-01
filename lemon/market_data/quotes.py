@@ -45,7 +45,7 @@ class Quotes:
         self,
         isin: List[str],
         mic: Optional[str] = None,
-        from_: Optional[Union[datetime, Literal["latest"]]] = None,
+        from_: Optional[datetime] = None,
         to: Optional[Union[datetime, Days]] = None,
         decimals: Optional[bool] = None,
         epoch: Optional[bool] = None,
