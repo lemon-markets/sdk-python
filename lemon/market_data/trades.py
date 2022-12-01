@@ -41,7 +41,7 @@ class Trades:
 
     def get(
         self,
-        isin: List[str],
+        isin: str,
         mic: Optional[str] = None,
         from_: Optional[datetime] = None,
         to: Optional[Union[datetime, Days]] = None,

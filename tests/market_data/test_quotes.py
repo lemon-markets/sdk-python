@@ -83,16 +83,16 @@ class BaseQuotesAPITests(CommonMarketDataApiTests):
     @pytest.mark.parametrize(
         "function_kwargs,query_string",
         [
-            ({"isin": ["A"]}, "isin=A"),
-            ({"isin": ["A"], "mic": "XMUN"}, "isin=A&mic=XMUN"),
-            ({"isin": ["A"], "decimals": False}, "isin=A&decimals=False"),
-            ({"isin": ["A"], "epoch": False}, "isin=A&epoch=False"),
-            ({"isin": ["A"], "sorting": "asc"}, "isin=A&sorting=asc"),
-            ({"isin": ["A"], "limit": 100}, "isin=A&limit=100"),
-            ({"isin": ["A"], "page": 3}, "isin=A&page=3"),
+            ({"isin": "A"}, "isin=A"),
+            ({"isin": "A", "mic": "XMUN"}, "isin=A&mic=XMUN"),
+            ({"isin": "A", "decimals": False}, "isin=A&decimals=False"),
+            ({"isin": "A", "epoch": False}, "isin=A&epoch=False"),
+            ({"isin": "A", "sorting": "asc"}, "isin=A&sorting=asc"),
+            ({"isin": "A", "limit": 100}, "isin=A&limit=100"),
+            ({"isin": "A", "page": 3}, "isin=A&page=3"),
             (
                 {
-                    "isin": ["A"],
+                    "isin": "A",
                     "mic": "XMUN",
                     "decimals": False,
                     "epoch": False,
@@ -203,9 +203,9 @@ class TestGetQuotes(BaseQuotesAPITests):
     @pytest.mark.parametrize(
         "function_kwargs,query_params",
         [
-            ({"isin": ["A"], "from_": DT}, {"isin": "A", "from": DT}),
-            ({"isin": ["A"], "to": DT}, {"isin": "A", "to": DT}),
-            ({"isin": ["A"], "to": 2}, {"isin": "A", "to": "P2D"}),
+            ({"isin": "A", "from_": DT}, {"isin": "A", "from": DT}),
+            ({"isin": "A", "to": DT}, {"isin": "A", "to": DT}),
+            ({"isin": "A", "to": 2}, {"isin": "A", "to": "P2D"}),
         ],
     )
     def test_getting_quotes_range(

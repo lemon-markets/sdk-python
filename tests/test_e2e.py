@@ -225,7 +225,7 @@ def test_quotes_by_epoch(uut: Api):
 @pytest.mark.e2e
 def test_get_historical_quotes(uut: Api):
     response = uut.market_data.quotes.get(
-        isin=["US88160R1014"], from_=datetime(2022, 10, 5, tzinfo=timezone.utc), to=1
+        isin="US88160R1014", from_=datetime(2022, 10, 5, tzinfo=timezone.utc), to=1
     )
     assert len(response.results) == 100
 
@@ -234,7 +234,7 @@ def test_get_historical_quotes(uut: Api):
 def test_get_historical_quotes_invalid_range(uut: Api):
     with pytest.raises(InvalidQueryError):
         uut.market_data.quotes.get(
-            isin=["US88160R1014"],
+            isin="US88160R1014",
             from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
             to=2,
         )
@@ -271,7 +271,7 @@ def test_trades_by_epoch(uut: Api):
 @pytest.mark.e2e
 def test_get_historical_trades(uut: Api):
     response = uut.market_data.trades.get(
-        isin=["US88160R1014"], from_=datetime(2022, 10, 5, tzinfo=timezone.utc), to=1
+        isin="US88160R1014", from_=datetime(2022, 10, 5, tzinfo=timezone.utc), to=1
     )
     assert len(response.results) == 100
 
@@ -280,7 +280,7 @@ def test_get_historical_trades(uut: Api):
 def test_get_historical_trades_invalid_range(uut: Api):
     with pytest.raises(InvalidQueryError):
         uut.market_data.trades.get(
-            isin=["US88160R1014"],
+            isin="US88160R1014",
             from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
             to=700,
         )
