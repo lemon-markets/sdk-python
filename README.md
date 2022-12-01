@@ -136,7 +136,7 @@ This example relies on that you have both this SDK installed as well as paho-mqt
 Below is an example usage of live streaming quotes through alby mqtt broker using paho mqtt client.
 When connecting to the broker the on_connect callback will be triggered.
 This in return will trigger the on_subscribe callback where we can let the broker know what ISINS we are interested in
-There is a limitation to only have 4 channels connected at once. 
+There is a limitation to only have 4 channels connected at once.
 You may be able to create more than 4 channels - however we then may close any one of them at any time.
 
 After that we will simply get all the quote updates through the on_message callback.
@@ -204,8 +204,8 @@ for order in response.auto_iter():
 # cancel order
 # create an order first
 response = client.trading.orders.create(
-    isin='US88160R1014', 
-    side='buy', 
+    isin='US88160R1014',
+    side='buy',
     quantity=1,
 )
 # cancel the order via order_id
@@ -250,7 +250,7 @@ response = client.trading.positions.get_performance()
 
 ### Direct API calls
 
-It is possible to call Market Data API/Trading API endpoints directly by providing path to the endpoint 
+It is possible to call Market Data API/Trading API endpoints directly by providing path to the endpoint
 and optionally - query parameters and payload to be sent.  SDK currently supports `GET|POST|PUT|DELETE` methods.
 
 ```python
@@ -322,5 +322,3 @@ print(response.json())
 print(response.results[0].dict())
 print(response.results[0].json())
 ```
-
-

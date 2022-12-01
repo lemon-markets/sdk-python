@@ -1,12 +1,4 @@
 repos:
-  - repo: local
-    hooks:
-      - id: generate-openapi
-        name: generate-openapi
-        types: [ python ]
-        language: system
-        entry: pipenv run python export_openapi.py
-        exclude: "!(api/)"
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0
     hooks:
