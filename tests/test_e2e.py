@@ -231,6 +231,12 @@ def test_get_historical_quotes(uut: Api):
 
 
 @pytest.mark.e2e
+def test_get_historical_quotes_as_get_latest(uut: Api):
+    response = uut.market_data.quotes.get(isin="US88160R1014")
+    assert len(response.results) == 1
+
+
+@pytest.mark.e2e
 def test_get_historical_quotes_invalid_range(uut: Api):
     with pytest.raises(InvalidQueryError):
         uut.market_data.quotes.get(
@@ -274,6 +280,12 @@ def test_get_historical_trades(uut: Api):
         isin="US88160R1014", from_=datetime(2022, 10, 5, tzinfo=timezone.utc), to=1
     )
     assert len(response.results) == 100
+
+
+@pytest.mark.e2e
+def test_get_historical_trades_as_get_latest(uut: Api):
+    response = uut.market_data.trades.get(isin="US88160R1014")
+    assert len(response.results) == 1
 
 
 @pytest.mark.e2e

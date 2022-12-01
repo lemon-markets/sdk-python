@@ -61,7 +61,7 @@ The SDK client consists of three parts:
 
 ```python
 from lemon import api
-from datetime import datetime
+from datetime import datetime, timezone
 
 client = api.create(
     market_data_api_token='your-market-data-api-token',
@@ -113,11 +113,51 @@ response = client.market_data.quotes.get_latest(
     sorting='asc'
 )
 
+# get historical quotes
+# for period <timestamp, timestamp + 1 day)
+response = client.market_data.quotes.get(
+    isin="US88160R1014",
+    from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
+)
+# for period <timestamp - 1 day, timestamp)
+response = client.market_data.quotes.get(
+    isin="US88160R1014",
+    to=datetime(2022, 10, 5, tzinfo=timezone.utc),
+)
+# for specific period <from, to) - timedelta has to be <= 1 day
+response = client.market_data.quotes.get(
+    isin="US88160R1014",
+    from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
+    to=datetime(2022, 10, 5, 15,  tzinfo=timezone.utc),
+)
+# if you don't provide from/to - endpoint works the same as 'client.market_data.quotes.get_latest'
+response = client.market_data.quotes.get(isin="US88160R1014")
+
 # get trades
 response = client.market_data.trades.get_latest(
     isin=['US88160R1014', 'US0231351067'],
     decimals=True
 )
+
+# get historical trades
+# for period <timestamp, timestamp + 1 day)
+response = client.market_data.trades.get(
+    isin="US88160R1014",
+    from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
+)
+# for period <timestamp - 1 day, timestamp)
+response = client.market_data.trades.get(
+    isin="US88160R1014",
+    to=datetime(2022, 10, 5, tzinfo=timezone.utc),
+)
+# for specific period <from, to) - timedelta has to be <= 1 day
+response = client.market_data.trades.get(
+    isin="US88160R1014",
+    from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
+    to=datetime(2022, 10, 5, 15,  tzinfo=timezone.utc),
+)
+# if you don't provide from/to - endpoint works the same as 'client.market_data.trades.get_latest'
+response = client.market_data.trades.get(isin="US88160R1014")
 ```
 
 ### Streaming API Usage
