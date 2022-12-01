@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.3.0] - 2022-12-01
+### Added:
+- access historical quotes/trades endpoints
+- filtering instruments updated since a specific point in time
+
 ## [1.2.0] - 2022-09-29
 ### Added:
 - `auto_iter()` on list responses to automatically iterate through the pages of the response.This method respects by default the rate limits.
