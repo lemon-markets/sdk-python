@@ -148,6 +148,4 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
             "/instruments",
             method="GET",
         ).respond_with_data(status=304)
-
-        DUMMY_RESPONSE._client = client.market_data  # Note: dynamically bound a client
         assert client.market_data.instruments.get() == EMPTY_RESPONSE
