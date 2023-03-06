@@ -149,3 +149,12 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
             method="GET",
         ).respond_with_data(status=304)
         assert client.market_data.instruments.get() == EMPTY_RESPONSE
+
+    def test_json_property(self, httpserver, client: Api):
+        httpserver.expect_oneshot_request(
+            "/instruments",
+            method="GET",
+        ).respond_with_json(DUMMY_PAYLOAD)
+
+        response = client.market_data.instruments.get()
+        assert isinstance(response.json(), str)

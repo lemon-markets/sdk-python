@@ -149,3 +149,9 @@ class BaseIterableModel(BaseModel):
 
             response = self._client.get(data.next, headers=headers).json()
             data = self._from_data(response)
+
+    def json(self) -> str:
+        dict_ = self.dict()
+        # Client cannot be converted, but is necessary for auto iterator util.
+        dict_.pop("_client")
+        return json.dumps(dict_, cls=JSONEncoder)
