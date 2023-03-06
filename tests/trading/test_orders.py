@@ -73,7 +73,7 @@ DUMMY_ORDERS_PAYLOAD = {
         }
     ],
     "previous": "https://paper-trading.lemon.markets/v1/orders/?limit=10&page=1",
-    "next": "https://paper-trading.lemon.markets/v1/orders/?limit=10&page=3",
+    "t": "https://paper-trading.lemon.markets/v1/orders/?limit=10&page=3",
     "total": 33,
     "page": 2,
     "pages": 4,

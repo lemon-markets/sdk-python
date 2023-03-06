@@ -1,5 +1,5 @@
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import date, datetime, time, timezone
 from typing import Any, Callable, Dict, Iterator, Optional, Tuple, Type, TypeVar, Union
 
@@ -147,3 +147,10 @@ class BaseIterableModel(BaseModel):
 
             response = self._client.get(data.next).json()
             data = self._from_data(response)
+
+
+    def json(self) -> str:
+        dict_ = self.dict()
+        # Client cannot be converted, but is necessary for auto iterator util.
+        dict_.pop('_client')
+        return  json.dumps(dict_, cls=JSONEncoder)
