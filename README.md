@@ -1,7 +1,7 @@
 # lemon.markets Python SDK
 
 [![License](https://img.shields.io/github/license/lemon-markets/sdk-python)](./LICENSE)
-[![Tests](https://img.shields.io/github/workflow/status/lemon-markets/sdk-python/tests/main?label=tests)](https://github.com/lemon-markets/sdk-python/actions)
+[![Tests](https://github.com/lemon-markets/sdk-python/actions/workflows/tests.yml/badge.svg)](https://github.com/lemon-markets/sdk-python/actions/workflows/tests.yml)
 [![Python versions](https://img.shields.io/pypi/pyversions/lemon.svg)](https://pypi.python.org/pypi/lemon/)
 [![PyPI](https://img.shields.io/pypi/v/lemon)](https://pypi.python.org/pypi/lemon/)
 
@@ -61,7 +61,7 @@ The SDK client consists of three parts:
 
 ```python
 from lemon import api
-from datetime import datetime
+from datetime import datetime, timezone
 
 client = api.create(
     market_data_api_token='your-market-data-api-token',
@@ -113,11 +113,51 @@ response = client.market_data.quotes.get_latest(
     sorting='asc'
 )
 
+# get historical quotes
+# for period <timestamp, timestamp + 1 day)
+response = client.market_data.quotes.get(
+    isin="US88160R1014",
+    from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
+)
+# for period <timestamp - 1 day, timestamp)
+response = client.market_data.quotes.get(
+    isin="US88160R1014",
+    to=datetime(2022, 10, 5, tzinfo=timezone.utc),
+)
+# for specific period <from, to) - timedelta has to be <= 1 day
+response = client.market_data.quotes.get(
+    isin="US88160R1014",
+    from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
+    to=datetime(2022, 10, 5, 15,  tzinfo=timezone.utc),
+)
+# if you don't provide from/to - endpoint works the same as 'client.market_data.quotes.get_latest'
+response = client.market_data.quotes.get(isin="US88160R1014")
+
 # get trades
 response = client.market_data.trades.get_latest(
     isin=['US88160R1014', 'US0231351067'],
     decimals=True
 )
+
+# get historical trades
+# for period <timestamp, timestamp + 1 day)
+response = client.market_data.trades.get(
+    isin="US88160R1014",
+    from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
+)
+# for period <timestamp - 1 day, timestamp)
+response = client.market_data.trades.get(
+    isin="US88160R1014",
+    to=datetime(2022, 10, 5, tzinfo=timezone.utc),
+)
+# for specific period <from, to) - timedelta has to be <= 1 day
+response = client.market_data.trades.get(
+    isin="US88160R1014",
+    from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
+    to=datetime(2022, 10, 5, 15,  tzinfo=timezone.utc),
+)
+# if you don't provide from/to - endpoint works the same as 'client.market_data.trades.get_latest'
+response = client.market_data.trades.get(isin="US88160R1014")
 ```
 
 ### Streaming API Usage
@@ -136,14 +176,16 @@ This example relies on that you have both this SDK installed as well as paho-mqt
 Below is an example usage of live streaming quotes through alby mqtt broker using paho mqtt client.
 When connecting to the broker the on_connect callback will be triggered.
 This in return will trigger the on_subscribe callback where we can let the broker know what ISINS we are interested in
-There is a limitation to only have 4 channels connected at once. 
+There is a limitation to only have 4 channels connected at once.
 You may be able to create more than 4 channels - however we then may close any one of them at any time.
 
 After that we will simply get all the quote updates through the on_message callback.
 
 ```python
 from lemon import api
+from lemon.market_data.model import Quote
 import paho.mqtt.client as mqtt
+import json
 
 client = api.create(...)
 
@@ -202,8 +244,8 @@ for order in response.auto_iter():
 # cancel order
 # create an order first
 response = client.trading.orders.create(
-    isin='US88160R1014', 
-    side='buy', 
+    isin='US88160R1014',
+    side='buy',
     quantity=1,
 )
 # cancel the order via order_id
@@ -248,7 +290,7 @@ response = client.trading.positions.get_performance()
 
 ### Direct API calls
 
-It is possible to call Market Data API/Trading API endpoints directly by providing path to the endpoint 
+It is possible to call Market Data API/Trading API endpoints directly by providing path to the endpoint
 and optionally - query parameters and payload to be sent.  SDK currently supports `GET|POST|PUT|DELETE` methods.
 
 ```python
@@ -320,5 +362,3 @@ print(response.json())
 print(response.results[0].dict())
 print(response.results[0].json())
 ```
-
-

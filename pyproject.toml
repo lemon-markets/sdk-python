@@ -40,7 +40,8 @@ dependencies = [
 test = [
     "pytest",
     "pytest-cov",
-    "pytest_httpserver"
+    "pytest-dotenv",
+    "pytest_httpserver",
 ]
 
 dev = [

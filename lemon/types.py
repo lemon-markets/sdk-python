@@ -135,9 +135,11 @@ class BaseModel(metaclass=BaseModelMeta):
 class BaseIterableModel(BaseModel):
     next: Optional[str]
     _client: Optional["Client"]
+    _headers: Optional[dict]
 
     def auto_iter(self) -> Iterator:
         data = self
+        headers = self._headers or {}
         while True:
             for el in data.results:
                 yield el
@@ -145,7 +147,7 @@ class BaseIterableModel(BaseModel):
             if not data.next:
                 break
 
-            response = self._client.get(data.next).json()
+            response = self._client.get(data.next, headers=headers).json()
             data = self._from_data(response)
 
 

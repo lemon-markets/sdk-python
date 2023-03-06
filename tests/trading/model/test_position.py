@@ -26,6 +26,7 @@ GET_POSITIONS_RESPONSE = GetPositionsResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next=None,
 )
 
@@ -46,6 +47,7 @@ DICT_GET_POSITIONS_RESPONSE = {
     "page": 2,
     "pages": 4,
     "_client": None,
+    "_headers": None,
     "next": None,
 }
 
@@ -69,6 +71,7 @@ GET_STATEMENTS_RESPONSE = GetStatementsResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next=None,
 )
 
@@ -92,6 +95,7 @@ DICT_GET_STATEMENTS_RESPONSE = {
     "page": 2,
     "pages": 4,
     "_client": None,
+    "_headers": None,
     "next": None,
 }
 
@@ -116,6 +120,7 @@ GET_PERFORMANCE_RESPONSE = GetPerformanceResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next=None,
 )
 
@@ -140,6 +145,7 @@ DICT_GET_PERFORMANCE_RESPONSE = {
     "page": 2,
     "pages": 4,
     "_client": None,
+    "_headers": None,
     "next": None,
 }
 

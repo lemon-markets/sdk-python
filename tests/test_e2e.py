@@ -1,6 +1,6 @@
 import os
 import warnings
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from operator import attrgetter
 from time import sleep
 from typing import Set
@@ -223,6 +223,30 @@ def test_quotes_by_epoch(uut: Api):
 
 
 @pytest.mark.e2e
+def test_get_historical_quotes(uut: Api):
+    response = uut.market_data.quotes.get(
+        isin="US88160R1014", from_=datetime(2022, 10, 5, tzinfo=timezone.utc), to=1
+    )
+    assert len(response.results) == 100
+
+
+@pytest.mark.e2e
+def test_get_historical_quotes_as_get_latest(uut: Api):
+    response = uut.market_data.quotes.get(isin="US88160R1014")
+    assert len(response.results) == 1
+
+
+@pytest.mark.e2e
+def test_get_historical_quotes_invalid_range(uut: Api):
+    with pytest.raises(InvalidQueryError):
+        uut.market_data.quotes.get(
+            isin="US88160R1014",
+            from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
+            to=2,
+        )
+
+
+@pytest.mark.e2e
 def test_trades_by_decimals(uut: Api):
     # decimals=False
     response = uut.market_data.trades.get_latest(isin=["US88160R1014"], decimals=False)
@@ -248,6 +272,30 @@ def test_trades_by_epoch(uut: Api):
     # decimals=True
     response = uut.market_data.trades.get_latest(isin=["US88160R1014"], epoch=True)
     assert isinstance(response.results[-1].t, int)
+
+
+@pytest.mark.e2e
+def test_get_historical_trades(uut: Api):
+    response = uut.market_data.trades.get(
+        isin="US88160R1014", from_=datetime(2022, 10, 5, tzinfo=timezone.utc), to=1
+    )
+    assert len(response.results) == 100
+
+
+@pytest.mark.e2e
+def test_get_historical_trades_as_get_latest(uut: Api):
+    response = uut.market_data.trades.get(isin="US88160R1014")
+    assert len(response.results) == 1
+
+
+@pytest.mark.e2e
+def test_get_historical_trades_invalid_range(uut: Api):
+    with pytest.raises(InvalidQueryError):
+        uut.market_data.trades.get(
+            isin="US88160R1014",
+            from_=datetime(2022, 10, 5, tzinfo=timezone.utc),
+            to=700,
+        )
 
 
 @pytest.mark.e2e
@@ -384,3 +432,13 @@ def test_instrument_iteration(uut: Api):
     response = uut.market_data.instruments.get(search="tesla", limit=1)
     result = list(response.auto_iter())
     assert len(result)
+
+
+@pytest.mark.e2e
+def test_instrument_if_modified_since(uut: Api):
+    response = uut.market_data.instruments.get(
+        modified_since=datetime.now(tz=timezone.utc)
+    )
+    assert response._headers
+    assert not response.results
+    assert not list(response.auto_iter())

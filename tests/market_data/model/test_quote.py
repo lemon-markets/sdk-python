@@ -19,6 +19,7 @@ RESPONSE = GetQuotesResponse(
     page=1,
     pages=1,
     _client=None,
+    _headers=None,
     next=None,
 )
 
@@ -39,6 +40,7 @@ DICT_RESPONSE = {
     "page": 1,
     "pages": 1,
     "_client": None,
+    "_headers": None,
     "next": None,
 }
 

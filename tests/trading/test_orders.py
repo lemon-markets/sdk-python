@@ -252,6 +252,7 @@ DUMMY_ORDERS_RESPONSE = GetOrdersResponse(
     page=2,
     pages=4,
     _client=None,
+    _headers=None,
     next="https://paper-trading.lemon.markets/v1/orders/?limit=10&page=3",
 )
 
