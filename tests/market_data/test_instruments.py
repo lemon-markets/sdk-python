@@ -101,24 +101,24 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
             ({"limit": 100}, "limit=100"),
             ({"page": 7}, "page=7"),
             (
-                    {
-                        "isin": ["XMUN"],
-                        "search": "foo",
-                        "type": ["stock", "etf"],
-                        "mic": ["XMUN"],
-                        "currency": ["USD"],
-                        "tradable": False,
-                        "sorting": "asc",
-                        "limit": 100,
-                        "page": 7,
-                    },
-                    "isin=XMUN&search=foo&type=stock&type=etf&mic=XMUN&"
-                    "currency=USD&tradable=False&sorting=asc&limit=100&page=7",
+                {
+                    "isin": ["XMUN"],
+                    "search": "foo",
+                    "type": ["stock", "etf"],
+                    "mic": ["XMUN"],
+                    "currency": ["USD"],
+                    "tradable": False,
+                    "sorting": "asc",
+                    "limit": 100,
+                    "page": 7,
+                },
+                "isin=XMUN&search=foo&type=stock&type=etf&mic=XMUN&"
+                "currency=USD&tradable=False&sorting=asc&limit=100&page=7",
             ),
         ],
     )
     def test_get_instruments(
-            self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
         httpserver.expect_oneshot_request(
             "/instruments",
