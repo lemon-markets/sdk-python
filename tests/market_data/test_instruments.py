@@ -88,24 +88,24 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
             ({"limit": 100}, "limit=100"),
             ({"page": 7}, "page=7"),
             (
-                {
-                    "isin": ["XMUN"],
-                    "search": "foo",
-                    "type": ["stock", "etf"],
-                    "mic": ["XMUN"],
-                    "currency": ["USD"],
-                    "tradable": False,
-                    "sorting": "asc",
-                    "limit": 100,
-                    "page": 7,
-                },
-                "isin=XMUN&search=foo&type=stock&type=etf&mic=XMUN&"
-                "currency=USD&tradable=False&sorting=asc&limit=100&page=7",
+                    {
+                        "isin": ["XMUN"],
+                        "search": "foo",
+                        "type": ["stock", "etf"],
+                        "mic": ["XMUN"],
+                        "currency": ["USD"],
+                        "tradable": False,
+                        "sorting": "asc",
+                        "limit": 100,
+                        "page": 7,
+                    },
+                    "isin=XMUN&search=foo&type=stock&type=etf&mic=XMUN&"
+                    "currency=USD&tradable=False&sorting=asc&limit=100&page=7",
             ),
         ],
     )
     def test_get_instruments(
-        self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
+            self, client: Api, httpserver: HTTPServer, function_kwargs, query_string
     ):
         httpserver.expect_oneshot_request(
             "/instruments",
@@ -129,3 +129,12 @@ class TestInstrumentsApi(CommonMarketDataApiTests):
 
         DUMMY_RESPONSE._client = client.market_data  # Note: dynamically bound a client
         assert client.market_data.instruments.get() == DUMMY_RESPONSE
+
+    def test_json_property(self, httpserver, client: Api):
+        httpserver.expect_oneshot_request(
+            "/instruments",
+            method="GET",
+        ).respond_with_json(DUMMY_PAYLOAD)
+
+        response = client.market_data.instruments.get()
+        assert isinstance(response.json(), str)
