@@ -46,6 +46,7 @@ class GetOhlcResponse(BaseIterableModel):
 
     @staticmethod
     def _from_data(  # type: ignore # pylint: disable=W0221
+        headers: Dict[str, Any],
         data: Dict[str, Any],
         t_type: Callable[[Any], Union[int, float]],
         k_type: Callable[[Any], Union[datetime, int]],
@@ -60,6 +61,6 @@ class GetOhlcResponse(BaseIterableModel):
             page=int(data["page"]),
             pages=int(data["pages"]),
             _client=client,
-            _headers=None,
+            _headers=headers,
             next=data["next"],
         )
