@@ -32,7 +32,7 @@ dependencies = [
     "pytz>=2022.1",
     "requests>=2.27.1",
     "typing-extensions>=4.2.0",
-    "urllib3>=1.26.0,<2",
+    "urllib3>=1.26.0,<3",
 ]
 
 [project.optional-dependencies]
